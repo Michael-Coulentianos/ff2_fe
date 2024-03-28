@@ -1,37 +1,19 @@
 import SearchBar from "../molecules/searchBar";
 import {
   Box,
-  Button,
   CssBaseline,
+  IconButton,
   Toolbar,
   Typography,
   styled,
   useTheme,
 } from "@mui/material";
 import NavigationDrawer from "./navigationDrawer";
-import { useState } from "react";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import EditIcon from "@mui/icons-material/Edit";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-
+import FFlogo from "../../assets/logos/fflogoGreen.png";
 const drawerWidth = 240;
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${drawerWidth}px`,
-  ...(open && {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
-}));
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -54,46 +36,57 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-export default function Header() {
-  const [open, setOpen] = useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
+export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
   return (
     <Box>
       <CssBaseline />
       <AppBar
         sx={{ backgroundColor: theme.palette.common.white }}
-        position="fixed"
+        position="sticky"
         open={open}
       >
         <Toolbar>
-          <NavigationDrawer></NavigationDrawer>
-          <Typography color={theme.palette.primary.main} variant="h6">
+          <NavigationDrawer
+            open={open}
+            handleDrawerOpen={handleDrawerOpen}
+            handleDrawerClose={handleDrawerClose}
+          ></NavigationDrawer>
+          <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
+          <Typography
+            flexGrow={1}
+            color={theme.palette.primary.main}
+            variant="h6"
+            marginLeft={2}
+          >
             Farmers Friend
           </Typography>
-          <SearchBar></SearchBar>
-          <Button
-            onClick={undefined}
-            style={{
-              backgroundColor: "#3C4F18",
-              color: "#FFFF",
-              padding: 4,
-              margin: 5,
-              borderRadius: 25,
+          <IconButton
+            aria-label="edit"
+            sx={{
+              color: "white",
+              backgroundColor: theme.palette.secondary.main,
+              width: "30px",
+              height: "30px",
             }}
           >
-            Sign Up
-          </Button>
+            <EditIcon />
+          </IconButton>
+          <SearchBar></SearchBar>
+          <IconButton
+            aria-label="edit"
+            sx={{
+              color: theme.palette.primary.main,
+            }}
+          >
+            <ExitToAppIcon
+              sx={{
+                color: theme.palette.primary.main,
+                width: "30px",
+                height: "30px",
+              }}
+            />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </Box>

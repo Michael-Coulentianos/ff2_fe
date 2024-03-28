@@ -1,7 +1,4 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import CircularProgress from "@mui/material/CircularProgress";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -9,33 +6,38 @@ import {
   MsalProvider,
 } from "@azure/msal-react";
 import { loginRequest } from "./auth-config";
-import { Login } from "@microsoft/mgt-react";
-import { Button } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
+import theme from "./theme";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HomeDashboardPage from "./components/pages/HomeDashboard";
+// import MyFarmPage from "./pages/MyFarm";
+// import OperationsPage from "./components/pages/Operations";
+// import CropClimatePage from "./components/pages/ropClimate";
+// import AdminastrationPage from "./components/pages/Adminastration";
+
 const WrappedView = () => {
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
 
-  const handleRedirect = () => {
-    instance
-      .loginRedirect({
-        ...loginRequest,
-        prompt: "create",
-      })
-      .catch((error) => console.log(error));
-  };
+  // const handleRedirect = () => {
+  //   instance
+  //     .loginRedirect({
+  //       ...loginRequest,
+  //       prompt: "create",
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
+
+  // april -21days challenge excercise, marathon 5 10 21, areobics
+  // Isaiah 60:18 - no more violence; walls salvation; gates parseIsolatedEntityName;
 
   return (
-    <div className="App">
+    <div>
       <AuthenticatedTemplate>
-        {activeAccount ? <h6>Authenticated Successfully</h6> : null}
+        {activeAccount ? <h6>Authentication successfull - Sign In</h6> : null}
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
-        <Button
-          onClick={handleRedirect}
-          style={{ backgroundColor: "#3C4F18", color: "#FFFF" }}
-        >
-          Sign Up
-        </Button>
+        {activeAccount ? <h6>Authentication unsuccessfull - Sign Up</h6> : null}
       </UnauthenticatedTemplate>
     </div>
   );
@@ -43,16 +45,20 @@ const WrappedView = () => {
 
 const App = ({ instance }) => {
   return (
-    <MsalProvider instance={instance}>
-      <WrappedView></WrappedView>
-      <p>
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>Version 2</p>
-          <CircularProgress color="inherit" />
-        </header>
-      </p>
-    </MsalProvider>
+    <ThemeProvider theme={theme}>
+      <MsalProvider instance={instance}>
+        <WrappedView></WrappedView>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomeDashboardPage props={undefined} />} />
+            {/* <Route path="/farm" element={<MyFarmPage/>} />
+            <Route path="/operations" element={<OperationsPage />} />
+            <Route path="/cropclimate" element={<CropClimatePage />} />
+            <Route path="/adminastration" element={<AdminastrationPage />} /> */}
+          </Routes>
+        </Router>
+      </MsalProvider>
+    </ThemeProvider>
   );
 };
 

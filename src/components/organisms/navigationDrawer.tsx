@@ -1,41 +1,28 @@
-import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
-import Drawer from "@mui/material/Drawer";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { DataUsage, Grass } from "@mui/icons-material";
 import barnIcon from "../../assets/icons/barnIcon.svg";
 import menuIcon from "../../assets/icons/menuIcon.svg";
-import { DataUsage, Grass } from "@mui/icons-material";
-
+import { useState } from "react";
+import {
+  Collapse,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  styled,
+} from "@mui/material";
+import theme from "../../theme";
 const drawerWidth = 240;
-
-const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${drawerWidth}px`,
-  ...(open && {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
-}));
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -47,18 +34,52 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   backgroundColor: "#3C4F1E",
 }));
 
-export default function NavigationDrawer() {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+const MenuItem = ({ text, icon }) => {
+  return (
+    <ListItem disablePadding>
+      <ListItemButton>
+        <ListItemIcon>{icon}</ListItemIcon>
+        <ListItemText primary={text} sx={{ color: "white" }} />
+      </ListItemButton>
+    </ListItem>
+  );
+};
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+const CollapsibleSection = ({ open, text, children }) => {
+  return (
+    <Collapse in={open} timeout="auto" unmountOnExit>
+      <List component="div" disablePadding>
+        {children}
+      </List>
+    </Collapse>
+  );
+};
+const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
+  const [openCollapseMyFarm, setOpenCollapseMyFarm] = useState(false);
+  const [openCollapseOperations, setOpenCollapseOperations] = useState(false);
+  const [openCollapseCropAndClimate, setOpenCollapseCropAndClimate] =
+    useState(false);
+  const [openCollapseAdministration, setOpenCollapseAdministration] =
+    useState(false);
+
+  const handleOpenHeading = (section) => {
+    switch (section) {
+      case "My Farm":
+        setOpenCollapseMyFarm(!openCollapseMyFarm);
+        break;
+      case "Operations":
+        setOpenCollapseOperations(!openCollapseOperations);
+        break;
+      case "Crop and Climate":
+        setOpenCollapseCropAndClimate(!openCollapseCropAndClimate);
+        break;
+      case "Administration":
+        setOpenCollapseAdministration(!openCollapseAdministration);
+        break;
+      default:
+        break;
+    }
   };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
   return (
     <>
       <IconButton
@@ -74,13 +95,11 @@ export default function NavigationDrawer() {
 
       <Drawer
         sx={{
-          width: drawerWidth,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
             backgroundColor: "#3C4F1E",
-            color: "#FFFFF",
           },
         }}
         variant="persistent"
@@ -92,31 +111,82 @@ export default function NavigationDrawer() {
           <Typography sx={{ marginTop: 0.5, color: "white" }}>
             Sean’s Farm
           </Typography>
-
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
+              <ChevronLeftIcon sx={{ color: "white" }} />
             ) : (
-              <ChevronRightIcon />
+              <ChevronRightIcon sx={{ color: "white" }} />
             )}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          {["My Farm", "Operations", "Crop and Climate", "Administration"].map(
-            (text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <Grass /> : <DataUsage />}
-                  </ListItemIcon>
-                  <ListItemText sx={{ color: "#FFFFF" }} primary={text} />
-                </ListItemButton>
+          {[
+            {
+              text: "My Farm",
+              icon: <Grass sx={{ color: "white" }} />,
+              open: openCollapseMyFarm,
+            },
+            {
+              text: "Operations",
+              icon: <SettingsIcon sx={{ color: "white" }} />,
+              open: openCollapseOperations,
+            },
+            {
+              text: "Crop and Climate",
+              icon: <DataUsage sx={{ color: "white" }} />,
+              open: openCollapseCropAndClimate,
+            },
+            {
+              text: "Administration",
+              icon: <AdminPanelSettingsIcon sx={{ color: "white" }} />,
+              open: openCollapseAdministration,
+            },
+          ].map(({ text, icon, open }, index) => (
+            <div key={text}>
+              <ListItem disablePadding onClick={() => handleOpenHeading(text)}>
+                <MenuItem text={text} icon={icon} />
+                {open ? (
+                  <ArrowDropUpIcon sx={{ color: "white" }} />
+                ) : (
+                  <ArrowDropDownIcon sx={{ color: "white" }} />
+                )}
               </ListItem>
-            )
-          )}
+              {text === "My Farm" && (
+                <CollapsibleSection open={open} text={undefined}>
+                  <MenuItem text="Farm Management" icon={undefined} />
+                  <MenuItem text="Fields Management" icon={undefined} />
+                  <MenuItem text="Activity Management" icon={undefined} />
+                </CollapsibleSection>
+              )}
+              {text === "Operations" && (
+                <CollapsibleSection open={open} text={undefined}>
+                  <MenuItem text="Warehouse" icon={undefined} />
+                  <MenuItem text="Financial Management" icon={undefined} />
+                  <MenuItem text="Alert Management" icon={undefined} />
+                </CollapsibleSection>
+              )}
+              {text === "Crop and Climate" && (
+                <CollapsibleSection open={open} text={undefined}>
+                  <MenuItem text="Climate Data" icon={undefined} />
+                  <MenuItem text="Crop Data" icon={undefined} />
+                  <MenuItem text="Sensor Data" icon={undefined} />
+                </CollapsibleSection>
+              )}
+              {text === "Administration" && (
+                <CollapsibleSection open={open} text={undefined}>
+                  <MenuItem text="Report Generating" icon={undefined} />
+                  <MenuItem text="Documentation" icon={undefined} />
+                  <MenuItem text="Settings" icon={undefined} />
+                  <MenuItem text="Notes" icon={undefined} />
+                </CollapsibleSection>
+              )}
+            </div>
+          ))}
         </List>
       </Drawer>
     </>
   );
-}
+};
+
+export default NavigationDrawer;
