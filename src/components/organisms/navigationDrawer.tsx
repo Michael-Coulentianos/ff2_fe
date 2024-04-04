@@ -6,7 +6,6 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { DataUsage, Grass } from "@mui/icons-material";
 import barnIcon from "../../assets/icons/barnIcon.svg";
-import menuIcon from "../../assets/icons/menuIcon.svg";
 import { useState } from "react";
 import {
   Collapse,
@@ -83,14 +82,14 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
   return (
     <>
       <IconButton
-        size="large"
+        size="small"
         edge="start"
         color="inherit"
         aria-label="open drawer"
         onClick={handleDrawerOpen}
-        sx={{ mr: 2, ...(open && { display: "none" }) }}
+        sx={{ mr: 1, ...(open && { display: "none" }) }}
       >
-        <img src={menuIcon} alt="menuIcon" />
+        <ChevronRightIcon sx={{ color: "black" }} />
       </IconButton>
 
       <Drawer
@@ -104,6 +103,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         }}
         variant="persistent"
         anchor="left"
+        
         open={open}
       >
         <DrawerHeader>

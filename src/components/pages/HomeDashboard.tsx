@@ -1,10 +1,8 @@
 import { useState } from "react";
 import Footer from "../organisms/footer";
 import Header from "../organisms/header";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
-
-const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;

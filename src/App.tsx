@@ -5,7 +5,7 @@ import {
   useMsal,
   MsalProvider,
 } from "@azure/msal-react";
-import { loginRequest } from "./auth-config";
+// import { loginRequest } from "./auth-config";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";

@@ -11,14 +11,15 @@ import {
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import EditIcon from "@mui/icons-material/Edit";
+import menuIcon from "../../assets/icons/menuIcon.svg";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
+
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
-
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
@@ -52,6 +53,17 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
             handleDrawerOpen={handleDrawerOpen}
             handleDrawerClose={handleDrawerClose}
           ></NavigationDrawer>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="open apps"
+            onClick={undefined}
+            sx={{ m: 1 }}
+          >
+            <img src={menuIcon} alt="menuIcon" />
+          </IconButton>
+
           <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
           <Typography
             flexGrow={1}
