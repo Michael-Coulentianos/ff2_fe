@@ -1,6 +1,7 @@
 import SearchBar from "../molecules/searchBar";
 import {
   Box,
+  Button,
   CssBaseline,
   IconButton,
   Toolbar,
@@ -15,6 +16,11 @@ import menuIcon from "../../assets/icons/menuIcon.svg";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
 
+import { loginRequest } from "../../../src/auth-config";
+import { useMsal } from "@azure/msal-react";
+
+
+  
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -39,6 +45,17 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
+  const { instance } = useMsal();
+  
+const handleRedirect = () => {
+  instance
+    .loginRedirect({
+      ...loginRequest,
+      prompt: "create",
+    })
+    .catch((error) => console.log(error));
+};
+
   return (
     <Box>
       <CssBaseline />
@@ -99,6 +116,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
               }}
             />
           </IconButton>
+          <Button onClick={handleRedirect}>signing</Button>
         </Toolbar>
       </AppBar>
     </Box>

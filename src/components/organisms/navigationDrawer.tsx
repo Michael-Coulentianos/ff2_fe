@@ -14,13 +14,12 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Typography,
   styled,
 } from "@mui/material";
 import theme from "../../theme";
+import MenuItem from "../molecules/menuItem";
+import DrawerToggleButton from "../atom/drawerToggle";
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -32,17 +31,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "space-around",
   backgroundColor: "#3C4F1E",
 }));
-
-const MenuItem = ({ text, icon }) => {
-  return (
-    <ListItem disablePadding>
-      <ListItemButton>
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText primary={text} sx={{ color: "white" }} />
-      </ListItemButton>
-    </ListItem>
-  );
-};
 
 const CollapsibleSection = ({ open, text, children }) => {
   return (
@@ -81,17 +69,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
   };
   return (
     <>
-      <IconButton
-        size="small"
-        edge="start"
-        color="inherit"
-        aria-label="open drawer"
-        onClick={handleDrawerOpen}
-        sx={{ mr: 1, ...(open && { display: "none" }) }}
-      >
-        <ChevronRightIcon sx={{ color: "black" }} />
-      </IconButton>
-
+      <DrawerToggleButton open={open} onClick={handleDrawerOpen} />
       <Drawer
         sx={{
           flexShrink: 0,
@@ -103,7 +81,6 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         }}
         variant="persistent"
         anchor="left"
-        
         open={open}
       >
         <DrawerHeader>

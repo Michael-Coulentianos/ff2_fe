@@ -28,8 +28,6 @@ const WrappedView = () => {
   //     .catch((error) => console.log(error));
   // };
 
-  // april -21days challenge excercise, marathon 5 10 21, areobics
-  // Isaiah 60:18 - no more violence; walls salvation; gates parseIsolatedEntityName;
 
   return (
     <div>

@@ -3,6 +3,7 @@ import Footer from "../organisms/footer";
 import Header from "../organisms/header";
 import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
+import TableComponent from "../organisms/table";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
