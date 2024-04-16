@@ -9,11 +9,12 @@ import {
 interface MenuItemProps {
   text: string;
   icon: React.ReactNode;
+  href: string;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ text, icon }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ text, icon, href }) => (
   <ListItem disablePadding>
-    <ListItemButton>
+    <ListItemButton href={href}>
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText primary={text} sx={{ color: "white" }} />
     </ListItemButton>

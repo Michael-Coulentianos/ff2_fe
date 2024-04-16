@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
 import "./App.css";
 import {
   AuthenticatedTemplate,
@@ -5,30 +7,36 @@ import {
   useMsal,
   MsalProvider,
 } from "@azure/msal-react";
-// import { loginRequest } from "./auth-config";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import HomeDashboardPage from "./components/pages/HomeDashboard";
-// import MyFarmPage from "./pages/MyFarm";
-// import OperationsPage from "./components/pages/Operations";
-// import CropClimatePage from "./components/pages/ropClimate";
-// import AdminastrationPage from "./components/pages/Adminastration";
+import Footer from "./components/organisms/footer";
+import Header from "./components/organisms/header";
+import Routing from "./routing";
 
+// import { loginRequest } from "./auth-config";
+
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
+  open?: boolean;
+}>(({ theme, open }) => ({
+  flexGrow: 1,
+  padding: theme.spacing(3),
+  transition: theme.transitions.create("margin", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  marginLeft: 5,
+  ...(open && {
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginLeft: 240,
+  }),
+}));
 const WrappedView = () => {
   const { instance } = useMsal();
   const activeAccount = instance.getActiveAccount();
-
-  // const handleRedirect = () => {
-  //   instance
-  //     .loginRedirect({
-  //       ...loginRequest,
-  //       prompt: "create",
-  //     })
-  //     .catch((error) => console.log(error));
-  // };
-
-
+  console.log(activeAccount);
   return (
     <div>
       <AuthenticatedTemplate>
@@ -42,19 +50,29 @@ const WrappedView = () => {
 };
 
 const App = ({ instance }) => {
+  const [open, setOpen] = useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <MsalProvider instance={instance}>
         <WrappedView></WrappedView>
-        <Router>
-          <Routes>
-            <Route path="/" element={<HomeDashboardPage props={undefined} />} />
-            {/* <Route path="/farm" element={<MyFarmPage/>} />
-            <Route path="/operations" element={<OperationsPage />} />
-            <Route path="/cropclimate" element={<CropClimatePage />} />
-            <Route path="/adminastration" element={<AdminastrationPage />} /> */}
-          </Routes>
-        </Router>
+        <Header
+          open={open}
+          handleDrawerOpen={handleDrawerOpen}
+          handleDrawerClose={handleDrawerClose}
+        ></Header>
+        <Main open={open} sx={{ minHeight: "87vh" }}>
+          <Routing />
+        </Main>
+        <Footer></Footer>
       </MsalProvider>
     </ThemeProvider>
   );

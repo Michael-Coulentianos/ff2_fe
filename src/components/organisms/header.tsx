@@ -4,10 +4,11 @@ import {
   Button,
   CssBaseline,
   IconButton,
+  Link,
   Toolbar,
-  Typography,
   styled,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -19,8 +20,6 @@ import FFlogo from "../../assets/logos/fflogoGreen.png";
 import { loginRequest } from "../../../src/auth-config";
 import { useMsal } from "@azure/msal-react";
 
-
-  
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -46,16 +45,17 @@ const AppBar = styled(MuiAppBar, {
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
   const { instance } = useMsal();
-  
-const handleRedirect = () => {
-  instance
-    .loginRedirect({
-      ...loginRequest,
-      prompt: "create",
-    })
-    .catch((error) => console.log(error));
-};
 
+  const handleRedirect = () => {
+    instance
+      .loginRedirect({
+        ...loginRequest,
+        prompt: "create",
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
   return (
     <Box>
       <CssBaseline />
@@ -76,20 +76,28 @@ const handleRedirect = () => {
             color="inherit"
             aria-label="open apps"
             onClick={undefined}
-            sx={{ m: 1 }}
+            sx={{ mt: 1, mb: 1.5 }}
           >
             <img src={menuIcon} alt="menuIcon" />
           </IconButton>
 
-          <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
-          <Typography
-            flexGrow={1}
-            color={theme.palette.primary.main}
-            variant="h6"
-            marginLeft={2}
-          >
-            Farmers Friend
-          </Typography>
+          <Link href={"/"} underline="none" sx={{ mr: 1 }}>
+            <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
+          </Link>
+
+          {isMdScreen && (
+            <Link
+              href={"/"}
+              flexGrow={1}
+              color={theme.palette.primary.main}
+              variant="h6"
+              marginLeft={2}
+              underline="none"
+            >
+              Farmers Friend
+            </Link>
+          )}
+
           <IconButton
             aria-label="edit"
             sx={{
@@ -116,7 +124,7 @@ const handleRedirect = () => {
               }}
             />
           </IconButton>
-          <Button onClick={handleRedirect}>signing</Button>
+          {/* <Button onClick={handleRedirect}>signing</Button> */}
         </Toolbar>
       </AppBar>
     </Box>

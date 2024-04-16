@@ -48,7 +48,6 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
     useState(false);
   const [openCollapseAdministration, setOpenCollapseAdministration] =
     useState(false);
-
   const handleOpenHeading = (section) => {
     switch (section) {
       case "My Farm":
@@ -122,7 +121,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
           ].map(({ text, icon, open }, index) => (
             <div key={text}>
               <ListItem disablePadding onClick={() => handleOpenHeading(text)}>
-                <MenuItem text={text} icon={icon} />
+                <MenuItem text={text} icon={icon} href={""} />
                 {open ? (
                   <ArrowDropUpIcon sx={{ color: "white" }} />
                 ) : (
@@ -131,31 +130,55 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
               </ListItem>
               {text === "My Farm" && (
                 <CollapsibleSection open={open} text={undefined}>
-                  <MenuItem text="Farm Management" icon={undefined} />
-                  <MenuItem text="Fields Management" icon={undefined} />
-                  <MenuItem text="Activity Management" icon={undefined} />
+                  <MenuItem text="Farm Management" icon={undefined} href={""} />
+                  <MenuItem
+                    text="Fields Management"
+                    icon={undefined}
+                    href={""}
+                  />
+                  <MenuItem
+                    text="Activity Management"
+                    icon={undefined}
+                    href={""}
+                  />
                 </CollapsibleSection>
               )}
               {text === "Operations" && (
                 <CollapsibleSection open={open} text={undefined}>
-                  <MenuItem text="Warehouse" icon={undefined} />
-                  <MenuItem text="Financial Management" icon={undefined} />
-                  <MenuItem text="Alert Management" icon={undefined} />
+                  <MenuItem text="Warehouse" icon={undefined} href={""} />
+                  <MenuItem
+                    text="Financial Management"
+                    icon={undefined}
+                    href={""}
+                  />
+                  <MenuItem
+                    text="Alert Management"
+                    icon={undefined}
+                    href={""}
+                  />
                 </CollapsibleSection>
               )}
               {text === "Crop and Climate" && (
                 <CollapsibleSection open={open} text={undefined}>
-                  <MenuItem text="Climate Data" icon={undefined} />
-                  <MenuItem text="Crop Data" icon={undefined} />
-                  <MenuItem text="Sensor Data" icon={undefined} />
+                  <MenuItem text="Climate Data" icon={undefined} href={""} />
+                  <MenuItem text="Crop Data" icon={undefined} href={""} />
+                  <MenuItem text="Sensor Data" icon={undefined} href={""} />
                 </CollapsibleSection>
               )}
               {text === "Administration" && (
                 <CollapsibleSection open={open} text={undefined}>
-                  <MenuItem text="Report Generating" icon={undefined} />
-                  <MenuItem text="Documentation" icon={undefined} />
-                  <MenuItem text="Settings" icon={undefined} />
-                  <MenuItem text="Notes" icon={undefined} />
+                  <MenuItem
+                    text="Report Generating"
+                    icon={undefined}
+                    href={""}
+                  />
+                  <MenuItem text="Documentation" icon={undefined} href={""} />
+                  <MenuItem
+                    text="Settings"
+                    icon={undefined}
+                    href={"/settings"}
+                  />
+                  <MenuItem text="Notes" icon={undefined} href={"/notes"} />
                 </CollapsibleSection>
               )}
             </div>

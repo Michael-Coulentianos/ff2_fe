@@ -10,6 +10,7 @@ export const msalConfig = {
     // Full redirect URL, in form of http://localhost:3000
     redirectUri: "http://localhost:3000",
   },
+  //http://localhost:3000/signin-iodc === shows authentication success message
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored
     storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge

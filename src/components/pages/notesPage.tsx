@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, styled } from "@mui/material";
+import { Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
-import OrganizationDialog from "../organisms/organisationDialog";
+import NotesDialog from "../organisms/notesDialog";
 import DynamicTable from "../organisms/table";
 
 interface Organization {
@@ -24,7 +24,7 @@ interface DynamicTableProps {
   data: DataItem[];
   columns: ColumnConfig[];
 }
-const OrganizationSettings: React.FC = () => {
+const Notes: React.FC = () => {
   const [organization, setOrganization] = useState<Organization>({
     name: "",
     contactInfo: "",
@@ -89,33 +89,23 @@ const OrganizationSettings: React.FC = () => {
   ];
   const myColumns: ColumnConfig[] = [
     {
-      label: "Company name",
+      label: "Name",
       dataKey: "name",
       renderCell: (item) => <span>{item.name}</span>,
     },
     {
-      label: "Registration  number",
-      dataKey: "registrationNum",
+      label: "Owner",
+      dataKey: "owner",
       renderCell: (item) => <span>{item.name}</span>,
     },
     {
-      label: "VAT number",
-      dataKey: "VAT",
-      renderCell: (item) => <span>{item.name}</span>,
-    },
-    {
-      label: "Contact information",
-      dataKey: "contactInformation",
-      renderCell: (item) => <span>{item.name}</span>,
-    },
-    {
-      label: "Address",
-      dataKey: "address",
+      label: "Date Created",
+      dataKey: "date",
       renderCell: (item) => <span>{item.name}</span>,
     },
     {
       label: "Action Buttons",
-      dataKey: "action",
+      dataKey: "actionBtns",
       renderCell: () => (
         <ActionButtons
           onEdit={handleEditClick}
@@ -128,13 +118,12 @@ const OrganizationSettings: React.FC = () => {
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
-        <OrganizationDialog></OrganizationDialog>
+        <NotesDialog></NotesDialog>
       </Grid>
-      <Grid xs={12}>
         <DynamicTable data={myData} columns={myColumns}></DynamicTable>
-      </Grid>
+     
     </>
   );
 };
 
-export default OrganizationSettings;
+export default Notes;
