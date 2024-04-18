@@ -11,6 +11,7 @@ import {
   Dialog,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
+import EditIcon from "@mui/icons-material/Edit";
 import TextBox from "../atom/textBox";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -28,8 +29,12 @@ interface Notes {
   contactInfo: string;
   address: string;
 }
+interface NotesProps {
+  isEdit: boolean;
+  onEdit?: any; // replace 'any' with the type of your 'onEdit' function
+}
 
-const NotesDialog: React.FC = () => {
+const NotesDialog: React.FC<NotesProps> = ({ isEdit, onEdit }) => {
   const [Notes, setNotes] = useState<Notes>({
     name: "",
     contactInfo: "",
@@ -41,7 +46,7 @@ const NotesDialog: React.FC = () => {
       setNotes({ ...Notes, [key]: event.target.value });
     };
 
-  const handleEditClick = () => {};
+  // const handleEditClick = () => {};
 
   const handleSaveClick = async () => {
     try {
@@ -74,83 +79,92 @@ const NotesDialog: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Button variant="contained" color="primary" onClick={handleOpenModal}>
-        Add
-      </Button>
-      <MuiDialog
-        onClose={handleCloseModal}
-        aria-labelledby="customized-dialog-title"
-        open={modalOpen}
-      >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              Notes
-            </Grid>
-          </Grid>
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseModal}
-          size="small"
-          sx={{
-            position: "absolute",
-            right: 10,
-            top: 15,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
+    <>
+      {isEdit && (
+        <IconButton onClick={onEdit}>
+          <EditIcon />
         </IconButton>
-        <form onSubmit={handleSaveClick}>
-          <DialogContent dividers>
-            <TextBox
-              label="Title"
-              value={Notes.name}
-              onChange={handleInputChange("name")}
-            />
-            <TextBox
-              label="Type"
-              value={Notes.contactInfo}
-              onChange={handleInputChange("contactInfo")}
-            />
-            <TextBox
-              label="Date"
-              value={Notes.address}
-              onChange={handleInputChange("address")}
-            />
-            <TextBox
-              label="Description"
-              value={Notes.address}
-              onChange={handleInputChange("address")}
-            />
+      )}
+      <Container>
+        {!isEdit && (
+          <Button variant="contained" color="primary" onClick={handleOpenModal}>
+            Add
+          </Button>
+        )}
+        <MuiDialog
+          onClose={handleCloseModal}
+          aria-labelledby="customized-dialog-title"
+          open={modalOpen}
+        >
+          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                Notes
+              </Grid>
+            </Grid>
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            size="small"
+            sx={{
+              position: "absolute",
+              right: 10,
+              top: 15,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <form onSubmit={handleSaveClick}>
+            <DialogContent dividers>
+              <TextBox
+                label="Title"
+                value={Notes.name}
+                onChange={handleInputChange("name")}
+              />
+              <TextBox
+                label="Type"
+                value={Notes.contactInfo}
+                onChange={handleInputChange("contactInfo")}
+              />
+              <TextBox
+                label="Date"
+                value={Notes.address}
+                onChange={handleInputChange("address")}
+              />
+              <TextBox
+                label="Description"
+                value={Notes.address}
+                onChange={handleInputChange("address")}
+              />
 
-            <TextBox
-              label="Infection percentage"
-              value={Notes.address}
-              onChange={handleInputChange("address")}
-            />
-            <TextBox
-              label="Attach file"
-              value={Notes.address}
-              onChange={handleInputChange("address")}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenModal}
-              type="submit"
-              startIcon={<SaveIcon />}
-            >
-              Add
-            </Button>
-          </DialogActions>
-        </form>
-      </MuiDialog>
-    </Container>
+              <TextBox
+                label="Infection percentage"
+                value={Notes.address}
+                onChange={handleInputChange("address")}
+              />
+              <TextBox
+                label="Attach file"
+                value={Notes.address}
+                onChange={handleInputChange("address")}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOpenModal}
+                type="submit"
+                startIcon={<SaveIcon />}
+              >
+                Add
+              </Button>
+            </DialogActions>
+          </form>
+        </MuiDialog>
+      </Container>
+    </>
   );
 };
 

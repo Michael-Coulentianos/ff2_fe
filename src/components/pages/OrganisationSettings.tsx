@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Paper, styled } from "@mui/material";
+import { Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations } from "../../apiService";
 
-interface Organization {
-  name: string;
-  contactInfo: string;
-  address: string;
-}
 interface Dataparty {
   id: string;
   [key: string]: any;
@@ -21,10 +16,6 @@ interface ColumnConfig {
   renderCell: (party: Dataparty) => React.ReactNode;
 }
 
-interface DynamicTableProps {
-  data: Dataparty[];
-  columns: ColumnConfig[];
-}
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
 
@@ -41,35 +32,33 @@ const OrganizationSettings: React.FC = () => {
     fetchOrganizations();
   }, []);
 
-  const handleEditClick = () => {};
-
-  const handleSaveClick = async () => {
-    try {
-      const response = await fetch("/api/UpdateOrganizationDetails", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(organizations),
-      });
-
-      if (response.ok) {
-        console.log("Data saved successfully!");
-      } else {
-        console.error("Error saving data:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error sending data:", error);
-    }
+  const handleDelete = (partyId: number) => {
+    console.log(`Deleting party with ID: ${partyId}`);
   };
 
-  const myData: Dataparty[] = [
-    {
-      id: "1",
-      key: "name1",
-      party: "name",
-    },
-  ];
+  const handleEditClick = (partyId: number) => {
+    console.log(`Edit party with ID: ${partyId}`);
+  };
+
+  // const handleSaveClick = async () => {
+  //   try {
+  //     const response = await fetch("/api/UpdateOrganizationDetails", {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(organizations),
+  //     });
+
+  //     if (response.ok) {
+  //       console.log("Data saved successfully!");
+  //     } else {
+  //       console.error("Error saving data:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error sending data:", error);
+  //   }
+  // };
   const myColumns: ColumnConfig[] = [
     {
       label: "Company name",
@@ -118,10 +107,10 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Action Buttons",
       dataKey: "action",
-      renderCell: () => (
+      renderCell: (party) => (
         <ActionButtons
-          onEdit={handleEditClick}
-          onDelete={handleEditClick}
+          onEdit={() => handleEditClick(party.partyId)}
+          onDelete={() => handleDelete(party.partyId)}
         ></ActionButtons>
       ),
     },
@@ -130,7 +119,7 @@ const OrganizationSettings: React.FC = () => {
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
-        <OrganizationDialog></OrganizationDialog>
+        <OrganizationDialog isEdit={false} onEdit={handleEditClick}></OrganizationDialog>
       </Grid>
       <Grid xs={12}>
         <DynamicTable data={organizations} columns={myColumns}></DynamicTable>

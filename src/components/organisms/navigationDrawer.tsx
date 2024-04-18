@@ -20,6 +20,7 @@ import {
 import theme from "../../theme";
 import MenuItem from "../molecules/menuItem";
 import DrawerToggleButton from "../atom/drawerToggle";
+import { useMsal } from "@azure/msal-react";
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -66,6 +67,12 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         break;
     }
   };
+  const { instance } = useMsal();
+  let activeAccount;
+
+  if (instance) {
+    activeAccount = instance.getActiveAccount();
+  }
   return (
     <>
       <DrawerToggleButton open={open} onClick={handleDrawerOpen} />
@@ -85,7 +92,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         <DrawerHeader>
           <img src={barnIcon} alt="barnIcon" />
           <Typography sx={{ marginTop: 0.5, color: "white" }}>
-            Sean’s Farm
+            {activeAccount ? activeAccount?.name : "Farmer"}’s Farm
           </Typography>
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === "ltr" ? (

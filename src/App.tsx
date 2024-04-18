@@ -1,19 +1,12 @@
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import "./App.css";
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useMsal,
-  MsalProvider,
-} from "@azure/msal-react";
+import { MsalProvider } from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
 import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Routing from "./routing";
-
-// import { loginRequest } from "./auth-config";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -33,21 +26,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     marginLeft: 240,
   }),
 }));
-const WrappedView = () => {
-  const { instance } = useMsal();
-  const activeAccount = instance.getActiveAccount();
-  console.log(activeAccount);
-  return (
-    <div>
-      <AuthenticatedTemplate>
-        {activeAccount ? <h6>Authentication successfull - Sign In</h6> : null}
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
-        {activeAccount ? <h6>Authentication unsuccessfull - Sign Up</h6> : null}
-      </UnauthenticatedTemplate>
-    </div>
-  );
-};
 
 const App = ({ instance }) => {
   const [open, setOpen] = useState(false);
@@ -63,7 +41,6 @@ const App = ({ instance }) => {
   return (
     <ThemeProvider theme={theme}>
       <MsalProvider instance={instance}>
-        <WrappedView></WrappedView>
         <Header
           open={open}
           handleDrawerOpen={handleDrawerOpen}

@@ -15,11 +15,7 @@ interface ColumnConfig {
   dataKey: keyof DataItem;
   renderCell: (item: DataItem) => React.ReactNode;
 }
-
-interface DynamicTableProps {
-  data: DataItem[];
-  columns: ColumnConfig[];
-}
+ 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
 
@@ -39,25 +35,25 @@ const Notes: React.FC = () => {
 
   const handleEditClick = () => {};
 
-  const handleSaveClick = async () => {
-    try {
-      const response = await fetch("/api/UpdateOrganizationDetails", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(notes),
-      });
+  // const handleSaveClick = async () => {
+  //   try {
+  //     const response = await fetch("/api/UpdateOrganizationDetails", {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(notes),
+  //     });
 
-      if (response.ok) {
-        console.log("Data saved successfully!");
-      } else {
-        console.error("Error saving data:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error sending data:", error);
-    }
-  };
+  //     if (response.ok) {
+  //       console.log("Data saved successfully!");
+  //     } else {
+  //       console.error("Error saving data:", response.statusText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error sending data:", error);
+  //   }
+  // };
 
   const myColumns: ColumnConfig[] = [
     {
@@ -100,7 +96,7 @@ const Notes: React.FC = () => {
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
-        <NotesDialog></NotesDialog>
+        <NotesDialog isEdit={false} ></NotesDialog>
       </Grid>
       <DynamicTable data={notes} columns={myColumns}></DynamicTable>
     </>

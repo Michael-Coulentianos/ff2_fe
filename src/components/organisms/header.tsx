@@ -5,7 +5,6 @@ import {
   CssBaseline,
   IconButton,
   Link,
-  Grid,
   Toolbar,
   styled,
   useTheme,
@@ -18,8 +17,11 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
 import ApplicationsMenu from "../molecules/appMenu";
 import { loginRequest } from "../../../src/auth-config";
-import { useMsal } from "@azure/msal-react";
-
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+  useMsal,
+} from "@azure/msal-react";
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -45,14 +47,18 @@ const AppBar = styled(MuiAppBar, {
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
   const { instance } = useMsal();
+  let activeAccount;
 
-  const handleRedirect = () => {
-    instance
-      .loginRedirect({
-        ...loginRequest,
-        prompt: "create",
-      })
-      .catch((error) => console.log(error));
+  if (instance) {
+    activeAccount = instance.getActiveAccount();
+  }
+
+  const handleLoginRedirect = () => {
+    instance.loginRedirect(loginRequest).catch((error) => console.log(error));
+  };
+
+  const handleLogoutRedirect = () => {
+    instance.logoutRedirect();
   };
 
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
@@ -70,12 +76,10 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
             handleDrawerOpen={handleDrawerOpen}
             handleDrawerClose={handleDrawerClose}
           ></NavigationDrawer>
-
           <ApplicationsMenu></ApplicationsMenu>
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
             <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
           </Link>
-
           {isSmScreen && (
             <Link
               href={"/"}
@@ -88,7 +92,6 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
               Farmers Friend
             </Link>
           )}
-
           <IconButton
             aria-label="edit"
             sx={{
@@ -100,24 +103,34 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           >
             <EditIcon />
           </IconButton>
-
           <SearchBar></SearchBar>
 
-          <IconButton
-            aria-label="edit"
-            sx={{
-              color: theme.palette.primary.main,
-            }}
-          >
-            <ExitToAppIcon
+          <AuthenticatedTemplate>
+            <IconButton
+              aria-label="edit"
               sx={{
                 color: theme.palette.primary.main,
-                width: "30px",
-                height: "30px",
               }}
-            />
-          </IconButton>
-          {/* <Button onClick={handleRedirect}>signing</Button> */}
+              onClick={handleLogoutRedirect}
+            >
+              <ExitToAppIcon
+                sx={{
+                  color: theme.palette.primary.main,
+                  width: "30px",
+                  height: "30px",
+                }}
+              />
+            </IconButton>
+          </AuthenticatedTemplate>
+          <UnauthenticatedTemplate>
+            <Button
+              variant="outlined"
+              onClick={handleLoginRedirect}
+              sx={{ height: "30px" }}
+            >
+              Sign in
+            </Button>
+          </UnauthenticatedTemplate>
         </Toolbar>
       </AppBar>
     </Box>
