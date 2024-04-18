@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   IconButton,
@@ -13,6 +13,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import TextBox from "../atom/textBox";
 import CloseIcon from "@mui/icons-material/Close";
+import { createOrganization } from "../../apiService";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -23,35 +24,40 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-interface Organization {
-  name: string;
-  contactInfo: string;
-  address: string;
-}
-
 const OrganizationDialog: React.FC = () => {
-  const [organization, setOrganization] = useState<Organization>({
+  const [formData, setFormData] = useState({
     name: "",
-    contactInfo: "",
-    address: "",
+    vatNumber: "",
+    AzureUserId: "",
+    LegalEntityTypeId: "",
+    registrationNumber: "",
+    contactPersonId: {
+      fullName: "",
+      contactNumber: "",
+      emailAddress: "",
+    },
+    addressId: {
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      code: "",
+    },
+    // Add other form fields here
   });
 
-  const handleInputChange =
-    (key: keyof Organization) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setOrganization({ ...organization, [key]: event.target.value });
-      };
-  
-  const handleEditClick = () => {};
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleSaveClick = async () => {
     try {
-      const response = await fetch("/api/UpdateOrganizationDetails", {
+      const response = await fetch("/api/createOrganization", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(organization),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
@@ -73,6 +79,41 @@ const OrganizationDialog: React.FC = () => {
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+  const [newOrganization, setNewOrganization] = useState<any[]>([]);
+
+  useEffect(() => {
+    const addOrganization = async () => {
+      try {
+        const data = await createOrganization();
+        setNewOrganization((prevOrganizations) => [
+          ...prevOrganizations,
+          {
+            name: data.name,
+            vatNumber: data.vatNumber,
+            AzureUserId: data.AzureUserId,
+            LegalEntityTypeId: data.LegalEntityTypeId,
+            registrationNumber: data.registrationNumber,
+            contactPersonId: {
+              FullName: data.fullName,
+              ContactNumber: data.contactNumber,
+              EmailAddress: data.emailAddress,
+            },
+            addressId: {
+              AddressLine1: data.addressLine1,
+              AddressLine2: data.addressLine2,
+              City: data.city,
+              Code: data.code,
+            },
+          },
+        ]);
+      } catch (error: any) {
+        console.error("Error fetching organizations:", error.message);
+      }
+    };
+
+    addOrganization();
+    console.log(newOrganization);
+  }, []);
 
   return (
     <Container>
@@ -107,19 +148,29 @@ const OrganizationDialog: React.FC = () => {
         <form onSubmit={handleSaveClick}>
           <DialogContent dividers>
             <TextBox
-              label="Name"
-              value={organization.name}
-              onChange={handleInputChange("name")}
+              label="Company Name"
+              value={formData.name}
+              onChange={handleInputChange}
             />
             <TextBox
-              label="Contact Info"
-              value={organization.contactInfo}
-              onChange={handleInputChange("contactInfo")}
+              label="Registration number"
+              value={formData.registrationNumber}
+              onChange={handleInputChange}
+            />
+            <TextBox
+              label="VAT number"
+              value={formData.vatNumber}
+              onChange={handleInputChange}
+            />
+            <TextBox
+              label="Contact information"
+              value={formData.contactPersonId}
+              onChange={handleInputChange}
             />
             <TextBox
               label="Address"
-              value={organization.address}
-              onChange={handleInputChange("address")}
+              value={formData.addressId}
+              onChange={handleInputChange}
             />
           </DialogContent>
           <DialogActions>

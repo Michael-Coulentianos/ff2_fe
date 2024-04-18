@@ -3,53 +3,42 @@ import { Grid, Paper, styled } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
+import { getOrganizations } from "../../apiService";
 
 interface Organization {
   name: string;
   contactInfo: string;
   address: string;
 }
-interface DataItem {
+interface Dataparty {
   id: string;
   [key: string]: any;
 }
 
 interface ColumnConfig {
   label: string;
-  dataKey: keyof DataItem;
-  renderCell: (item: DataItem) => React.ReactNode;
+  dataKey: keyof Dataparty;
+  renderCell: (party: Dataparty) => React.ReactNode;
 }
 
 interface DynamicTableProps {
-  data: DataItem[];
+  data: Dataparty[];
   columns: ColumnConfig[];
 }
 const OrganizationSettings: React.FC = () => {
-  const [organization, setOrganization] = useState<Organization>({
-    name: "",
-    contactInfo: "",
-    address: "",
-  });
+  const [organizations, setOrganizations] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchOrganizationData = async () => {
+    const fetchOrganizations = async () => {
       try {
-        const response = await fetch("/api/Organizations");
-        if (response.ok) {
-          const data = await response.json();
-          setOrganization(data);
-        } else {
-          console.error(
-            "Error fetching organization data:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching organization data:", error);
+        const data = await getOrganizations();
+        setOrganizations(data.details);
+      } catch (error: any) {
+        console.error("Error fetching organizations:", error.message);
       }
     };
 
-    fetchOrganizationData();
+    fetchOrganizations();
   }, []);
 
   const handleEditClick = () => {};
@@ -61,7 +50,7 @@ const OrganizationSettings: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(organization),
+        body: JSON.stringify(organizations),
       });
 
       if (response.ok) {
@@ -74,44 +63,57 @@ const OrganizationSettings: React.FC = () => {
     }
   };
 
-  const handleInputChange =
-    (key: keyof Organization) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setOrganization({ ...organization, [key]: event.target.value });
-    };
-
-  const myData: DataItem[] = [
+  const myData: Dataparty[] = [
     {
       id: "1",
       key: "name1",
-      item: "name",
+      party: "name",
     },
   ];
   const myColumns: ColumnConfig[] = [
     {
       label: "Company name",
       dataKey: "name",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (party) => <>{party.name}</>,
     },
     {
       label: "Registration  number",
       dataKey: "registrationNum",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (party) => <>{party.registrationNumber}</>,
     },
     {
       label: "VAT number",
       dataKey: "VAT",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (party) => <>{party.vatNumber}</>,
     },
     {
       label: "Contact information",
       dataKey: "contactInformation",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (party) => (
+        <>
+          {party.contactPerson.map((person) => (
+            <p key={person.contactPersonId}>
+              {person.fullName}
+              <p>Contact Number: {person.contactNumber}</p>
+              <p>Email Address: {person.emailAddress}</p>
+            </p>
+          ))}
+        </>
+      ),
     },
     {
       label: "Address",
       dataKey: "address",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (party) => (
+        <>
+          {party.physicalAddress.map((address) => (
+            <p key={address.addressId}>
+              {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
+              {address.code}
+            </p>
+          ))}
+        </>
+      ),
     },
     {
       label: "Action Buttons",
@@ -131,7 +133,7 @@ const OrganizationSettings: React.FC = () => {
         <OrganizationDialog></OrganizationDialog>
       </Grid>
       <Grid xs={12}>
-        <DynamicTable data={myData} columns={myColumns}></DynamicTable>
+        <DynamicTable data={organizations} columns={myColumns}></DynamicTable>
       </Grid>
     </>
   );

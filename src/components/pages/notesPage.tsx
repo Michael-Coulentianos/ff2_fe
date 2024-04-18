@@ -3,12 +3,8 @@ import { Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import NotesDialog from "../organisms/notesDialog";
 import DynamicTable from "../organisms/table";
+import { getNotes } from "../../apiService";
 
-interface Organization {
-  name: string;
-  contactInfo: string;
-  address: string;
-}
 interface DataItem {
   id: string;
   [key: string]: any;
@@ -25,31 +21,20 @@ interface DynamicTableProps {
   columns: ColumnConfig[];
 }
 const Notes: React.FC = () => {
-  const [organization, setOrganization] = useState<Organization>({
-    name: "",
-    contactInfo: "",
-    address: "",
-  });
+  const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchOrganizationData = async () => {
+    const fetchNotes = async () => {
       try {
-        const response = await fetch("/api/Organizations");
-        if (response.ok) {
-          const data = await response.json();
-          setOrganization(data);
-        } else {
-          console.error(
-            "Error fetching organization data:",
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching organization data:", error);
+        const data = await getNotes();
+        setNotes(data.details);
+        console.log(data.details);
+      } catch (error: any) {
+        console.error("Error fetching Notes:", error.message);
       }
     };
 
-    fetchOrganizationData();
+    fetchNotes();
   }, []);
 
   const handleEditClick = () => {};
@@ -61,7 +46,7 @@ const Notes: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(organization),
+        body: JSON.stringify(notes),
       });
 
       if (response.ok) {
@@ -74,34 +59,31 @@ const Notes: React.FC = () => {
     }
   };
 
-  const handleInputChange =
-    (key: keyof Organization) =>
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setOrganization({ ...organization, [key]: event.target.value });
-    };
-
-  const myData: DataItem[] = [
-    {
-      id: "1",
-      key: "name1",
-      item: "name",
-    },
-  ];
   const myColumns: ColumnConfig[] = [
-    {
-      label: "Name",
-      dataKey: "name",
-      renderCell: (item) => <span>{item.name}</span>,
-    },
     {
       label: "Owner",
       dataKey: "owner",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (item) => <span>{item.party}</span>,
     },
     {
-      label: "Date Created",
+      label: "Title",
+      dataKey: "title",
+      renderCell: (item) => <span>{item.title}</span>,
+    },
+    {
+      label: "Location",
+      dataKey: "location",
+      renderCell: (item) => <span>{item.location}</span>,
+    },
+    {
+      label: "Description",
+      dataKey: "description",
+      renderCell: (item) => <span>{item.description}</span>,
+    },
+    {
+      label: "Date Created ",
       dataKey: "date",
-      renderCell: (item) => <span>{item.name}</span>,
+      renderCell: (item) => <span>{item.createdDate}</span>,
     },
     {
       label: "Action Buttons",
@@ -120,8 +102,7 @@ const Notes: React.FC = () => {
       <Grid xs={12} sx={{ mb: 1 }}>
         <NotesDialog></NotesDialog>
       </Grid>
-        <DynamicTable data={myData} columns={myColumns}></DynamicTable>
-     
+      <DynamicTable data={notes} columns={myColumns}></DynamicTable>
     </>
   );
 };

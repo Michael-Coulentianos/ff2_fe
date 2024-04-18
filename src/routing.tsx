@@ -8,7 +8,7 @@ const Routing: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomeDashboardPage props={undefined} />} />
+        <Route path="/" element={<HomeDashboardPage />} />
         <Route path="/settings" element={<OrganizationSettings />} />
         <Route path="/notes" element={<Notes />} />
         {/* Add more routes here */}

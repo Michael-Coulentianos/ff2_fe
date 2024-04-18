@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 
-const HomeDashboard = ({ props }) => {
+const HomeDashboard = () => {
   return (
     <Typography paragraph>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod

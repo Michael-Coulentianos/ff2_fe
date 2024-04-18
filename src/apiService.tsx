@@ -5,10 +5,11 @@ const API_KEY = process.env.REACT_APP_API_KEY || "";
 const AZURE_USER_ID = process.env.REACT_APP_AZURE_USER_ID || "";
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": API_KEY,
+    "x-api-key": "7E80B3AB-A941-4C36-BA76-6ECA579F3CCB",
+    "X-AzureUserId": "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
   },
 });
 
@@ -17,7 +18,7 @@ export const createOrganization = async () => {
     const response = await api.post("/CreateOrganization", {
       Name: "ZZ2 Farms - Azure",
       VATNumber: "VAT2024/01/24",
-      AzureUserId: AZURE_USER_ID,
+      AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
       LegalEntityTypeId: 1,
       RegistrationNumber: "Reg2024/01/24",
       ContactPerson: {
@@ -60,6 +61,24 @@ export const createFarm = async () => {
       OrganizationId: 6,
       AzureUserId: AZURE_USER_ID,
     });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response.data);
+  }
+};
+
+export const getOrganizations = async () => {
+  try {
+    const response = await api.get("Organizations", {});
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response.data);
+  }
+};
+
+export const getNotes = async () => {
+  try {
+    const response = await api.get("Notes", {});
     return response.data;
   } catch (error: any) {
     throw new Error(error.response.data);

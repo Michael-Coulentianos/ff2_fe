@@ -5,6 +5,7 @@ import {
   CssBaseline,
   IconButton,
   Link,
+  Grid,
   Toolbar,
   styled,
   useTheme,
@@ -13,10 +14,9 @@ import {
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import EditIcon from "@mui/icons-material/Edit";
-import menuIcon from "../../assets/icons/menuIcon.svg";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
-
+import ApplicationsMenu from "../molecules/appMenu";
 import { loginRequest } from "../../../src/auth-config";
 import { useMsal } from "@azure/msal-react";
 
@@ -55,7 +55,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
       .catch((error) => console.log(error));
   };
 
-  const isMdScreen = useMediaQuery(theme.breakpoints.up("md"));
+  const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   return (
     <Box>
       <CssBaseline />
@@ -70,22 +70,13 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
             handleDrawerOpen={handleDrawerOpen}
             handleDrawerClose={handleDrawerClose}
           ></NavigationDrawer>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open apps"
-            onClick={undefined}
-            sx={{ mt: 1, mb: 1.5 }}
-          >
-            <img src={menuIcon} alt="menuIcon" />
-          </IconButton>
 
+          <ApplicationsMenu></ApplicationsMenu>
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
             <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
           </Link>
 
-          {isMdScreen && (
+          {isSmScreen && (
             <Link
               href={"/"}
               flexGrow={1}
@@ -109,7 +100,9 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           >
             <EditIcon />
           </IconButton>
+
           <SearchBar></SearchBar>
+
           <IconButton
             aria-label="edit"
             sx={{
