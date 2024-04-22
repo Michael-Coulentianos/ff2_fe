@@ -8,6 +8,7 @@ import {
   TableRow,
   Container,
   Paper,
+  Pagination,
 } from "@mui/material";
 
 interface TableData {
@@ -31,7 +32,13 @@ interface DynamicTableProps {
   columns: ColumnConfig[];
 }
 
+const rowsPerPage = 5;
+
 const DynamicTable: React.FC<DynamicTableProps> = ({ data, columns }) => {
+  const [page, setPage] = React.useState(1);
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
   return (
     <Container>
       <TableContainer component={Paper}>
@@ -45,19 +52,27 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data, columns }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data &&
-              data.map((item) => (
-                <TableRow key={item.id}>
-                  {columns.map((column) => (
-                    <TableCell key={column.label}>
-                      {column.renderCell(item)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+            {Array.isArray(data) &&
+              data
+                .slice((page - 1) * rowsPerPage, page * rowsPerPage)
+                .map((item) => (
+                  <TableRow key={item.id}>
+                    {columns.map((column) => (
+                      <TableCell key={column.label}>
+                        {column.renderCell(item)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        sx={{ marginTop: 2 }}
+        count={Math.ceil(data.length / rowsPerPage)}
+        page={page}
+        onChange={handleChange}
+      />
     </Container>
   );
 };

@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import {
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   Container,
   IconButton,
   Grid,
@@ -12,8 +17,59 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
-import TextBox from "../atom/textBox";
 import CloseIcon from "@mui/icons-material/Close";
+import * as yup from "yup";
+import TextBox from "../atom/textBox";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { createNote } from "../../apiService";
+
+export const validationSchema = yup.object().shape({
+  noteType: yup.string().required("This field is required"),
+  title: yup.string().required("This field is required"),
+  date: yup.string().required("This field is required"),
+  map: yup.string().required("This field is required"),
+  description: yup.string().required("This field is required"),
+  attachment: yup.string().required("This field is required"),
+  riskPercentage: yup.string().required("This field is required"),
+  infectionType: yup.string().required("This field is required"),
+  phaseType: yup.string().required("This field is required"),
+  soilType: yup.string().required("This field is required"),
+  deficiencies: yup.string().required("This field is required"),
+  damageType: yup.string().required("This field is required"),
+});
+
+type NoteType = "General" | "Infection" | "Crop Analysis" | "Damage";
+
+interface FormProps {
+  noteType: NoteType;
+  title: string;
+  date: Date;
+  map: string;
+  description: string;
+  attachment: File | null;
+  riskPercentage?: number;
+  infectionType?: string;
+  phaseType?: string;
+  soilType?: string;
+  deficiencies?: string;
+  damageType?: string;
+}
+
+interface NotesDialogProps {
+  isEdit: boolean;
+  onEdit?: any;
+  onSubmit?: any;
+}
+
+interface Note {
+  NoteTypeId: string;
+  Title: string;
+  PartyId: string;
+  Location: string;
+  Description: string;
+  Attachment: any;
+}
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -24,59 +80,74 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-interface Notes {
-  name: string;
-  contactInfo: string;
-  address: string;
-}
-interface NotesProps {
-  isEdit: boolean;
-  onEdit?: any; // replace 'any' with the type of your 'onEdit' function
-}
-
-const NotesDialog: React.FC<NotesProps> = ({ isEdit, onEdit }) => {
-  const [Notes, setNotes] = useState<Notes>({
-    name: "",
-    contactInfo: "",
-    address: "",
+const NotesDialog: React.FC<NotesDialogProps> = ({
+  isEdit,
+  onEdit,
+  onSubmit,
+}) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    reset,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
   });
 
-  const handleInputChange =
-    (key: keyof Notes) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setNotes({ ...Notes, [key]: event.target.value });
-    };
-
-  // const handleEditClick = () => {};
-
-  const handleSaveClick = async () => {
+  const onSave = async (data: Note) => {
     try {
-      const response = await fetch("/api/UpdateNotesDetails", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Notes),
-      });
+      const response = await createNote(data);
+      console.log(response.message);
+      console.log("data note interface", data);
 
-      if (response.ok) {
-        console.log("Data saved successfully!");
-      } else {
-        console.error("Error saving data:", response.statusText);
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (responseData.errors) {
+          for (let key in responseData.errors) {
+            setError(response, {
+              type: "manual",
+              message: responseData.errors[key],
+            });
+          }
+        }
+        throw new Error("Failed to create note");
       }
-    } catch (error) {
-      console.error("Error sending data:", error);
+      alert("note created successfully");
+      setModalOpen(false);
+      reset();
+    } catch (error: any) {
+      alert(error.message);
     }
-  };
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
   };
+
+  //remove the below
+  const [form, setForm] = useState<FormProps>({
+    noteType: "General",
+    title: "",
+    date: new Date(),
+    map: "",
+    description: "",
+    attachment: null,
+  });
+
+  const handleInputChange = (
+    event: ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    const { name, value } = event.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name as string]: value,
+    }));
+  };
+
+  //remove the above
 
   return (
     <>
@@ -87,7 +158,11 @@ const NotesDialog: React.FC<NotesProps> = ({ isEdit, onEdit }) => {
       )}
       <Container>
         {!isEdit && (
-          <Button variant="contained" color="primary" onClick={handleOpenModal}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setModalOpen(true)}
+          >
             Add
           </Button>
         )}
@@ -99,7 +174,7 @@ const NotesDialog: React.FC<NotesProps> = ({ isEdit, onEdit }) => {
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
             <Grid container direction="row">
               <Grid item xs={12}>
-                Notes
+                Note
               </Grid>
             </Grid>
           </DialogTitle>
@@ -116,45 +191,220 @@ const NotesDialog: React.FC<NotesProps> = ({ isEdit, onEdit }) => {
           >
             <CloseIcon />
           </IconButton>
-          <form onSubmit={handleSaveClick}>
+          <form onSubmit={handleSubmit(() => onSave)}>
             <DialogContent dividers>
-              <TextBox
-                label="Title"
-                value={Notes.name}
-                onChange={handleInputChange("name")}
-              />
-              <TextBox
-                label="Type"
-                value={Notes.contactInfo}
-                onChange={handleInputChange("contactInfo")}
-              />
-              <TextBox
-                label="Date"
-                value={Notes.address}
-                onChange={handleInputChange("address")}
-              />
-              <TextBox
-                label="Description"
-                value={Notes.address}
-                onChange={handleInputChange("address")}
-              />
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  {/* <FormControl variant="outlined">
+        <InputLabel>Note Type</InputLabel>
+        <Select
+          name="noteType"
+          value={form.noteType}
+          onChange={() => handleInputChange}
+        >
+          <MenuItem value="General">General</MenuItem>
+          <MenuItem value="Infection">Infection</MenuItem>
+          <MenuItem value="Crop Analysis">Crop Analysis</MenuItem>
+          <MenuItem value="Damage">Damage</MenuItem>
+        </Select>
+      </FormControl> */}
+                  <Controller
+                    name="noteType"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label="Date"
+                        error={!!errors.date}
+                        onChange={(event) => {
+                          // Call the original field.onChange method
+                          field.onChange(event.target.value);
+                          // Additional logic for the onChange event
 
-              <TextBox
-                label="Infection percentage"
-                value={Notes.address}
-                onChange={handleInputChange("address")}
-              />
-              <TextBox
-                label="Attach file"
-                value={Notes.address}
-                onChange={handleInputChange("address")}
-              />
+                          setForm((prevForm) => ({
+                            ...prevForm,
+                            [event.target.name as string]: event.target.value,
+                          }));
+                        }}
+                      >
+                        <MenuItem value="General">General</MenuItem>
+                        <MenuItem value="Infection">Infection</MenuItem>
+                        <MenuItem value="Crop Analysis">Crop Analysis</MenuItem>
+                        <MenuItem value="Damage">Damage</MenuItem>
+                      </Select>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Controller
+                    name="title"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Title"
+                        error={!!errors.title}
+                        helperText={errors.title?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="date"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Date"
+                        error={!!errors.date}
+                        helperText={errors.date?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="map"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Map"
+                        error={!!errors.map}
+                        helperText={errors.map?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="description"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Description"
+                        error={!!errors.description}
+                        helperText={errors.description?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  {form.noteType === "Infection" && (
+                    <>
+                      <Controller
+                        name="riskPercentage"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Risk Percentage"
+                            error={!!errors.riskPercentage}
+                            helperText={errors.riskPercentage?.message}
+                          />
+                        )}
+                      />
+
+                      <Controller
+                        name="infectionType"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Infection Type"
+                            error={!!errors.infectionType}
+                            helperText={errors.infectionType?.message}
+                          />
+                        )}
+                      />
+                    </>
+                  )}
+                  {form.noteType === "Crop Analysis" && (
+                    <>
+                      <Controller
+                        name="phaseType"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Phase Type"
+                            error={!!errors.phaseType}
+                            helperText={errors.phaseType?.message}
+                          />
+                        )}
+                      />
+
+                      <Controller
+                        name="soilType"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Soil Type"
+                            error={!!errors.soilType}
+                            helperText={errors.soilType?.message}
+                          />
+                        )}
+                      />
+
+                      <Controller
+                        name="deficiencies"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Deficiencies"
+                            error={!!errors.deficiencies}
+                            helperText={errors.deficiencies?.message}
+                          />
+                        )}
+                      />
+                    </>
+                  )}
+                  {form.noteType === "Damage" && (
+                    <>
+                      <Controller
+                        name="riskPercentage"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Risk Percentage"
+                            error={!!errors.riskPercentage}
+                            helperText={errors.riskPercentage?.message}
+                          />
+                        )}
+                      />
+
+                      <Controller
+                        name="damageType"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                          <TextBox
+                            {...field}
+                            label="Damage Type"
+                            error={!!errors.damageType}
+                            helperText={errors.damageType?.message}
+                          />
+                        )}
+                      />
+                    </>
+                  )}
+                </Grid>
+              </Grid>
             </DialogContent>
             <DialogActions>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleOpenModal}
                 type="submit"
                 startIcon={<SaveIcon />}
               >

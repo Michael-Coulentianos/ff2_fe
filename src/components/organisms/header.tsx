@@ -46,12 +46,14 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
-  const { instance } = useMsal();
-  let activeAccount;
 
-  if (instance) {
-    activeAccount = instance.getActiveAccount();
-  }
+  
+  const { instance } = useMsal();
+
+  // if (instance) {
+  //   let activeAccount;
+  //   activeAccount = instance.getActiveAccount();
+  // }
 
   const handleLoginRedirect = () => {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));

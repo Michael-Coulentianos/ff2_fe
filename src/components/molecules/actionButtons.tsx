@@ -6,11 +6,20 @@ import OrganizationDialog from "../organisms/organisationDialog";
 interface ActionButtonsProps {
   onEdit: () => void;
   onDelete: () => void;
+  onSubmit: () => void;
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete }) => (
+const ActionButtons: React.FC<ActionButtonsProps> = ({
+  onEdit,
+  onDelete,
+  onSubmit,
+}) => (
   <>
-    <OrganizationDialog isEdit={true} onEdit={onEdit}></OrganizationDialog>
+    <OrganizationDialog
+      isEdit={true}
+      onEdit={onEdit}
+      onSubmit={onSubmit}
+    ></OrganizationDialog>
     <IconButton onClick={onDelete}>
       <DeleteIcon />
     </IconButton>

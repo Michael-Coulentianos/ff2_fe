@@ -1,9 +1,5 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_BASE_URL || "";
-const API_KEY = process.env.REACT_APP_API_KEY || "";
-const AZURE_USER_ID = process.env.REACT_APP_AZURE_USER_ID || "";
-
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
   headers: {
@@ -12,27 +8,32 @@ const api = axios.create({
     "X-AzureUserId": "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
   },
 });
+interface ContactPerson {
+  FullName?: string;
+  ContactNumber?: string;
+  EmailAddress?: string;
+}
 
-export const createOrganization = async () => {
+interface PhysicalAddress {
+  AddressLine1?: string;
+  AddressLine2?: string;
+  City?: string;
+  Code?: string;
+}
+
+interface Organization {
+  Name?: string;
+  VatNumber?: string;
+  AzureUserId?: string;
+  // LegalEntityTypeId?: number;
+  RegistrationNumber?: string;
+  ContactPerson?: ContactPerson;
+  PhysicalAddress?: PhysicalAddress;
+}
+ 
+export const createOrganization = async (organization: Organization) => {
   try {
-    const response = await api.post("/CreateOrganization", {
-      Name: "ZZ2 Farms - Azure",
-      VATNumber: "VAT2024/01/24",
-      AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
-      LegalEntityTypeId: 1,
-      RegistrationNumber: "Reg2024/01/24",
-      ContactPerson: {
-        FullName: "Elias Siboyane",
-        ContactNumber: "0730531673",
-        EmailAddress: "elias.s@IQLogistica.com",
-      },
-      PhysicalAddress: {
-        AddressLine1: "474 Lynnwood Street",
-        AddressLine2: "Lynnwood",
-        City: "Pretoria",
-        Code: "0015",
-      },
-    });
+    const response = await api.post("/CreateOrganization", organization);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response.data);
@@ -59,7 +60,6 @@ export const createFarm = async () => {
     const response = await api.post("/CreateFarm", {
       name: "JJ Farms",
       OrganizationId: 6,
-      AzureUserId: AZURE_USER_ID,
     });
     return response.data;
   } catch (error: any) {
@@ -76,9 +76,36 @@ export const getOrganizations = async () => {
   }
 };
 
+interface Note {
+  NoteTypeId: string;
+  Title: string;
+  PartyId: string;
+  Location: string;
+  Description: string;
+  Attachment: any;
+}
+
+export const createNote = async (note: Note) => {
+  try {
+    const response = await api.post("AddNote", note);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response.data);
+  }
+};
+
 export const getNotes = async () => {
   try {
     const response = await api.get("Notes", {});
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response.data);
+  }
+};
+
+export const removeNote = async (NoteId: any) => {
+  try {
+    const response = await api.delete(`RemoveNote/${NoteId}`, {});
     return response.data;
   } catch (error: any) {
     throw new Error(error.response.data);

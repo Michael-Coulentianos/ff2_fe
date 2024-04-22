@@ -4,6 +4,7 @@ import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations } from "../../apiService";
+import Loading from "./loading";
 
 interface Dataparty {
   id: string;
@@ -16,10 +17,36 @@ interface ColumnConfig {
   renderCell: (party: Dataparty) => React.ReactNode;
 }
 
+interface ContactPerson {
+  FullName: string;
+  ContactNumber: string;
+  EmailAddress: string;
+}
+
+interface PhysicalAddress {
+  AddressLine1: string;
+  AddressLine2: string;
+  City: string;
+  Code: string;
+}
+
+interface Organization {
+  Name: string;
+  VATNumber: string;
+  AzureUserId: string;
+  LegalEntityTypeId: number;
+  RegistrationNumber: string;
+  ContactPerson: ContactPerson;
+  PhysicalAddress: PhysicalAddress;
+}
+
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
+
     const fetchOrganizations = async () => {
       try {
         const data = await getOrganizations();
@@ -30,35 +57,43 @@ const OrganizationSettings: React.FC = () => {
     };
 
     fetchOrganizations();
+    setIsLoading(false);
   }, []);
+  if (isLoading) {
+    return <Loading></Loading>;
+  }
 
   const handleDelete = (partyId: number) => {
     console.log(`Deleting party with ID: ${partyId}`);
+  };
+  const handleSubmit = (partyId: number) => {
+    console.log(`Submitted party with ID: ${partyId}`);
   };
 
   const handleEditClick = (partyId: number) => {
     console.log(`Edit party with ID: ${partyId}`);
   };
 
-  // const handleSaveClick = async () => {
-  //   try {
-  //     const response = await fetch("/api/UpdateOrganizationDetails", {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(organizations),
-  //     });
+  const handleCreateOrganization = async (organization: Organization) => {
+    try {
+      const response = await fetch("/api/CreateOrganization", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(organization),
+      });
 
-  //     if (response.ok) {
-  //       console.log("Data saved successfully!");
-  //     } else {
-  //       console.error("Error saving data:", response.statusText);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error sending data:", error);
-  //   }
-  // };
+      if (response.ok) {
+        console.log("Organization created successfully!");
+      } else {
+        console.error("Error creating organization:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error sending data:", error);
+    }
+  };
+
   const myColumns: ColumnConfig[] = [
     {
       label: "Company name",
@@ -111,6 +146,7 @@ const OrganizationSettings: React.FC = () => {
         <ActionButtons
           onEdit={() => handleEditClick(party.partyId)}
           onDelete={() => handleDelete(party.partyId)}
+          onSubmit={() => handleCreateOrganization}
         ></ActionButtons>
       ),
     },
@@ -118,8 +154,12 @@ const OrganizationSettings: React.FC = () => {
 
   return (
     <>
+      {isLoading && <Loading />}
       <Grid xs={12} sx={{ mb: 1 }}>
-        <OrganizationDialog isEdit={false} onEdit={handleEditClick}></OrganizationDialog>
+        <OrganizationDialog
+          isEdit={false}
+          onSubmit={handleCreateOrganization}
+        ></OrganizationDialog>
       </Grid>
       <Grid xs={12}>
         <DynamicTable data={organizations} columns={myColumns}></DynamicTable>

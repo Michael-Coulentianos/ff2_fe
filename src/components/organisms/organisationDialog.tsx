@@ -12,45 +12,56 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
-import TextBox from "../atom/textBox";
 import CloseIcon from "@mui/icons-material/Close";
+import * as yup from "yup";
+import TextBox from "../atom/textBox";
+import { createOrganization } from "../../apiService";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-// useEffect(() => {
-//   const addOrganization = async () => {
-//     try {
-//       const data = await createOrganization();
-//       setNewOrganization((prevOrganizations) => [
-//         ...prevOrganizations,
-//         {
-//           name: data.name,
-//           vatNumber: data.vatNumber,
-//           AzureUserId: data.AzureUserId,
-//           LegalEntityTypeId: data.LegalEntityTypeId,
-//           registrationNumber: data.registrationNumber,
-//           contactPersonId: {
-//             FullName: data.fullName,
-//             ContactNumber: data.contactNumber,
-//             EmailAddress: data.emailAddress,
-//           },
-//           addressId: {
-//             AddressLine1: data.addressLine1,
-//             AddressLine2: data.addressLine2,
-//             City: data.city,
-//             Code: data.code,
-//           },
-//         },
-//       ]);
-//     } catch (error: any) {
-//       console.error("Error fetching organizations:", error.message);
-//     }
-//   };
+export const validationSchema = yup.object().shape({
+  orgName: yup.string().required("This field is required"),
+  vatNumber: yup.string().required("This field is required"),
+  LegalEntityTypeId: yup.string().required("This field is required"),
+  registrationNumber: yup.string().required("This field is required"),
+  emailAddress: yup
+    .string()
+    .email("Invalid email")
+    .required("This field is required"),
+  contactNumber: yup.string().required("This field is required"),
+  fullName: yup.string().required("This field is required"),
+  addressLine1: yup.string().required("This field is required"),
+  addressLine2: yup.string().required("This field is required"),
+  city: yup.string().required("This field is required"),
+  code: yup.string().required("This field is required"),
+});
 
-//   addOrganization();
-//   console.log(newOrganization);
-// }, []);
+interface ContactPerson {
+  FullName?: string;
+  ContactNumber?: string;
+  EmailAddress?: string;
+}
+
+interface PhysicalAddress {
+  AddressLine1?: string;
+  AddressLine2?: string;
+  City?: string;
+  Code?: string;
+}
+
+interface Organization {
+  Name?: string;
+  VatNumber?: string;
+  AzureUserId?: string;
+  RegistrationNumber?: string;
+  ContactPerson?: ContactPerson;
+  PhysicalAddress?: PhysicalAddress;
+}
+
 interface OrganizationDialogProps {
   isEdit: boolean;
-  onEdit?: any; // replace 'any' with the type of your 'onEdit' function
+  onEdit?: any;
+  onSubmit?: any;
 }
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
@@ -65,55 +76,44 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
 const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
   isEdit,
   onEdit,
+  onSubmit,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    vatNumber: "",
-    AzureUserId: "",
-    LegalEntityTypeId: "",
-    registrationNumber: "",
-    contactPersonId: {
-      fullName: "",
-      contactNumber: "",
-      emailAddress: "",
-    },
-    addressId: {
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      code: "",
-    },
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    reset,
+  } = useForm({
+    resolver: yupResolver(validationSchema),
   });
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSave = async () => {
+  const onSave = async (data: Organization) => {
     try {
-      const response = await fetch("/api/createOrganization", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await createOrganization(data);
+      console.log(response.message);
+      console.log("data org interface", data);
 
-      if (response.ok) {
-        console.log("Data saved successfully!");
-      } else {
-        console.error("Error saving data:", response.statusText);
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        if (responseData.errors) {
+          for (let key in responseData.errors) {
+            setError(response, {
+              type: "manual",
+              message: responseData.errors[key],
+            });
+          }
+        }
+        throw new Error("Failed to create org");
       }
-    } catch (error) {
-      console.error("Error sending data:", error);
+      alert("org created successfully");
+      setModalOpen(false);
+      reset();
+    } catch (error: any) {
+      alert(error.message);
     }
-    setModalOpen(false);
-  };
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -129,7 +129,11 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
       )}
       <Container>
         {!isEdit && (
-          <Button variant="contained" color="primary" onClick={handleOpenModal}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setModalOpen(true)}
+          >
             Add
           </Button>
         )}
@@ -158,39 +162,153 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           >
             <CloseIcon />
           </IconButton>
-          <form onSubmit={handleSave}>
+          <form onSubmit={handleSubmit(() => onSave)}>
             <DialogContent dividers>
-              <TextBox
-                label="Company Name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-              <TextBox
-                label="Registration number"
-                value={formData.registrationNumber}
-                onChange={handleInputChange}
-              />
-              <TextBox
-                label="VAT number"
-                value={formData.vatNumber}
-                onChange={handleInputChange}
-              />
-              <TextBox
-                label="Contact information"
-                value={formData.contactPersonId}
-                onChange={handleInputChange}
-              />
-              <TextBox
-                label="Address"
-                value={formData.addressId}
-                onChange={handleInputChange}
-              />
+              <Grid container spacing={3}>
+                <Grid item xs={6}>
+                  <Controller
+                    name="orgName"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Organization Name"
+                        error={!!errors.orgName}
+                        helperText={errors.orgName?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="vatNumber"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="VAT Number"
+                        error={!!errors.vatNumber}
+                        helperText={errors.vatNumber?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="registrationNumber"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Registration Number"
+                        error={!!errors.registrationNumber}
+                        helperText={errors.registrationNumber?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="emailAddress"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Email Address"
+                        error={!!errors?.emailAddress}
+                        helperText={errors?.emailAddress?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="contactNumber"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Contact Number"
+                        error={!!errors?.contactNumber}
+                        helperText={errors?.contactNumber?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Controller
+                    name="fullName"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Full Name"
+                        error={!!errors?.fullName}
+                        helperText={errors?.fullName?.message}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    name="addressLine1"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Address Line 1"
+                        error={!!errors?.addressLine1}
+                        helperText={errors?.addressLine1?.message}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    name="addressLine2"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Address Line 2"
+                        error={!!errors?.addressLine2}
+                        helperText={errors?.addressLine2?.message}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    name="city"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="City"
+                        error={!!errors?.city}
+                        helperText={errors?.city?.message}
+                      />
+                    )}
+                  />
+
+                  <Controller
+                    name="code"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Code"
+                        error={!!errors?.code}
+                        helperText={errors?.code?.message}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
             </DialogContent>
             <DialogActions>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleOpenModal}
                 type="submit"
                 startIcon={<SaveIcon />}
               >
