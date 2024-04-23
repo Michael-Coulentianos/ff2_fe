@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid } from "@mui/material";
+import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import { getAllNotes, deleteNote } from "../../apiService";
@@ -19,7 +19,9 @@ interface ColumnConfig {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -45,14 +47,28 @@ const Notes: React.FC = () => {
     console.log(`Submitted party with ID: ${noteId}`);
   };
 
-  const handleDeleteClick = async (noteId: string | number) => {
-    try {
-      await deleteNote(noteId);
-      setNotes(notes.filter(note => note.noteId !== noteId));
-      console.log('Note deleted successfully');
-    } catch (error) {
-      console.error('Failed to delete note:', error);
+  const handleDeleteClick = (noteId: number) => {
+    setCurrentNoteId(noteId); // Set the current note ID to be deleted
+    setConfirmOpen(true); // Show confirmation dialog
+  };
+
+  const confirmDelete = async () => {
+    if (currentNoteId !== null) {
+      try {
+        await deleteNote(currentNoteId);
+        setNotes(notes.filter(note => note.id !== currentNoteId)); // Ensure you're filtering by the correct identifier
+        console.log('Note deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete note:', error);
+      }
     }
+    setConfirmOpen(false); // Close the confirmation dialog
+    setCurrentNoteId(null); // Reset the pending deletion note ID
+  };
+
+  const handleCancel = () => {
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
   };
 
   const handleEditClick = () => {};
@@ -99,9 +115,30 @@ const Notes: React.FC = () => {
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
-        <NotesDialog isEdit={false}></NotesDialog>
+        <NotesDialog isEdit={false} />
       </Grid>
-      <DynamicTable data={notes} columns={myColumns}></DynamicTable>
+      <DynamicTable data={notes} columns={myColumns} />
+      <Dialog
+        open={confirmOpen}
+        onClose={handleCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete this note?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

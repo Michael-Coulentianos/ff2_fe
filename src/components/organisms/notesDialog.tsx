@@ -1,20 +1,8 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { NoteType } from '../../models/noteType.interface';
 import {
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Container,
-  IconButton,
-  Grid,
-  styled,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Dialog
+  TextField, FormHelperText, MenuItem, FormControl, InputLabel,Container, IconButton,
+  Grid, styled, DialogTitle, DialogContent, DialogActions, Button, Dialog
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
@@ -218,10 +206,9 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
     attachment: null,
   });
 
-  // const handleNoteTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-  //   const value = event.target.value as string;  
-  //   setSelectedNoteType(value);
-  // };
+  const handleButtonClick = () => {
+    document.getElementById('file-input')?.click();
+  };
 
   return (
     <>
@@ -231,15 +218,13 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
         </IconButton>
       )}
       <Container>
-        {!isEdit && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setModalOpen(true)}
-          >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setModalOpen(true)}
+        >
             {isEdit ? "Edit Note" : "Add Note"}
-          </Button>
-        )}
+        </Button>
         <MuiDialog
           onClose={handleCloseModal}
           aria-labelledby="customized-dialog-title"
@@ -270,6 +255,33 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
               <Grid container spacing={3}>
                 <Grid item xs={12}>
                 <Controller
+                    name="title"
+                    control={control}
+                    render={({ field }) => (
+                      <TextBox
+                        {...field}
+                        label="Title"
+                        error={!!errors.title}
+                        helperText={errors.title?.message}
+                      />
+                    )}
+                  />
+                <Controller
+                    name="date"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type="date"
+                        fullWidth
+                        variant="outlined"
+                        margin="dense"
+                        error={!!errors.date}
+                        helperText={errors.date?.message}
+                      />
+                    )}
+                  />
+                <Controller
                   name="noteType"
                   control={control}
                   render={({ field }) => (
@@ -289,48 +301,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                     </TextField>
                   )}
                 />
-                </Grid>
-                <Grid item xs={6}>
-                  <Controller
-                    name="title"
-                    control={control}
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Title"
-                        error={!!errors.title}
-                        helperText={errors.title?.message}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="date"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type="date"
-                        fullWidth
-                        variant="outlined"
-                        margin="dense"
-                        error={!!errors.date}
-                        helperText={errors.date?.message}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="map"
-                    control={control}
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Map"
-                        error={!!errors.map}
-                        helperText={errors.map?.message}
-                      />
-                    )}
-                  />
-                  <Controller
+                <Controller
                     name="description"
                     control={control}
                     render={({ field }) => (
@@ -346,23 +317,65 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                       />
                     )}
                   />
+
+<Controller
+      name="attachment"
+      control={control}
+      //defaultValue={null}  // Ensure the default value is consistent with the input type
+      render={({ field: { onChange, onBlur, value, name, ref } }) => (
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12}>
+            <input
+              id="file-input"
+              type="file"
+              ref={ref}
+              name={name}
+              style={{ display: 'none' }}  // Hide the actual input element
+              onChange={(e) => {
+                // Update the form state when a file is selected
+                const file = e.target.files ? e.target.files[0] : null;
+                onChange(file);
+              }}
+              onBlur={onBlur}
+            />
+            <FormControl fullWidth error={!!errors.attachment}>
+              <InputLabel shrink htmlFor="file-input">
+                Attach file
+              </InputLabel>
+              <Button
+                variant="contained"
+                component="span"
+                onClick={handleButtonClick}
+                style={{ marginTop: 8 }} // Add margin for spacing between the label and button
+              >
+                Upload File
+              </Button>
+              {errors.attachment && (
+                <FormHelperText>{errors.attachment.message}</FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
+        </Grid>
+      )}
+    />
+                </Grid>
+                <Grid item xs={6}>
+                  
+                  
                   <Controller
-                    name="attachment"
+                    name="map"
                     control={control}
                     render={({ field }) => (
-                      <TextField
+                      <TextBox
                         {...field}
-                        fullWidth
-                        multiline
-                        type="file"
-                        margin="dense"
-                        rows={4}
-                        label="Attachment"
-                        error={!!errors.attachment}
-                        helperText={errors.attachment?.message}
+                        label="Map"
+                        error={!!errors.map}
+                        helperText={errors.map?.message}
                       />
                     )}
                   />
+                  
+                  
                 </Grid>
                 <Grid item xs={6}>
                   {/* {form.noteType.name === "Infection" && (
