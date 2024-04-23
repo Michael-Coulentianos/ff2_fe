@@ -17,15 +17,6 @@ interface ColumnConfig {
   renderCell: (item: DataItem) => React.ReactNode;
 }
 
-interface Note {
-  NoteTypeId: string;
-  Title: string;
-  PartyId: string;
-  Location: string;
-  Description: string;
-  Attachment: any;
-}
-
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,36 +41,18 @@ const Notes: React.FC = () => {
     return <Loading></Loading>;
   }
 
-  const handleAddNote = async (note: Note) => {
-    try {
-      const response = await fetch("/api/CreateOrganization", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(note),
-      });
-
-      if (response.ok) {
-        console.log("Organization created successfully!");
-      } else {
-        console.error("Error creating organization:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error sending data:", error);
-    }
-  };
-
-  const deleteNote = async (noteId: any) => {
-    try {
-      await deleteNote(noteId);
-      console.log("deleted note ", { noteId });
-    } catch (error: any) {
-      console.error("Error fetching Notes:", error.message);
-    }
-  };
   const handleSubmit = (noteId: number) => {
     console.log(`Submitted party with ID: ${noteId}`);
+  };
+
+  const handleDeleteClick = async (noteId: string | number) => {
+    try {
+      await deleteNote(noteId);
+      setNotes(notes.filter(note => note.noteId !== noteId));
+      console.log('Note deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete note:', error);
+    }
   };
 
   const handleEditClick = () => {};
@@ -116,7 +89,7 @@ const Notes: React.FC = () => {
       renderCell: (item) => (
         <ActionButtons
           onEdit={handleEditClick}
-          onDelete={() => deleteNote(item?.noteId)}
+          onDelete={() => handleDeleteClick(item?.noteId)}
           onSubmit={() => handleSubmit(item?.partyId)}
         ></ActionButtons>
       ),

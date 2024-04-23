@@ -247,7 +247,13 @@ export const updateNote = async (noteChanges: Partial<Note> & { id: number }): P
 
 export const deleteNote = async (noteId: string | number): Promise<void> => {
   try {
-    const response = await api.delete(`RemoveNote/${noteId}`);
+    const response = await api.delete(`RemoveNote`, {
+      data: {
+        NoteId: noteId,
+        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008"
+      }
+    });
+    console.log('Delete response:', response.data);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {

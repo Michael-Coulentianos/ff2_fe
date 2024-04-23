@@ -207,19 +207,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
             <DialogContent dividers>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  {/* <FormControl variant="outlined">
-        <InputLabel>Note Type</InputLabel>
-        <Select
-          name="noteType"
-          value={form.noteType}
-          onChange={() => handleInputChange}
-        >
-          <MenuItem value="General">General</MenuItem>
-          <MenuItem value="Infection">Infection</MenuItem>
-          <MenuItem value="Crop Analysis">Crop Analysis</MenuItem>
-          <MenuItem value="Damage">Damage</MenuItem>
-        </Select>
-      </FormControl> */}
+                  {}
                   <Controller
                     name="noteType"
                     control={control}
