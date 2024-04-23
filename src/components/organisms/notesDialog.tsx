@@ -1,4 +1,5 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import { NoteType } from '../../models/noteType.interface';
 import {
   TextField,
   Select,
@@ -13,16 +14,16 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Dialog,
+  Dialog
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TextBox from "../atom/textBox";
-import { Controller, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { createNote } from "../../apiService";
+import { createNote, getNoteTypes } from "../../apiService";
 
 export const validationSchema = yup.object().shape({
   noteType: yup.string().required("This field is required"),
@@ -39,10 +40,10 @@ export const validationSchema = yup.object().shape({
   damageType: yup.string().required("This field is required"),
 });
 
-type NoteType = "General" | "Infection" | "Crop Analysis" | "Damage";
+type NoteTypes = "General" | "Infection" | "Crop Analysis" | "Damage";
 
 interface FormProps {
-  noteType: NoteType;
+  noteType: NoteTypes;
   title: string;
   date: Date;
   map: string;
@@ -96,6 +97,27 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
     resolver: yupResolver(validationSchema),
   });
 
+  const [noteTypes, setNoteTypes] = useState<NoteType[]>([]);
+  const [selectedNoteType, setSelectedNoteType] = useState<string>("Default");
+
+  useEffect(() => {
+    const fetchNoteTypes = async () => {
+      try {
+        const fetchedNoteTypes = await getNoteTypes();
+        setNoteTypes(fetchedNoteTypes);
+        setSelectedNoteType(fetchedNoteTypes[0].name); 
+      } catch (error) {
+        console.error("Failed to fetch note types:", error);
+      }
+    };
+
+    fetchNoteTypes();
+  }, []);
+
+  const handleNoteTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedNoteType(event.target.value);
+  };
+
   const onSave = async (data: Note) => {
     // try {
     //   const response = await createNote(data);
@@ -136,16 +158,6 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
     description: "",
     attachment: null,
   });
-
-  const handleInputChange = (
-    event: ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    const { name, value } = event.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name as string]: value,
-    }));
-  };
 
   //remove the above
 
@@ -211,27 +223,23 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                   <Controller
                     name="noteType"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <Select
                         {...field}
-                        label="Date"
-                        error={!!errors.date}
+                        label="Note Type"
+                        error={!!errors.noteType}
                         onChange={(event) => {
-                          // Call the original field.onChange method
+                          // Handle the select change
                           field.onChange(event.target.value);
-                          // Additional logic for the onChange event
-
-                          setForm((prevForm) => ({
-                            ...prevForm,
-                            [event.target.name as string]: event.target.value,
-                          }));
+                          setSelectedNoteType(event.target.value);
                         }}
+                        fullWidth
                       >
-                        <MenuItem value="General">General</MenuItem>
-                        <MenuItem value="Infection">Infection</MenuItem>
-                        <MenuItem value="Crop Analysis">Crop Analysis</MenuItem>
-                        <MenuItem value="Damage">Damage</MenuItem>
+                        {noteTypes.map((type) => (
+                          <MenuItem key={type.noteTypeId} value={type.name}>
+                            {type.name}
+                          </MenuItem>
+                        ))}
                       </Select>
                     )}
                   />
@@ -281,8 +289,12 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                     control={control}
                     defaultValue=""
                     render={({ field }) => (
-                      <TextBox
+                      <TextField
                         {...field}
+                        fullWidth
+                        multiline
+                        margin="dense"
+                        rows={4}
                         label="Description"
                         error={!!errors.description}
                         helperText={errors.description?.message}
