@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, removeNote } from "../../apiService";
+import { getAllNotes, deleteNote } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
 
@@ -34,7 +34,7 @@ const Notes: React.FC = () => {
     setIsLoading(true);
     const fetchNotes = async () => {
       try {
-        const data = await getNotes();
+        const data = await getAllNotes();
         setNotes(data.details);
       } catch (error: any) {
         console.error("Error fetching Notes:", error.message);
@@ -69,9 +69,10 @@ const Notes: React.FC = () => {
       console.error("Error sending data:", error);
     }
   };
+
   const deleteNote = async (noteId: any) => {
     try {
-      await removeNote(noteId);
+      await deleteNote(noteId);
       console.log("deleted note ", { noteId });
     } catch (error: any) {
       console.error("Error fetching Notes:", error.message);

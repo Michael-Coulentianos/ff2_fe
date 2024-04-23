@@ -17,6 +17,7 @@ import * as yup from "yup";
 import TextBox from "../atom/textBox";
 import { createOrganization } from "../../apiService";
 import { Controller, useForm } from "react-hook-form";
+import { Organization } from '../../models/organization.interface';
 import { yupResolver } from "@hookform/resolvers/yup";
 
 export const validationSchema = yup.object().shape({
@@ -35,28 +36,6 @@ export const validationSchema = yup.object().shape({
   city: yup.string().required("This field is required"),
   code: yup.string().required("This field is required"),
 });
-
-interface ContactPerson {
-  FullName?: string;
-  ContactNumber?: string;
-  EmailAddress?: string;
-}
-
-interface PhysicalAddress {
-  AddressLine1?: string;
-  AddressLine2?: string;
-  City?: string;
-  Code?: string;
-}
-
-interface Organization {
-  Name?: string;
-  VatNumber?: string;
-  AzureUserId?: string;
-  RegistrationNumber?: string;
-  ContactPerson?: ContactPerson;
-  PhysicalAddress?: PhysicalAddress;
-}
 
 interface OrganizationDialogProps {
   isEdit: boolean;
