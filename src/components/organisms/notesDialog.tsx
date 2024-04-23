@@ -26,26 +26,29 @@ import TextBox from "../atom/textBox";
 import { createNote, getNoteTypes } from "../../apiService";
 
 export const validationSchema = yup.object().shape({
-  noteType: yup.string().required("This field is required"),
+  noteType: yup.object().shape({
+    name: yup.string().required("Note type name is required"),
+    noteTypeId: yup.number().required(),
+    description: yup.string().required(),
+    properties: yup.array().of(yup.mixed()).required()
+  }),
   title: yup.string().required("This field is required"),
   date: yup.string().required("This field is required"),
   map: yup.string().required("This field is required"),
   description: yup.string().required("This field is required"),
   attachment: yup.string().required("This field is required"),
-  riskPercentage: yup.string().required("This field is required"),
-  infectionType: yup.string().required("This field is required"),
-  phaseType: yup.string().required("This field is required"),
-  soilType: yup.string().required("This field is required"),
-  deficiencies: yup.string().required("This field is required"),
-  damageType: yup.string().required("This field is required"),
+  // riskPercentage: yup.string().required("This field is required"),
+  // infectionType: yup.string().required("This field is required"),
+  // phaseType: yup.string().required("This field is required"),
+  // soilType: yup.string().required("This field is required"),
+  // deficiencies: yup.string().required("This field is required"),
+  // damageType: yup.string().required("This field is required"),
 });
 
-type NoteTypes = "General" | "Infection" | "Crop Analysis" | "Damage";
-
 interface FormProps {
-  noteType: NoteTypes;
+  noteType: NoteType;
   title: string;
-  date: Date;
+  date: string;
   map: string;
   description: string;
   attachment: File | null;
@@ -58,18 +61,20 @@ interface FormProps {
 }
 
 interface NotesDialogProps {
+  noteData?: Note;
   isEdit: boolean;
   onEdit?: any;
   onSubmit?: any;
 }
 
 interface Note {
-  NoteTypeId: string;
+  NoteType: NoteType;
   Title: string;
   PartyId: string;
+  Date: string;
   Location: string;
   Description: string;
-  Attachment: any;
+  Attachment: File | null;
 }
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
@@ -82,11 +87,34 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const NotesDialog: React.FC<NotesDialogProps> = ({
+  noteData,
   isEdit,
   onEdit,
   onSubmit,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  const defaultValues = {
+    noteType: {
+      name: "General (default)",
+      noteTypeId: 0,
+      description: "",
+      properties: []
+    },
+    title: "",
+    date: new Date().toISOString().slice(0, 10),
+    map: "",
+    description: "",
+    attachment: null, 
+    // riskPercentage: "",
+    // infectionType: "",
+    // phaseType: "",
+    // soilType: "",
+    // deficiencies: "",
+    // damageType: "",
+  };
+  
+
   const {
     control,
     handleSubmit,
@@ -95,10 +123,38 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
     reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
+    //defaultValues: defaultValues,
   });
 
+  useEffect(() => {
+    if (isEdit && noteData) {
+      setModalOpen(true);
+      // reset({
+      //   //noteTypeId: noteData.NoteType.noteTypeId,
+      //   title: noteData.Title,
+      //   date: noteData.Date || new Date().toISOString().slice(0, 10),
+      //   map: noteData.Location,
+      //   description: noteData.Description,
+      //   attachment: noteData.Attachment || null,
+      // });
+    }
+  }, [isEdit, noteData, reset]);
+
+  const handleSave = async (data: Note) => {
+    if (onSubmit) {
+      onSubmit(data);
+    }
+    setModalOpen(false); // Close modal on save
+    //reset(defaultValues); // Reset form to default values after save
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    //reset(defaultValues); // Reset the form when closing modal
+  };
+
   const [noteTypes, setNoteTypes] = useState<NoteType[]>([]);
-  const [selectedNoteType, setSelectedNoteType] = useState<string>("Default");
+  const [selectedNoteType, setSelectedNoteType] = useState<string>();
 
   useEffect(() => {
     const fetchNoteTypes = async () => {
@@ -145,21 +201,27 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
     // }
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
+  const today = new Date().toISOString().slice(0, 10);
 
   //remove the below
   const [form, setForm] = useState<FormProps>({
-    noteType: "General",
+    noteType: {
+      name: "General (default)",
+      noteTypeId: 0,
+      description: "",
+      properties: []
+    },
     title: "",
-    date: new Date(),
+    date: today,
     map: "",
     description: "",
     attachment: null,
   });
 
-  //remove the above
+  // const handleNoteTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  //   const value = event.target.value as string;  
+  //   setSelectedNoteType(value);
+  // };
 
   return (
     <>
@@ -175,7 +237,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
             color="primary"
             onClick={() => setModalOpen(true)}
           >
-            Add
+            {isEdit ? "Edit Note" : "Add Note"}
           </Button>
         )}
         <MuiDialog
@@ -186,7 +248,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
             <Grid container direction="row">
               <Grid item xs={12}>
-                Note
+              {isEdit ? "Edit Note" : "Add Note"}
               </Grid>
             </Grid>
           </DialogTitle>
@@ -207,36 +269,31 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
             <DialogContent dividers>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  {}
-                  <Controller
-                    name="noteType"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        label="Note Type"
-                        error={!!errors.noteType}
-                        onChange={(event) => {
-                          // Handle the select change
-                          field.onChange(event.target.value);
-                          setSelectedNoteType(event.target.value);
-                        }}
-                        fullWidth
-                      >
-                        {noteTypes.map((type) => (
-                          <MenuItem key={type.noteTypeId} value={type.name}>
-                            {type.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
+                <Controller
+                  name="noteType"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      select
+                      fullWidth
+                      label="Note Type"
+                      value={selectedNoteType}
+                      onChange={handleNoteTypeChange}
+                      margin="dense"
+                    >
+                      {noteTypes.map((type) => (
+                        <MenuItem key={type.noteTypeId} value={type.name}>
+                          {type.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
                 </Grid>
                 <Grid item xs={6}>
                   <Controller
                     name="title"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <TextBox
                         {...field}
@@ -249,11 +306,13 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                   <Controller
                     name="date"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
-                      <TextBox
+                      <TextField
                         {...field}
-                        label="Date"
+                        type="date"
+                        fullWidth
+                        variant="outlined"
+                        margin="dense"
                         error={!!errors.date}
                         helperText={errors.date?.message}
                       />
@@ -262,7 +321,6 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                   <Controller
                     name="map"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <TextBox
                         {...field}
@@ -275,7 +333,6 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                   <Controller
                     name="description"
                     control={control}
-                    defaultValue=""
                     render={({ field }) => (
                       <TextField
                         {...field}
@@ -289,9 +346,26 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                       />
                     )}
                   />
+                  <Controller
+                    name="attachment"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        multiline
+                        type="file"
+                        margin="dense"
+                        rows={4}
+                        label="Attachment"
+                        error={!!errors.attachment}
+                        helperText={errors.attachment?.message}
+                      />
+                    )}
+                  />
                 </Grid>
                 <Grid item xs={6}>
-                  {form.noteType === "Infection" && (
+                  {/* {form.noteType.name === "Infection" && (
                     <>
                       <Controller
                         name="riskPercentage"
@@ -322,7 +396,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                       />
                     </>
                   )}
-                  {form.noteType === "Crop Analysis" && (
+                  {form.noteType.name === "Crop Analysis" && (
                     <>
                       <Controller
                         name="phaseType"
@@ -367,7 +441,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                       />
                     </>
                   )}
-                  {form.noteType === "Damage" && (
+                  {form.noteType.name === "Damage" && (
                     <>
                       <Controller
                         name="riskPercentage"
@@ -397,7 +471,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                         )}
                       />
                     </>
-                  )}
+                  )} */}
                 </Grid>
               </Grid>
             </DialogContent>
@@ -408,7 +482,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                 type="submit"
                 startIcon={<SaveIcon />}
               >
-                Add
+                {isEdit ? "Update" : "Add"}
               </Button>
             </DialogActions>
           </form>
