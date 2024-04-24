@@ -98,7 +98,7 @@ const FormDialog: React.FC<FormDialogProps> = ({
   return (
     <Container>
       <MuiDialog onClose={() => { onClose(); reset(); }} open={isOpen}>
-        <DialogTitle>Add Note</DialogTitle>
+        <DialogTitle>{formData ? "Update Note" : "Add Note"}</DialogTitle>
         <IconButton
           aria-label="close"
           onClick={() => { onClose(); reset(); }}
@@ -153,9 +153,8 @@ const FormDialog: React.FC<FormDialogProps> = ({
               variant="contained"
               color="primary"
               type="submit"
-              startIcon={<SaveIcon />}
-            >
-              Save
+              startIcon={<SaveIcon />}>
+              {formData ? "Update" : "Save"}
             </Button>
           </DialogActions>
         </form>
