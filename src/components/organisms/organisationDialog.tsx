@@ -39,7 +39,7 @@ export const validationSchema = yup.object().shape({
 
 interface OrganizationDialogProps {
   isEdit: boolean;
-  onEdit?: any;
+  onEdit: () => void;
   onSubmit?: any;
 }
 
@@ -99,10 +99,14 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     setModalOpen(false);
   };
 
+  const handleEdit = () => {
+    setModalOpen(true);
+    onEdit();
+  };
   return (
     <>
       {isEdit && (
-        <IconButton onClick={onEdit}>
+        <IconButton onClick={handleEdit}>
           <EditIcon />
         </IconButton>
       )}
