@@ -1,4 +1,4 @@
-interface Farm {
+export interface Farm {
   farmId: number;
   partyId: number;
   partyIdentifier: string;

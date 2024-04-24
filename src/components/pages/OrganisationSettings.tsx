@@ -68,7 +68,7 @@ const OrganizationSettings: React.FC = () => {
 
       if (response.ok) {
         console.log(
-          `Submitted org with Name: ${organization.contactPerson.fullName}`
+          `Submitted org with Name: ${organization.contactPerson[0].fullName}`
         );
         console.log("Organization created successfully!");
       } else {
