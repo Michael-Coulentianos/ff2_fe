@@ -3,6 +3,8 @@ import { Note } from './models/note.interface';
 import { NoteType } from './models/noteType.interface';
 import { Farm } from './models/farm.interface';
 import { Organization } from './models/organization.interface';
+import { ApiResponse } from './models/apiResponse.interface';
+
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
   headers: {
@@ -29,41 +31,6 @@ export const getOrganizations = async () => {
     throw new Error(error.response.data);
   }
 };
-
-export const getAllNotes = async () => {
-  try {
-    const response = await api.get("Notes", {});
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response.data);
-  }
-};
-
-// export const createOrganization = async () => {
-//   try {
-//     const response = await api.post("/CreateOrganization", {
-//       Name: "ZZ2 Farms - Azure",
-//       VATNumber: "VAT2024/01/24",
-//       AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
-//       LegalEntityTypeId: 1,
-//       RegistrationNumber: "Reg2024/01/24",
-//       ContactPerson: {
-//         FullName: "Elias Siboyane",
-//         ContactNumber: "0730531673",
-//         EmailAddress: "elias.s@IQLogistica.com",
-//       },
-//       PhysicalAddress: {
-//         AddressLine1: "474 Lynnwood Street",
-//         AddressLine2: "Lynnwood",
-//         City: "Pretoria",
-//         Code: "0015",
-//       },
-//     });
-//     return response.data;
-//   } catch (error: any) {
-//     throw new Error(error.response.data);
-//   }
-// };
 
 //Organisation CRUD APIs
 export const createOrganisation = async (): Promise<Organization> => {
@@ -213,7 +180,6 @@ export const createNote = async (note: Partial<Note>): Promise<Note> => {
     if (error.response && error.response.data) {
       throw new Error(`Failed to create note: ${error.response.data}`);
     } else {
-      // This handles cases where the error may not be related to the HTTP response, providing a fallback error message
       throw new Error('Something went wrong while creating the note');
     }
   }
@@ -221,14 +187,20 @@ export const createNote = async (note: Partial<Note>): Promise<Note> => {
 
 export const getNotes = async (): Promise<Note[]> => {
   try {
-    const response = await api.get<Note[]>("Notes");
-    return response.data;
+      const response = await api.get<ApiResponse<Note[]>>("Notes");
+      if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
+          return response.data.details;
+      } else {
+          throw new Error(`Failed to fetch notes: ${response.data.message}`);
+      }
   } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to fetch notes: ${error.response.data}`);
-    } else {
-      throw new Error('Something went wrong while fetching notes');
-    }
+      if (error.response) {
+          throw new Error(`API Error: ${error.response.status} ${error.response.data}`);
+      } else if (error.request) {
+          throw new Error('No response received');
+      } else {
+          throw new Error('Error setting up request');
+      }
   }
 };
 
@@ -253,21 +225,31 @@ export const deleteNote = async (noteId: string | number): Promise<void> => {
         AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008"
       }
     });
-    console.log('Delete response:', response.data);
-    return response.data;
+
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`Deletion failed with message: ${response.data.message}`);
+    }
+
+    if (response.data.details) {
+      console.log('Deletion details:', response.data.details);
+    }
+
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(`Failed to delete note: ${error.response.data}`);
+      throw new Error(`Failed to delete note: ${error.response.data.error || error.response.data}`);
+    } else if (error.request) {
+      throw new Error('No response received during the deletion process');
     } else {
-      throw new Error('Something went wrong while deleting the note');
+      throw new Error(`Error during the deletion process: ${error.message}`);
     }
   }
 };
 
+
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {
   try {
-    const response = await api.get<{ responseId: string, statusCode: number, message: string, details: NoteType[], httpStatusCode: number }>("NoteTypes");
+    const response = await api.get<ApiResponse<NoteType[]>>("NoteTypes");
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -275,9 +257,9 @@ export const getNoteTypes = async (): Promise<NoteType[]> => {
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(`Failed to fetch notes: ${error.response.data.message || error.message}`);
+      throw new Error(`Failed to fetch note types: ${error.response.data.message || error.message}`);
     } else {
-      throw new Error('Something went wrong while fetching notes');
+      throw new Error('Something went wrong while fetching note types');
     }
   }
 };

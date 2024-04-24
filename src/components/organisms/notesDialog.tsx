@@ -163,30 +163,32 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
   };
 
   const onSave = async (data: Note) => {
-    // try {
-    //   const response = await createNote(data);
-    //   console.log(response.message);
-    //   console.log("data note interface", data);
+    try {
+      console.log(data);
 
-    //   const responseData = await response.json();
+      const response = await createNote(data);
+      console.log(response.message);
+      console.log("data note interface", data);
 
-    //   if (!response.ok) {
-    //     if (responseData.errors) {
-    //       for (let key in responseData.errors) {
-    //         setError(response, {
-    //           type: "manual",
-    //           message: responseData.errors[key],
-    //         });
-    //       }
-    //     }
-    //     throw new Error("Failed to create note");
-    //   }
-    //   alert("note created successfully");
-    //   setModalOpen(false);
-    //   reset();
-    // } catch (error: any) {
-    //   alert(error.message);
-    // }
+      const responseData = await response.json();
+
+      // if (!response.ok) {
+      //   if (responseData.errors) {
+      //     for (let key in responseData.errors) {
+      //       setError(response, {
+      //         type: "manual",
+      //         message: responseData.errors[key],
+      //       });
+      //     }
+      //   }
+      //   throw new Error("Failed to create note");
+      // }
+      alert("note created successfully");
+      setModalOpen(false);
+      reset();
+    } catch (error: any) {
+      alert(error.message);
+    }
   };
 
   const today = new Date().toISOString().slice(0, 10);

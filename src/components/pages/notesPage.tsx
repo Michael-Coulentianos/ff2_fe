@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getAllNotes, deleteNote } from "../../apiService";
+import { getNotes, deleteNote } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
+import ConfirmDialog from '../organisms/confirmDialog';
 
 interface DataItem {
   id: string;
@@ -27,8 +28,8 @@ const Notes: React.FC = () => {
     setIsLoading(true);
     const fetchNotes = async () => {
       try {
-        const data = await getAllNotes();
-        setNotes(data.details);
+        const data = await getNotes();
+        setNotes(data);
       } catch (error: any) {
         console.error("Error fetching Notes:", error.message);
       }
@@ -48,22 +49,22 @@ const Notes: React.FC = () => {
   };
 
   const handleDeleteClick = (noteId: number) => {
-    setCurrentNoteId(noteId); // Set the current note ID to be deleted
-    setConfirmOpen(true); // Show confirmation dialog
+    setCurrentNoteId(noteId);
+    setConfirmOpen(true);
   };
 
   const confirmDelete = async () => {
     if (currentNoteId !== null) {
       try {
         await deleteNote(currentNoteId);
-        setNotes(notes.filter(note => note.id !== currentNoteId)); // Ensure you're filtering by the correct identifier
+        setNotes(notes.filter(note => note.id !== currentNoteId));
         console.log('Note deleted successfully');
       } catch (error) {
         console.error('Failed to delete note:', error);
       }
     }
-    setConfirmOpen(false); // Close the confirmation dialog
-    setCurrentNoteId(null); // Reset the pending deletion note ID
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
   };
 
   const handleCancel = () => {
@@ -115,30 +116,14 @@ const Notes: React.FC = () => {
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
-        <NotesDialog isEdit={false} />
+        <NotesDialog isEdit={false}></NotesDialog>
       </Grid>
-      <DynamicTable data={notes} columns={myColumns} />
-      <Dialog
+      <DynamicTable data={notes} columns={myColumns}></DynamicTable>
+      <ConfirmDialog
         open={confirmOpen}
-        onClose={handleCancel}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this note?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={confirmDelete} color="primary" autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onCancel={handleCancel}
+        onConfirm={confirmDelete}
+      />
     </>
   );
 };
