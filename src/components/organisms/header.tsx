@@ -22,6 +22,7 @@ import {
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
+import { UserProfileForm } from "./profileSettings";
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -47,7 +48,6 @@ const AppBar = styled(MuiAppBar, {
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
 
-  
   const { instance } = useMsal();
 
   // if (instance) {
@@ -108,6 +108,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           <SearchBar></SearchBar>
 
           <AuthenticatedTemplate>
+            <UserProfileForm></UserProfileForm>
             <IconButton
               aria-label="edit"
               sx={{

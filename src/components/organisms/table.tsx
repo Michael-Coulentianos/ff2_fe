@@ -15,11 +15,6 @@ interface TableData {
   id: string;
   [key: string]: string;
 }
-interface Organization {
-  name: string;
-  contactInfo: string;
-  address: string;
-}
 
 interface ColumnConfig {
   label: string;

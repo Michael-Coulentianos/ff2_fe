@@ -17,7 +17,7 @@ import * as yup from "yup";
 import TextBox from "../atom/textBox";
 import { createOrganization } from "../../apiService";
 import { Controller, useForm } from "react-hook-form";
-import { Organization } from '../../models/organization.interface';
+import { Organization } from "../../models/organization.interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 export const validationSchema = yup.object().shape({
@@ -39,7 +39,7 @@ export const validationSchema = yup.object().shape({
 
 interface OrganizationDialogProps {
   isEdit: boolean;
-  onEdit?: any;
+  onEdit: () => void;
   onSubmit?: any;
 }
 
@@ -55,7 +55,6 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
 const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
   isEdit,
   onEdit,
-  onSubmit,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -68,7 +67,8 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSave = async (data: Organization) => {
+  const onSubmit = async (data) => {
+    
     try {
       const response = await createOrganization(data);
       console.log(response.message);
@@ -99,10 +99,14 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     setModalOpen(false);
   };
 
+  const handleEdit = () => {
+    setModalOpen(true);
+    onEdit();
+  };
   return (
     <>
       {isEdit && (
-        <IconButton onClick={onEdit}>
+        <IconButton onClick={handleEdit}>
           <EditIcon />
         </IconButton>
       )}
@@ -141,7 +145,7 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           >
             <CloseIcon />
           </IconButton>
-          <form onSubmit={handleSubmit(() => onSave)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <DialogContent dividers>
               <Grid container spacing={3}>
                 <Grid item xs={6}>

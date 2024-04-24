@@ -5,44 +5,23 @@ import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations } from "../../apiService";
 import Loading from "./loading";
+import { Organization } from "../../models/organization.interface";
 
-interface Dataparty {
+interface Dataorg {
   id: string;
   [key: string]: any;
 }
 
 interface ColumnConfig {
   label: string;
-  dataKey: keyof Dataparty;
-  renderCell: (party: Dataparty) => React.ReactNode;
-}
-
-interface ContactPerson {
-  FullName: string;
-  ContactNumber: string;
-  EmailAddress: string;
-}
-
-interface PhysicalAddress {
-  AddressLine1: string;
-  AddressLine2: string;
-  City: string;
-  Code: string;
-}
-
-interface Organization {
-  Name: string;
-  VATNumber: string;
-  AzureUserId: string;
-  LegalEntityTypeId: number;
-  RegistrationNumber: string;
-  ContactPerson: ContactPerson;
-  PhysicalAddress: PhysicalAddress;
+  dataKey: keyof Dataorg;
+  renderCell: (org: Dataorg) => React.ReactNode;
 }
 
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -63,15 +42,18 @@ const OrganizationSettings: React.FC = () => {
     return <Loading></Loading>;
   }
 
-  const handleDelete = (partyId: number) => {
-    console.log(`Deleting party with ID: ${partyId}`);
+  const handleDelete = (id: string) => {
+    console.log(`Deleting org with ID: ${id}`);
+    setSelectedId(id);
   };
-  const handleSubmit = (partyId: number) => {
-    console.log(`Submitted party with ID: ${partyId}`);
+  const handleSubmit = (id: string) => {
+    console.log(`Submitted org with ID: ${id}`);
+    setSelectedId(id);
   };
 
-  const handleEditClick = (partyId: number) => {
-    console.log(`Edit party with ID: ${partyId}`);
+  const handleEdit = (id: string) => {
+    console.log(`Edit org with ID: ${id}`);
+    setSelectedId(id);
   };
 
   const handleCreateOrganization = async (organization: Organization) => {
@@ -85,6 +67,9 @@ const OrganizationSettings: React.FC = () => {
       });
 
       if (response.ok) {
+        console.log(
+          `Submitted org with Name: ${organization.contactPerson.fullName}`
+        );
         console.log("Organization created successfully!");
       } else {
         console.error("Error creating organization:", response.statusText);
@@ -98,24 +83,24 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Company name",
       dataKey: "name",
-      renderCell: (party) => <>{party.name}</>,
+      renderCell: (org) => <>{org.name}</>,
     },
     {
       label: "Registration  number",
       dataKey: "registrationNum",
-      renderCell: (party) => <>{party.registrationNumber}</>,
+      renderCell: (org) => <>{org.registrationNumber}</>,
     },
     {
       label: "VAT number",
       dataKey: "VAT",
-      renderCell: (party) => <>{party.vatNumber}</>,
+      renderCell: (org) => <>{org.vatNumber}</>,
     },
     {
       label: "Contact information",
       dataKey: "contactInformation",
-      renderCell: (party) => (
+      renderCell: (org) => (
         <>
-          {party.contactPerson.map((person) => (
+          {org.contactPerson.map((person) => (
             <p key={person.contactPersonId}>
               {person.fullName}
               <p>Contact Number: {person.contactNumber}</p>
@@ -128,9 +113,9 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Address",
       dataKey: "address",
-      renderCell: (party) => (
+      renderCell: (org) => (
         <>
-          {party.physicalAddress.map((address) => (
+          {org.physicalAddress.map((address) => (
             <p key={address.addressId}>
               {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
               {address.code}
@@ -142,10 +127,10 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Action Buttons",
       dataKey: "action",
-      renderCell: (party) => (
+      renderCell: (org) => (
         <ActionButtons
-          onEdit={() => handleEditClick(party.partyId)}
-          onDelete={() => handleDelete(party.partyId)}
+          onEdit={() => handleEdit(org.id)}
+          onDelete={() => handleDelete(org.id)}
           onSubmit={() => handleCreateOrganization}
         ></ActionButtons>
       ),
@@ -159,6 +144,7 @@ const OrganizationSettings: React.FC = () => {
         <OrganizationDialog
           isEdit={false}
           onSubmit={handleCreateOrganization}
+          onEdit={() => handleEdit}
         ></OrganizationDialog>
       </Grid>
       <Grid xs={12}>
