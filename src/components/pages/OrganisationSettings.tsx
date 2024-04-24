@@ -5,6 +5,7 @@ import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations } from "../../apiService";
 import Loading from "./loading";
+import { Organization } from "../../models/organization.interface";
 
 interface Dataorg {
   id: string;
@@ -15,29 +16,6 @@ interface ColumnConfig {
   label: string;
   dataKey: keyof Dataorg;
   renderCell: (org: Dataorg) => React.ReactNode;
-}
-
-interface ContactPerson {
-  FullName: string;
-  ContactNumber: string;
-  EmailAddress: string;
-}
-
-interface PhysicalAddress {
-  AddressLine1: string;
-  AddressLine2: string;
-  City: string;
-  Code: string;
-}
-
-interface Organization {
-  Name: string;
-  VATNumber: string;
-  AzureUserId: string;
-  LegalEntityTypeId: number;
-  RegistrationNumber: string;
-  ContactPerson: ContactPerson;
-  PhysicalAddress: PhysicalAddress;
 }
 
 const OrganizationSettings: React.FC = () => {
@@ -90,7 +68,7 @@ const OrganizationSettings: React.FC = () => {
 
       if (response.ok) {
         console.log(
-          `Submitted org with Name: ${organization.ContactPerson.FullName}`
+          `Submitted org with Name: ${organization.contactPerson.fullName}`
         );
         console.log("Organization created successfully!");
       } else {

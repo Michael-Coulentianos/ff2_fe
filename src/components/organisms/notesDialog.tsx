@@ -12,6 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TextBox from "../atom/textBox";
 import { createNote, getNoteTypes } from "../../apiService";
+import { Note } from "../../models/note.interface";
 
 export const validationSchema = yup.object().shape({
   noteType: yup.object().shape({
@@ -55,15 +56,6 @@ interface NotesDialogProps {
   onSubmit?: any;
 }
 
-interface Note {
-  NoteType: NoteType;
-  Title: string;
-  PartyId: string;
-  Date: string;
-  Location: string;
-  Description: string;
-  Attachment: File | null;
-}
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
