@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextField, MenuItem, Container, IconButton, Grid, styled, DialogTitle,
   DialogContent, DialogActions, Button, Dialog
@@ -25,13 +25,14 @@ const validationSchema = yup.object().shape({
   title: yup.string().required("This field is required"),
   location: yup.string().required("This field is required"),
   description: yup.string().required("This field is required"),
-  //noteType: yup.string().required("Note type is required")
+  noteType: yup.string().required("Note type is required")
 });
 
 interface FormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: any) => void;
+  formData?: any;
   title?: string;
 }
 
@@ -39,7 +40,7 @@ const FormDialog: React.FC<FormDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  title = 'Add Note'
+  formData
 }) => {
   const [noteTypes, setNoteTypes] = useState<NoteType[]>([]);
   const [selectedNoteType, setSelectedNoteType] = useState<string>("");
@@ -60,40 +61,44 @@ const FormDialog: React.FC<FormDialogProps> = ({
     fetchNoteTypes();
   }, []);
 
-  const defaultValues = {
-    title: "",
-    location: "",
-    description: "",
-    //noteType: 
-  };
-
   const { control, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues
+    defaultValues: {
+      title: "",
+      location: "",
+      description: "",
+      noteType: ""
+    }
   });
 
-  const handleNoteTypeChange = (event: ChangeEvent<{ value: unknown }>) => {
+  // Update form state when formData changes
+  useEffect(() => {
+    if (formData && isOpen) {
+      reset({
+        title: formData.title || "",
+        location: formData.location || "",
+        description: formData.description || "",
+        noteType: formData.noteType || ""
+      });
+    }
+  }, [formData, isOpen, reset]);
+
+  const handleNoteTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSelectedNoteType(event.target.value as string);
   };
 
-  useEffect(() => {
-    if (!isOpen) {
-      reset(defaultValues);
-    }
-  }, [isOpen, reset]);
-
   return (
     <Container>
-      <MuiDialog onClose={() => { onClose(); reset(defaultValues); }} open={isOpen}>
-        <DialogTitle>{title}</DialogTitle>
+      <MuiDialog onClose={() => { onClose(); reset(); }} open={isOpen}>
+        <DialogTitle>Add Note</DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={() => { onClose(); reset(defaultValues); }}
+          onClick={() => { onClose(); reset(); }}
           sx={{ position: "absolute", right: 10, top: 10, color: (theme) => theme.palette.grey[500] }}
         >
           <CloseIcon />
         </IconButton>
-        <form onSubmit={handleSubmit((data) => { onSubmit(data); reset(defaultValues); })}>
+        <form onSubmit={handleSubmit((data) => { onSubmit(data); onClose(); reset(); })}>
           <DialogContent dividers>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -104,50 +109,32 @@ const FormDialog: React.FC<FormDialogProps> = ({
                     <TextBox {...field} label="Title" error={!!errors.title} helperText={errors.title?.message} />
                   )}
                 />
-                {/* <Controller
-                  name="noteType"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField {...field} select label="Note Type" onChange={handleNoteTypeChange} margin="dense" fullWidth value={selectedNoteType}>
-                      {noteTypes.map((type) => (
-                        <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
-                          {type.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  )}
-                /> */}
-                <TextField select label="Note Type" onChange={handleNoteTypeChange} margin="dense" fullWidth value={selectedNoteType}>
-                      {noteTypes.map((type) => (
-                        <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
-                          {type.name}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                <TextField
+                  select
+                  label="Note Type"
+                  onChange={handleNoteTypeChange}
+                  value={selectedNoteType}
+                  fullWidth
+                  margin="dense"
+                >
+                  {noteTypes.map((type) => (
+                    <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
+                      {type.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
                 <Controller
                   name="location"
                   control={control}
                   render={({ field }) => (
-                    <TextBox
-                      {...field}
-                      label="Location"
-                      error={!!errors.location}
-                      helperText={errors.location?.message}
-                    />
+                    <TextBox {...field} label="Location" error={!!errors.location} helperText={errors.location?.message} />
                   )}
                 />
                 <Controller
                   name="description"
                   control={control}
                   render={({ field }) => (
-                    <TextBox
-                      {...field}
-                      label="Description"
-                      error={!!errors.description}
-                      helperText={errors.description?.message}
-                      multiline
-                      rows={4}
-                    />
+                    <TextBox {...field} label="Description" error={!!errors.description} helperText={errors.description?.message} multiline rows={4} />
                   )}
                 />
               </Grid>

@@ -25,6 +25,7 @@ const Notes: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
+  const [selectedNote, setSelectedNote] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -73,9 +74,9 @@ const Notes: React.FC = () => {
       dataKey: "actionBtns",
       renderCell: (item) => (
         <ActionButtons
-          onEdit={handleEditClick}
+          onEdit={() => handleEditClick(item)}
           onDelete={() => handleDeleteClick(item?.noteId)}
-          onSubmit={() => handleEditClick()}
+          onSubmit={() => null}
         ></ActionButtons>
       ),
     },
@@ -91,7 +92,10 @@ const Notes: React.FC = () => {
     setCurrentNoteId(null);
   };
 
-  const handleEditClick = () => {};
+  const handleEditClick = (note) => {
+    setSelectedNote(note);
+    setFormOpen(true);
+  };
 
   const handleOpenForm = () => setFormOpen(true);
   const handleCloseForm = () => setFormOpen(false);
@@ -153,7 +157,7 @@ const Notes: React.FC = () => {
             isOpen={formOpen}
             onClose={handleCloseForm}
             onSubmit={handleFormSubmit}
-            title="Add New Note"
+            formData={selectedNote}
           />
         </Grid>
         <Grid item xs={12}>
