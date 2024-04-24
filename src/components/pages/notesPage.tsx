@@ -5,7 +5,7 @@ import DynamicTable from "../organisms/table";
 import { getNotes, deleteNote } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
-import ConfirmDialog from '../organisms/confirmDialog';
+import GenericConfirmDialog from '../organisms/genericConfirmDialog';
 
 interface DataItem {
   id: string;
@@ -39,40 +39,6 @@ const Notes: React.FC = () => {
 
     setIsLoading(false);
   }, []);
-
-  if (isLoading) {
-    return <Loading></Loading>;
-  }
-
-  const handleSubmit = (noteId: number) => {
-    console.log(`Submitted party with ID: ${noteId}`);
-  };
-
-  const handleDeleteClick = (noteId: number) => {
-    setCurrentNoteId(noteId);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (currentNoteId !== null) {
-      try {
-        await deleteNote(currentNoteId);
-        setNotes(notes.filter(note => note.id !== currentNoteId));
-        console.log('Note deleted successfully');
-      } catch (error) {
-        console.error('Failed to delete note:', error);
-      }
-    }
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
-  };
-
-  const handleCancel = () => {
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
-  };
-
-  const handleEditClick = () => {};
 
   const myColumns: ColumnConfig[] = [
     {
@@ -113,16 +79,53 @@ const Notes: React.FC = () => {
     },
   ];
 
+  //Handler Methods
+  if (isLoading) {
+    return <Loading></Loading>;
+  }
+
+  const handleCancel = () => {
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
+  };
+
+  const handleEditClick = () => {};
+
+  const handleSubmit = (noteId: number) => {
+    console.log(`Submitted party with ID: ${noteId}`);
+  };
+
+  const handleDeleteClick = (noteId: number) => {
+    setCurrentNoteId(noteId);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (currentNoteId !== null) {
+      try {
+        console.log(currentNoteId);
+        await deleteNote(currentNoteId);
+        setNotes(prevNotes => prevNotes.filter(note => note.noteId !== currentNoteId));
+      } catch (error) {
+        console.error('Failed to delete note:', error);
+      }
+    }
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
+  };
+
   return (
     <>
       <Grid xs={12} sx={{ mb: 1 }}>
         <NotesDialog isEdit={false}></NotesDialog>
       </Grid>
       <DynamicTable data={notes} columns={myColumns}></DynamicTable>
-      <ConfirmDialog
+      <GenericConfirmDialog
         open={confirmOpen}
         onCancel={handleCancel}
         onConfirm={confirmDelete}
+        title="Confirm Deletion"
+        content="Are you sure you want to delete this note?"
       />
     </>
   );
