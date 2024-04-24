@@ -207,17 +207,42 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 
 //Note CRUD APIs
 export const createNote = async (note: Partial<Note>): Promise<Note> => {
-  try {
-    const response = await api.post<Note>("AddNote", note);
-    return response.data;
-  } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to create note: ${error.response.data}`);
-    } else {
-      throw new Error('Something went wrong while creating the note');
+    const formData = new FormData();
+    formData.append('NoteTypeId', note.noteTypeId ?? '');
+    formData.append('Title', note.title ?? '');
+    formData.append('PartyId', note.partyId ?? '');
+    formData.append('Location', note.location ?? '');
+    formData.append('Description', note.description ?? '');
+    
+    if (note.property) {
+      formData.append('Property', JSON.stringify(note.property));
     }
+    if (note.azureUserId) {
+      formData.append('AzureUserId', note.azureUserId);
+    }
+
+    try {
+       // Manual handling of FormData entries
+  const entries = formData.entries();
+  let entry = entries.next();
+  while (!entry.done) {
+    console.log(entry.value[0], entry.value[1]); // Log the key and value
+    entry = entries.next();
   }
-};
+
+      const response = await api.post<Note>('AddNote', formData);
+      
+    console.log('response', response);
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to create note:', error);
+      if (error.response) {
+        throw new Error(`Failed to create note: ${error.response.data.message}`);
+      } else {
+        throw new Error('Something went wrong while creating the note');
+      }
+    }
+  };
 
 export const getNotes = async (): Promise<Note[]> => {
   try {

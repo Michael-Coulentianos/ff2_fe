@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, ChangeEvent } from "react";
 import {
   TextField, MenuItem, Container, IconButton, Grid, styled, DialogTitle,
   DialogContent, DialogActions, Button, Dialog
@@ -25,16 +25,13 @@ const validationSchema = yup.object().shape({
   title: yup.string().required("This field is required"),
   location: yup.string().required("This field is required"),
   description: yup.string().required("This field is required"),
-  noteType: yup.string().required("Note type is required")
+  //noteType: yup.string().required("Note type is required")
 });
 
 interface FormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: any) => void;
-  formData?: any;
-  loading?: boolean;
-  error?: any;
   title?: string;
 }
 
@@ -42,14 +39,12 @@ const FormDialog: React.FC<FormDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  formData,
-  loading = false,
   title = 'Add Note'
 }) => {
-  const [selectedNoteType, setSelectedNoteType] = React.useState<string>("");
-  const [noteTypes, setNoteTypes] = React.useState<NoteType[]>([]);
+  const [noteTypes, setNoteTypes] = useState<NoteType[]>([]);
+  const [selectedNoteType, setSelectedNoteType] = useState<string>("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchNoteTypes = async () => {
       try {
         const fetchedNoteTypes = await getNoteTypes();
@@ -65,27 +60,40 @@ const FormDialog: React.FC<FormDialogProps> = ({
     fetchNoteTypes();
   }, []);
 
-  const handleNoteTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const defaultValues = {
+    title: "",
+    location: "",
+    description: "",
+    //noteType: 
+  };
+
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues
+  });
+
+  const handleNoteTypeChange = (event: ChangeEvent<{ value: unknown }>) => {
     setSelectedNoteType(event.target.value as string);
   };
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: formData || { title: "", location: "", description: "", noteType: "" }
-  });
+  useEffect(() => {
+    if (!isOpen) {
+      reset(defaultValues);
+    }
+  }, [isOpen, reset]);
 
   return (
     <Container>
-      <MuiDialog onClose={onClose} open={isOpen}>
+      <MuiDialog onClose={() => { onClose(); reset(defaultValues); }} open={isOpen}>
         <DialogTitle>{title}</DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={onClose}
+          onClick={() => { onClose(); reset(defaultValues); }}
           sx={{ position: "absolute", right: 10, top: 10, color: (theme) => theme.palette.grey[500] }}
         >
           <CloseIcon />
         </IconButton>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit((data) => { onSubmit(data); reset(defaultValues); })}>
           <DialogContent dividers>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -96,7 +104,7 @@ const FormDialog: React.FC<FormDialogProps> = ({
                     <TextBox {...field} label="Title" error={!!errors.title} helperText={errors.title?.message} />
                   )}
                 />
-                <Controller
+                {/* <Controller
                   name="noteType"
                   control={control}
                   render={({ field }) => (
@@ -108,32 +116,40 @@ const FormDialog: React.FC<FormDialogProps> = ({
                       ))}
                     </TextField>
                   )}
+                /> */}
+                <TextField select label="Note Type" onChange={handleNoteTypeChange} margin="dense" fullWidth value={selectedNoteType}>
+                      {noteTypes.map((type) => (
+                        <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
+                          {type.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                <Controller
+                  name="location"
+                  control={control}
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="Location"
+                      error={!!errors.location}
+                      helperText={errors.location?.message}
+                    />
+                  )}
                 />
                 <Controller
-                    name="location"
-                    control={control}
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Location"
-                        error={!!errors.location}
-                        helperText={errors.location?.message}
-                      />
-                    )}
-                  />
-                <Controller
-                    name="description"
-                    control={control}
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Description"
-                        rows={4}
-                        error={!!errors.description}
-                        helperText={errors.description?.message}
-                      />
-                    )}
-                  />
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="Description"
+                      error={!!errors.description}
+                      helperText={errors.description?.message}
+                      multiline
+                      rows={4}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
           </DialogContent>

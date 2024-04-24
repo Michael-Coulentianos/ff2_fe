@@ -96,9 +96,18 @@ const Notes: React.FC = () => {
   const handleOpenForm = () => setFormOpen(true);
   const handleCloseForm = () => setFormOpen(false);
 
+  const exampleNoteData = {
+    noteTypeId: '2',  // Assuming this is a string ID
+    title: 'Fix HTTP verbs',
+    partyId: '203',  // Assuming party ID is a string
+    location: 'Hoedspruit Farms',
+    description: 'Update methods to use correct verbs',
+    property: { Color: 'red' },  // Example of a JSON property
+    azureUserId: 'fd78de01-3de4-4cd7-8080-27e9aa6b6008'  // Azure User ID
+  };
+
   const handleFormSubmit = (formData) => {
-    createNote(formData);
-    console.log('Form Data:', formData);
+    createNewNote(exampleNoteData);
     handleCloseForm();
   };
 
@@ -120,7 +129,7 @@ const Notes: React.FC = () => {
     setCurrentNoteId(null);
   };
 
-  const createNote = async (formData) => {
+  const createNewNote = async (formData) => {
     try {
       await createNote(formData);
     } catch (error) {
