@@ -288,17 +288,41 @@ export const getNoteById = async (noteId: number): Promise<Note[]> => {
   }
 };
 
-export const updateNote = async (
-  noteChanges: Partial<Note> & { id: number }
-): Promise<Note> => {
+export const updateNote = async (note: Partial<Note>): Promise<Note> => {
+  const formData = new FormData();
+  formData.append('NoteTypeId', note.noteTypeId ?? '');
+  formData.append('NoteId', note.noteId ?? '');
+  formData.append('Title', note.title ?? '');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('Location', note.location ?? '');
+  formData.append('Description', note.description ?? '');
+  
+  if (note.property) {
+    formData.append('Property', JSON.stringify(note.property));
+  }
+  if (note.azureUserId) {
+    formData.append('AzureUserId', note.azureUserId);
+  }
+
   try {
-    const response = await api.put<Note>("UpdateNote", noteChanges);
+     // Manual handling of FormData entries
+const entries = formData.entries();
+let entry = entries.next();
+while (!entry.done) {
+  console.log(entry.value[0], entry.value[1]); // Log the key and value
+  entry = entries.next();
+}
+
+    const response = await api.put<ApiResponse<<Note>>('UpdateNote', formData);
+    
+  console.log('response', response);
     return response.data;
   } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to update note: ${error.response.data}`);
+    console.error('Failed to create note:', error);
+    if (error.response) {
+      throw new Error(`Failed to create note: ${error.response.data.message}`);
     } else {
-      throw new Error("Something went wrong while updating the note");
+      throw new Error('Something went wrong while creating the note');
     }
   }
 };

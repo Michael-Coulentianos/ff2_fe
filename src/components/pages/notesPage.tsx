@@ -3,7 +3,7 @@ import { NoteType } from '../../models/noteType.interface';
 import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote, createNote } from "../../apiService";
+import { getNotes, deleteNote, createNote, updateNote } from "../../apiService";
 import Loading from "./loading";
 import FormDialog from "../organisms/formDialog";
 import GenericConfirmDialog from '../organisms/genericConfirmDialog';
@@ -117,10 +117,27 @@ const Notes: React.FC = () => {
     azureUserId: 'fd78de01-3de4-4cd7-8080-27e9aa6b6008'  // Azure User ID
   };
 
-  const handleFormSubmit = (formData) => {
-    createNewNote(exampleNoteData);
-    handleCloseForm();
+  const handleFormSubmit = async (formData) => {
+    if (selectedNote && currentNoteId) {
+      try {
+        const updatedNote = await updateNote(formData);
+        console.log('Note updated:', updatedNote);
+        setNotes(notes.map(note => note.id === updatedNote.id ? updatedNote : note));
+      } catch (error) {
+        console.error('Error updating note:', error);
+      }
+    } else {
+      try {
+        const newNote = await createNote(formData);
+        console.log('Note created:', newNote);
+        setNotes([...notes, newNote]);
+      } catch (error) {
+        console.error('Error creating note:', error);
+      }
+    }
+    handleCloseForm(); 
   };
+  
 
   const handleDeleteClick = (noteId: number) => {
     setCurrentNoteId(noteId);
