@@ -33,26 +33,7 @@ export const getOrganizations = async () => {
 };
 
 //Organisation CRUD APIs
-export const createOrganisation = async (): Promise<Organization> => {
-  const newOrgData: Organization = {
-    name: "Ty Ty Agri",
-    vatNumber: "VAT2024/04/24",
-    azureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
-    legalEntityTypeId: 1,
-    registrationNumber: "Reg2024/04/24",
-    contactPerson: {
-      fullName: "Tyron de Beer",
-      contactNumber: "0603177077",
-      emailAddress: "tyron.debeer@iqlogistica.com",
-    },
-    physicalAddress: {
-      addressLine1: "474 Lynnwood Street",
-      addressLine2: "Lynnwood",
-      city: "Pretoria",
-      code: "0015",
-    }
-  };
-
+export const createOrganisation = async (note: Partial<Organization>): Promise<Organization> => {
   try {
     const response = await api.post<Organization>("/CreateOrganization", newOrgData);
     return response.data;
@@ -112,6 +93,23 @@ export const deleteOrganization = async (organizationId: number): Promise<void> 
   }
 };
 
+export const getOrganizationById = async (farmId: number): Promise<Organization[]> => {
+  try {
+    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+    
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to retrieve organization: ${error.response.data.message || error.message}`);
+    } else {
+      throw new Error('Something went wrong while retrieving organization');
+    }
+  }
+};
+
 //Farm CRUD APIs
 export const createFarm = async (): Promise<Farm> => {
   const newFarmData: Omit<Farm, 'id'> = {
@@ -132,9 +130,9 @@ export const createFarm = async (): Promise<Farm> => {
   }
 };
 
-export const getFarm = async (farmId: number): Promise<Farm> => {
+export const getFarm = async (farmId: number): Promise<Farm[]> => {
   try {
-    const response = await api.get<Farm>(`/GetFarm/${farmId}`);
+    const response = await api.get<Farm[]>(`/GetFarm/${farmId}`);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -161,13 +159,29 @@ export const updateFarm = async (farm: Farm): Promise<Farm> => {
 export const deleteFarm = async (farmId: number): Promise<void> => {
   try {
     const response = await api.delete<void>(`/DeleteFarm/${farmId}`);
-    return response.data; // Usually, delete operations might not return data, adjust as per your API's design
+    return response.data; 
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to delete farm: ${error.response.data}`);
     } else {
       throw new Error('Something went wrong while deleting the farm');
     }
+  }
+};
+
+export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => {
+  try {
+    const response = await api.get<ApiResponse<Farm>>("OrganizationFarmById");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+    return response.data.details;
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        throw new Error(`Failed to retrieve organiszation farm details: ${error.response.data.message || error.message}`);
+      } else {
+        throw new Error('Something went wrong while retrieving organiszation farm details');
+      }
   }
 };
 

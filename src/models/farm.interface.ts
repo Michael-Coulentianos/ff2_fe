@@ -1,6 +1,8 @@
-export interface Farm {
-    id?: number;
-    name: string;
-    organizationId: number;
-    azureUserId: string;
-  }
+interface Farm {
+  farmId: number;
+  partyId: number;
+  partyIdentifier: string;
+  organizationId: number;
+  farm: string;
+  organization: string;
+}

@@ -103,7 +103,6 @@ const Notes: React.FC = () => {
   const confirmDelete = async () => {
     if (currentNoteId !== null) {
       try {
-        console.log(currentNoteId);
         await deleteNote(currentNoteId);
         setNotes(prevNotes => prevNotes.filter(note => note.noteId !== currentNoteId));
       } catch (error) {

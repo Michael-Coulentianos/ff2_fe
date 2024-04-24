@@ -320,46 +320,47 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                     )}
                   />
 
-<Controller
-      name="attachment"
-      control={control}
-      //defaultValue={null}  // Ensure the default value is consistent with the input type
-      render={({ field: { onChange, onBlur, value, name, ref } }) => (
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12}>
-            <input
-              id="file-input"
-              type="file"
-              ref={ref}
-              name={name}
-              style={{ display: 'none' }}  // Hide the actual input element
-              onChange={(e) => {
-                // Update the form state when a file is selected
-                const file = e.target.files ? e.target.files[0] : null;
-                onChange(file);
-              }}
-              onBlur={onBlur}
-            />
-            <FormControl fullWidth error={!!errors.attachment}>
-              <InputLabel shrink htmlFor="file-input">
-                Attach file
-              </InputLabel>
-              <Button
-                variant="contained"
-                component="span"
-                onClick={handleButtonClick}
-                style={{ marginTop: 8 }} // Add margin for spacing between the label and button
-              >
-                Upload File
-              </Button>
-              {errors.attachment && (
-                <FormHelperText>{errors.attachment.message}</FormHelperText>
-              )}
-            </FormControl>
-          </Grid>
-        </Grid>
-      )}
-    />
+              <Controller
+              
+                    name="attachment"
+                    control={control}
+                    //defaultValue={null}  // Ensure the default value is consistent with the input type
+                    render={({ field: { onChange, onBlur, value, name, ref } }) => (
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12}>
+                          <input
+                            id="file-input"
+                            type="file"
+                            ref={ref}
+                            name={name}
+                            style={{ display: 'none' }}  // Hide the actual input element
+                            onChange={(e) => {
+                              // Update the form state when a file is selected
+                              const file = e.target.files ? e.target.files[0] : null;
+                              onChange(file);
+                            }}
+                            onBlur={onBlur}
+                          />
+                          <FormControl fullWidth error={!!errors.attachment}>
+                            <InputLabel shrink htmlFor="file-input">
+                              Attach file
+                            </InputLabel>
+                            <Button
+                              variant="contained"
+                              component="span"
+                              onClick={handleButtonClick}
+                              style={{ marginTop: 8 }} // Add margin for spacing between the label and button
+                            >
+                              Upload File
+                            </Button>
+                            {errors.attachment && (
+                              <FormHelperText>{errors.attachment.message}</FormHelperText>
+                            )}
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    )}
+                  />
                 </Grid>
                 <Grid item xs={6}>
                   
