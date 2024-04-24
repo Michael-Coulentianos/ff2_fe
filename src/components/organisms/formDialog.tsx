@@ -71,15 +71,23 @@ const FormDialog: React.FC<FormDialogProps> = ({
     }
   });
 
-  // Update form state when formData changes
   useEffect(() => {
-    if (formData && isOpen) {
-      reset({
-        title: formData.title || "",
-        location: formData.location || "",
-        description: formData.description || "",
-        noteType: formData.noteType || ""
-      });
+    if (isOpen) {
+      if (formData) {
+        reset({
+          title: formData.title || "",
+          location: formData.location || "",
+          description: formData.description || "",
+          noteType: formData.noteType || ""
+        });
+      } else {
+        reset({
+          title: "",
+          location: "",
+          description: "",
+          noteType: ""
+        });
+      }
     }
   }, [formData, isOpen, reset]);
 

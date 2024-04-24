@@ -97,8 +97,15 @@ const Notes: React.FC = () => {
     setFormOpen(true);
   };
 
-  const handleOpenForm = () => setFormOpen(true);
-  const handleCloseForm = () => setFormOpen(false);
+  const handleOpenForm = () => {
+    setSelectedNote(null); 
+    setFormOpen(true);
+  };
+  
+  const handleCloseForm = () => {
+    setSelectedNote(null);
+    setFormOpen(false);
+  };
 
   const exampleNoteData = {
     noteTypeId: '2',  // Assuming this is a string ID
