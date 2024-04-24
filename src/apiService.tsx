@@ -15,6 +15,10 @@ const api = axios.create({
   },
 });
 
+// const newFarmData: Omit<Farm, "id"> = {
+//   organizationId: 6
+// };
+
 export const updateUserProfile = async (userProfile: UserProfile) => {
   try {
     const response = await api.put("/UpdateUserProfile", userProfile);
@@ -23,7 +27,6 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
     throw new Error(error.response.data);
   }
 };
-
 export const createOrganization = async (organization: Organization) => {
   try {
     const response = await api.post("/CreateOrganization", organization);
@@ -33,43 +36,33 @@ export const createOrganization = async (organization: Organization) => {
   }
 };
 
-export const getOrganizations = async () => {
+//Organisation CRUD APIs
+export const createOrganization2 = async (organization: Partial<Organization>): Promise<Organization> => {
   try {
-    const response = await api.get("Organizations", {});
-    return response.data;
+    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization",organization);
+    return response.data.details;
   } catch (error: any) {
-    throw new Error(error.response.data);
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to create organization: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while creating the organization");
+    }
   }
 };
 
-//Organisation CRUD APIs
-// export const createOrganisation = async (note: Partial<Organization>): Promise<Organization> => {
-//   try {
-//     const response = await api.post<Organization>(
-//       "/CreateOrganization",
-//       newOrgData
-//     );
-//     return response.data;
-//   } catch (error: any) {
-//     if (error.response && error.response.data) {
-//       throw new Error(`Failed to create organization: ${error.response.data}`);
-//     } else {
-//       throw new Error("Something went wrong while creating the organization");
-//     }
-//   }
-// };
-
-export const getOrganisations = async (): Promise<Organization[]> => {
+export const getOrganizations = async (): Promise<Organization[]> => {
   try {
-    const response = await api.get<Organization[]>("Organizations");
-    return response.data;
+    const response = await api.get<ApiResponse<Organization[]>>("Organizations");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(
-        `Failed to retrieve organizations: ${error.response.data}`
-      );
+      throw new Error(`Failed to retrieve organizations: ${error.response.data.message || error.message}`);
     } else {
-      throw new Error("Something went wrong while retrieving organizations");
+      throw new Error('Something went wrong while retrieving organizations');
     }
   }
 };
@@ -122,7 +115,7 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
       }
     };
 
-    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById");
+    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -138,22 +131,18 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
 };
 
 //Farm CRUD APIs
-// export const createFarm = async (): Promise<Farm> => {
-//   // const newFarmData: Omit<Farm, "id"> = {
-//   //   organizationId: 6
-//   // };
-
-//   // try {
-//   //   const response = await api.post<Farm>("/CreateFarm", newFarmData);
-//   //   return response.data;
-//   // } catch (error: any) {
-//   //   if (error.response && error.response.data) {
-//   //     throw new Error(`Failed to create farm: ${error.response.data}`);
-//   //   } else {
-//   //     throw new Error("Something went wrong while creating the farm");
-//   //   }
-//   // }
-// };
+export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
+  try {
+    const response = await api.post<ApiResponse<Farm>>("/CreateOrganization",farm);
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to create farm: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while creating the farm");
+    }
+  }
+};
 
 export const getFarm = async (farmId: number): Promise<Farm[]> => {
   try {
@@ -220,7 +209,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 export const createNote = async (note: Partial<Note>): Promise<Note> => {
   try {
     const response = await api.post<Note>("AddNote", note);
-    return response.data; // Assuming the API returns the newly created note
+    return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to create note: ${error.response.data}`);

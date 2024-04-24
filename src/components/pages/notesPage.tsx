@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { NoteType } from '../../models/noteType.interface';
 import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote } from "../../apiService";
+import { getNotes, deleteNote, createNote } from "../../apiService";
 import Loading from "./loading";
-import NotesDialog from "../organisms/notesDialog";
+import FormDialog from "../organisms/formDialog";
 import GenericConfirmDialog from '../organisms/genericConfirmDialog';
 
 interface DataItem {
@@ -20,6 +21,7 @@ interface ColumnConfig {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
@@ -73,7 +75,7 @@ const Notes: React.FC = () => {
         <ActionButtons
           onEdit={handleEditClick}
           onDelete={() => handleDeleteClick(item?.noteId)}
-          onSubmit={() => handleSubmit(item?.partyId)}
+          onSubmit={() => handleEditClick()}
         ></ActionButtons>
       ),
     },
@@ -91,8 +93,13 @@ const Notes: React.FC = () => {
 
   const handleEditClick = () => {};
 
-  const handleSubmit = (noteId: number) => {
-    console.log(`Submitted party with ID: ${noteId}`);
+  const handleOpenForm = () => setFormOpen(true);
+  const handleCloseForm = () => setFormOpen(false);
+
+  const handleFormSubmit = (formData) => {
+    createNote(formData);
+    console.log('Form Data:', formData);
+    handleCloseForm();
   };
 
   const handleDeleteClick = (noteId: number) => {
@@ -113,19 +120,44 @@ const Notes: React.FC = () => {
     setCurrentNoteId(null);
   };
 
+  const createNote = async (formData) => {
+    try {
+      await createNote(formData);
+    } catch (error) {
+      console.error('Failed to create note:', error);
+    }
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
+  };
+  
   return (
     <>
-      <Grid xs={12} sx={{ mb: 1 }}>
-        <NotesDialog isEdit={false}></NotesDialog>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            onClick={handleOpenForm}
+            color="primary">
+              Add Note
+          </Button>
+          <FormDialog
+            isOpen={formOpen}
+            onClose={handleCloseForm}
+            onSubmit={handleFormSubmit}
+            title="Add New Note"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <DynamicTable data={notes} columns={myColumns} />
+          <GenericConfirmDialog
+            open={confirmOpen}
+            onCancel={handleCancel}
+            onConfirm={confirmDelete}
+            title="Confirm Deletion"
+            content="Are you sure you want to delete this note?"
+          />
+        </Grid>
       </Grid>
-      <DynamicTable data={notes} columns={myColumns}></DynamicTable>
-      <GenericConfirmDialog
-        open={confirmOpen}
-        onCancel={handleCancel}
-        onConfirm={confirmDelete}
-        title="Confirm Deletion"
-        content="Are you sure you want to delete this note?"
-      />
     </>
   );
 };
