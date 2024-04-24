@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { NoteType } from '../../models/noteType.interface';
 import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
@@ -93,48 +92,54 @@ const Notes: React.FC = () => {
   };
 
   const handleEditClick = (note) => {
-    setSelectedNote(note);
     setFormOpen(true);
+    setSelectedNote(note);
   };
 
   const handleOpenForm = () => {
-    setSelectedNote(null); 
     setFormOpen(true);
+    setSelectedNote(null); 
   };
   
   const handleCloseForm = () => {
-    setSelectedNote(null);
     setFormOpen(false);
+    setSelectedNote(null);
   };
 
   const exampleNoteData = {
     noteTypeId: '2',  // Assuming this is a string ID
-    title: 'Fix HTTP verbs',
+    noteId: '21',  // Assuming this is a string ID
+    title: 'tgggggggggggggggggggggggggggggggggfh',
     partyId: '203',  // Assuming party ID is a string
-    location: 'Hoedspruit Farms',
-    description: 'Update methods to use correct verbs',
+    location: 'Ho',
+    description: 'Update ts',
     property: { Color: 'red' },  // Example of a JSON property
     azureUserId: 'fd78de01-3de4-4cd7-8080-27e9aa6b6008'  // Azure User ID
   };
 
   const handleFormSubmit = async (formData) => {
-    if (selectedNote && currentNoteId) {
+    console.log("trying");
+    if (selectedNote) {
+    console.log("update");
+
       try {
-        const updatedNote = await updateNote(formData);
-        console.log('Note updated:', updatedNote);
-        setNotes(notes.map(note => note.id === updatedNote.id ? updatedNote : note));
+        const updatedNote = await updateNote(exampleNoteData);
+        setNotes(notes.map(note => note.noteId === updatedNote.details ? updatedNote : note));
       } catch (error) {
         console.error('Error updating note:', error);
       }
     } else {
+    console.log("add");
+
       try {
-        const newNote = await createNote(formData);
-        console.log('Note created:', newNote);
+        const newNote = await createNote(exampleNoteData);
         setNotes([...notes, newNote]);
       } catch (error) {
         console.error('Error creating note:', error);
       }
     }
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
     handleCloseForm(); 
   };
   
@@ -152,16 +157,6 @@ const Notes: React.FC = () => {
       } catch (error) {
         console.error('Failed to delete note:', error);
       }
-    }
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
-  };
-
-  const createNewNote = async (formData) => {
-    try {
-      await createNote(formData);
-    } catch (error) {
-      console.error('Failed to create note:', error);
     }
     setConfirmOpen(false);
     setCurrentNoteId(null);

@@ -156,13 +156,13 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
 
   const onSave = async (data: Note) => {
     try {
-      console.log(data);
+      // console.log(data);
 
-      const response = await createNote(data);
-      console.log(response.message);
-      console.log("data note interface", data);
+      // const response = await createNote(data);
+      // console.log(response.message);
+      // console.log("data note interface", data);
 
-      const responseData = await response.json();
+      // const responseData = await response.json();
 
       // if (!response.ok) {
       //   if (responseData.errors) {

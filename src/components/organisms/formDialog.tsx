@@ -106,7 +106,12 @@ const FormDialog: React.FC<FormDialogProps> = ({
         >
           <CloseIcon />
         </IconButton>
-        <form onSubmit={handleSubmit((data) => { onSubmit(data); onClose(); reset(); })}>
+        <form onSubmit={handleSubmit((data) => {
+  console.log("Form data on submit:", data);
+  onSubmit(data);
+  onClose();
+  reset();
+})}>
           <DialogContent dividers>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -117,20 +122,30 @@ const FormDialog: React.FC<FormDialogProps> = ({
                     <TextBox {...field} label="Title" error={!!errors.title} helperText={errors.title?.message} />
                   )}
                 />
-                <TextField
-                  select
-                  label="Note Type"
-                  onChange={handleNoteTypeChange}
-                  value={selectedNoteType}
-                  fullWidth
-                  margin="dense"
-                >
-                  {noteTypes.map((type) => (
-                    <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
-                      {type.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
+               <Controller
+                name="noteType"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    label="Note Type"
+                    fullWidth
+                    margin="dense"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setSelectedNoteType(e.target.value as string); 
+                    }}
+                    value={field.value}
+                  >
+                    {noteTypes.map((type) => (
+                      <MenuItem key={type.noteTypeId} value={type.noteTypeId}>
+                        {type.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
                 <Controller
                   name="location"
                   control={control}
