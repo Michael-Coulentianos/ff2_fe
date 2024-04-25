@@ -20,6 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import TextBox from "../atom/textBox";
 import { NoteType } from "../../models/noteType.interface";
 import { getNoteTypes } from "../../apiService";
+import MapComponent from "./locationMap";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -152,9 +153,8 @@ const NotesDialog: React.FC<FormDialogProps> = ({
                 <Controller
                   name="location"
                   control={control}
-                  render={({ field }) => (
-                    <TextBox
-                      {...field}
+                  render={() => (
+                    <MapComponent
                       label="Location"
                       error={!!errors.location}
                       helperText={errors.location?.message}
