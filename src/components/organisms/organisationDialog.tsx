@@ -67,44 +67,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     resolver: yupResolver(validationSchema),
   });
 
-  // const [activeOrg, setActiveOrg] = useState<Organization>({
-  //   name: activeOrg ? activeOrg.name : "",
-  //   vatNumber: activeOrg ? activeOrg.name : "",
-  //   registrationNumber: activeOrg ? activeOrg.name : "",
-  //   emailAddress: activeOrg ? activeOrg.name : "",
-  //   contactNumber: activeOrg ? activeOrg.name : "",
-  //   fullName: activeOrg ? activeOrg.name : "",
-  //   addressLine1: activeOrg ? activeOrg.name : "",
-  //   addressLine2: activeOrg ? activeOrg.name : "",
-  //   city: activeOrg ? activeOrg.name : "",
-  //   code: activeOrg ? activeOrg.name : "",
-  // });
-
-  // useEffect(() => {
-  //   if (activeAccount) {
-  //     setUserProfile((prevProfile) => ({
-  //       ...prevProfile,
-  //       AzureUserId: activeAccount.localAccountId,
-  //     }));
-  //   }
-  // }, []);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setUserProfile({
-  //     ...userProfile,
-  //     [event.target.name]: event.target.value,
-  //   });
-  };
-
-  // const handleSubmit = async (event: React.FormEvent) => {
-  //   event.preventDefault();
-  //   try {
-  //     const response = await updateUserProfile(userProfile);
-  //     console.log(response.data);
-  //   } catch (error: any) {
-  //     throw new Error(error.response.data);
-  //   }
-  // };
   const onSubmit = async (data) => {
     try {
       const response = await createOrganization(data);
@@ -194,7 +156,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Organization Name"
                         error={!!errors.orgName}
                         helperText={errors.orgName?.message}
@@ -208,7 +169,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="VAT Number"
                         error={!!errors.vatNumber}
                         helperText={errors.vatNumber?.message}
@@ -222,7 +182,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Registration Number"
                         error={!!errors.registrationNumber}
                         helperText={errors.registrationNumber?.message}
@@ -236,7 +195,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Email Address"
                         error={!!errors?.emailAddress}
                         helperText={errors?.emailAddress?.message}
@@ -250,7 +208,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Contact Number"
                         error={!!errors?.contactNumber}
                         helperText={errors?.contactNumber?.message}
@@ -266,7 +223,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Full Name"
                         error={!!errors?.fullName}
                         helperText={errors?.fullName?.message}
@@ -281,7 +237,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Address Line 1"
                         error={!!errors?.addressLine1}
                         helperText={errors?.addressLine1?.message}
@@ -296,7 +251,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Address Line 2"
                         error={!!errors?.addressLine2}
                         helperText={errors?.addressLine2?.message}
@@ -311,7 +265,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="City"
                         error={!!errors?.city}
                         helperText={errors?.city?.message}
@@ -326,7 +279,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     render={({ field }) => (
                       <TextBox
                         {...field}
-                        onChange={handleChange}
                         label="Code"
                         error={!!errors?.code}
                         helperText={errors?.code?.message}
