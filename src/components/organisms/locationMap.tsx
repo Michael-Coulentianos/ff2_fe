@@ -49,6 +49,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         onChange={undefined}
         error={error}
         helperText={helperText}
+        disabled
       ></TextBox>
     </>
   );
