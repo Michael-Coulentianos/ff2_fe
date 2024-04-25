@@ -114,27 +114,21 @@ export const deleteOrganization = async (
   }
 };
 
-export const getOrganizationById = async (OrganizationId: number): Promise<Organization[]> => {
-  try {
-    const config = {
-      headers: {
-        "x-OrganizationId": OrganizationId
-      }
-    };
+export const getOrganizationById = async (
+  OrganizationId: number
+): Promise<Organization[]> => {
+  const response = await api.get<ApiResponse<Organization[]>>(
+    "OrganizationById",
+    {
+      headers: { "x-OrganizationId": OrganizationId },
+    }
+  );
 
-    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById");
-    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
-      throw new Error(`API call unsuccessful: ${response.data.message}`);
-    }
-    
-    return response.data.details;
-  } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to retrieve organization: ${error.response.data.message || error.message}`);
-    } else {
-      throw new Error('Something went wrong while retrieving organization');
-    }
+  if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+    throw new Error(`API call unsuccessful: ${response.data.message}`);
   }
+
+  return response.data.details;
 };
 
 //Farm CRUD APIs

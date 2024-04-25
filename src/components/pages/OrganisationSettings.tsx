@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizations } from "../../apiService";
+import { getOrganizationById, getOrganizations } from "../../apiService";
 import Loading from "./loading";
 import { Organization } from "../../models/organization.interface";
 
@@ -49,6 +49,16 @@ const OrganizationSettings: React.FC = () => {
   const handleSubmit = (id: string) => {
     console.log(`Submitted org with ID: ${id}`);
     setSelectedId(id);
+  };
+
+  const fetchOrgById = async (id: number) => {
+    console.log(id);
+    try {
+      const res = await getOrganizationById(id);
+      console.log(res);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
 
   const handleEdit = (id: string) => {
@@ -129,8 +139,8 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "action",
       renderCell: (org) => (
         <ActionButtons
-          onEdit={() => handleEdit(org.id)}
-          onDelete={() => handleDelete(org.id)}
+          onEdit={() => fetchOrgById(org.organizationId)}
+          onDelete={() => handleDelete(org.organizationId)}
           onSubmit={() => handleCreateOrganization}
         ></ActionButtons>
       ),
