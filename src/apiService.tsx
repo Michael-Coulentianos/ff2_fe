@@ -15,6 +15,10 @@ const api = axios.create({
   },
 });
 
+// const newFarmData: Omit<Farm, "id"> = {
+//   organizationId: 6
+// };
+
 export const updateUserProfile = async (userProfile: UserProfile) => {
   try {
     const response = await api.put("/UpdateUserProfile", userProfile);
@@ -23,7 +27,6 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
     throw new Error(error.response.data);
   }
 };
-
 export const createOrganization = async (organization: Organization) => {
   try {
     const response = await api.post("/CreateOrganization", organization);
@@ -33,43 +36,33 @@ export const createOrganization = async (organization: Organization) => {
   }
 };
 
-export const getOrganizations = async () => {
+//Organisation CRUD APIs
+export const createOrganization2 = async (organization: Partial<Organization>): Promise<Organization> => {
   try {
-    const response = await api.get("Organizations", {});
-    return response.data;
+    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization",organization);
+    return response.data.details;
   } catch (error: any) {
-    throw new Error(error.response.data);
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to create organization: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while creating the organization");
+    }
   }
 };
 
-//Organisation CRUD APIs
-// export const createOrganisation = async (note: Partial<Organization>): Promise<Organization> => {
-//   try {
-//     const response = await api.post<Organization>(
-//       "/CreateOrganization",
-//       newOrgData
-//     );
-//     return response.data;
-//   } catch (error: any) {
-//     if (error.response && error.response.data) {
-//       throw new Error(`Failed to create organization: ${error.response.data}`);
-//     } else {
-//       throw new Error("Something went wrong while creating the organization");
-//     }
-//   }
-// };
-
-export const getOrganisations = async (): Promise<Organization[]> => {
+export const getOrganizations = async (): Promise<Organization[]> => {
   try {
-    const response = await api.get<Organization[]>("Organizations");
-    return response.data;
+    const response = await api.get<ApiResponse<Organization[]>>("Organizations");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(
-        `Failed to retrieve organizations: ${error.response.data}`
-      );
+      throw new Error(`Failed to retrieve organizations: ${error.response.data.message || error.message}`);
     } else {
-      throw new Error("Something went wrong while retrieving organizations");
+      throw new Error('Something went wrong while retrieving organizations');
     }
   }
 };
@@ -114,40 +107,42 @@ export const deleteOrganization = async (
   }
 };
 
-export const getOrganizationById = async (
-  OrganizationId: number
-): Promise<Organization[]> => {
-  const response = await api.get<ApiResponse<Organization[]>>(
-    "OrganizationById",
-    {
-      headers: { "x-OrganizationId": OrganizationId },
+export const getOrganizationById = async (OrganizationId: number): Promise<Organization[]> => {
+  try {
+    const config = {
+      headers: {
+        "x-OrganizationId": OrganizationId
+      }
+    };
+
+    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById", config);
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
-  );
-
-  if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
-    throw new Error(`API call unsuccessful: ${response.data.message}`);
+    
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to retrieve organization: ${error.response.data.message || error.message}`);
+    } else {
+      throw new Error('Something went wrong while retrieving organization');
+    }
   }
-
-  return response.data.details;
 };
 
 //Farm CRUD APIs
-// export const createFarm = async (): Promise<Farm> => {
-//   // const newFarmData: Omit<Farm, "id"> = {
-//   //   organizationId: 6
-//   // };
-
-//   // try {
-//   //   const response = await api.post<Farm>("/CreateFarm", newFarmData);
-//   //   return response.data;
-//   // } catch (error: any) {
-//   //   if (error.response && error.response.data) {
-//   //     throw new Error(`Failed to create farm: ${error.response.data}`);
-//   //   } else {
-//   //     throw new Error("Something went wrong while creating the farm");
-//   //   }
-//   // }
-// };
+export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
+  try {
+    const response = await api.post<ApiResponse<Farm>>("/CreateOrganization",farm);
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to create farm: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while creating the farm");
+    }
+  }
+};
 
 export const getFarm = async (farmId: number): Promise<Farm[]> => {
   try {
@@ -211,16 +206,54 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 };
 
 //Note CRUD APIs
-export const createNote = async (note: Partial<Note>): Promise<Note> => {
+export const createNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+  const formData = new FormData();
+  formData.append('NoteTypeId', note.noteTypeId ?? '');
+  formData.append('Title', note.title ?? '');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('Location', note.location ?? '');
+  formData.append('Description', note.description ?? '');
+  
+  if (note.property) {
+    formData.append('Property', JSON.stringify(note.property));
+  }
+  if (note.azureUserId) {
+    formData.append('AzureUserId', note.azureUserId);
+  }
+
   try {
-    const response = await api.post<Note>("AddNote", note);
-    return response.data; // Assuming the API returns the newly created note
-  } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to create note: ${error.response.data}`);
-    } else {
-      throw new Error('Something went wrong while creating the note');
+    const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
+      method: 'POST',
+      headers: {
+        'x-api-key': '7E80B3AB-A941-4C36-BA76-6ECA579F3CCB',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'User-Agent': 'YourAppNameHere'
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+
+    const result: ApiResponse<string> = await response.json();
+    const details = JSON.parse(result.details);
+    const matches = details.match(/NoteTypeId = (\d+)/);
+
+    if (!matches || matches.length < 2) {
+      throw new Error("NoteTypeId not found in response details.");
+    }
+    else{
+      result.details = matches[1];
+    }
+
+    console.log('Update successful:', result);
+    return result;
+  } catch (error: any) {
+    console.error('Error during note update:', error);
+    throw new Error(`Error updating note: ${error.message || 'Unknown error'}`);
   }
 };
 
@@ -243,7 +276,7 @@ export const getNotes = async (): Promise<Note[]> => {
   }
 };
 
-export const getNoteById = async (noteId: number): Promise<Note[]> => {
+export const getNoteById = async (noteId: number): Promise<Note> => {
   try {
     const config = {
       headers: {
@@ -251,7 +284,7 @@ export const getNoteById = async (noteId: number): Promise<Note[]> => {
       }
     };
 
-      const response = await api.get<ApiResponse<Note[]>>("Notes", config);
+      const response = await api.get<ApiResponse<Note>>("NoteById", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -268,18 +301,47 @@ export const getNoteById = async (noteId: number): Promise<Note[]> => {
   }
 };
 
-export const updateNote = async (
-  noteChanges: Partial<Note> & { id: number }
-): Promise<Note> => {
+export const updateNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+  const formData = new FormData();
+  formData.append('NoteId', note.noteId ?? '');
+  formData.append('NoteTypeId', note.noteTypeId ?? '');
+  formData.append('Title', note.title ?? '');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('Location', note.location ?? '');
+  formData.append('Description', note.description ?? '');
+  
+  if (note.property) {
+    formData.append('Property', JSON.stringify(note.property));
+  }
+  if (note.azureUserId) {
+    formData.append('AzureUserId', note.azureUserId);
+  }
+
   try {
-    const response = await api.put<Note>("UpdateNote", noteChanges);
-    return response.data;
-  } catch (error: any) {
-    if (error.response && error.response.data) {
-      throw new Error(`Failed to update note: ${error.response.data}`);
-    } else {
-      throw new Error("Something went wrong while updating the note");
+    const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/UpdateNote', {
+      method: 'PUT',
+      headers: {
+        'x-api-key': '7E80B3AB-A941-4C36-BA76-6ECA579F3CCB',
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        'User-Agent': 'YourAppNameHere'
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+
+    const result: ApiResponse<string> = await response.json();
+    result.details = note.noteId ?? '';
+
+    console.log('Update successful:', result);
+    return result;
+  } catch (error: any) {
+    console.error('Error during note update:', error);
+    throw new Error(`Error updating note: ${error.message || 'Unknown error'}`);
   }
 };
 
@@ -310,7 +372,6 @@ export const deleteNote = async (noteId: number): Promise<void> => {
     }
   }
 };
-
 
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {

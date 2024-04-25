@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote, getNoteById } from "../../apiService";
+import { getNotes, deleteNote, createNote, updateNote, getNoteById } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -28,9 +28,11 @@ interface ColumnConfig {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
+  const [selectedNote, setSelectedNote] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -47,7 +49,6 @@ const Notes: React.FC = () => {
 
     setIsLoading(false);
   }, []);
-  const handleEditClick = () => {};
 
   const fetchNoteById = async (id: number) => {
     console.log(id);
@@ -89,9 +90,9 @@ const Notes: React.FC = () => {
       dataKey: "actionBtns",
       renderCell: (item) => (
         <ActionButtons
-          onEdit={() => fetchNoteById(item?.noteId)}
+          onEdit={() => handleEditClick(item?.noteId)}
           onDelete={() => handleDeleteClick(item?.noteId)}
-          onSubmit={() => handleSubmit(item?.noteId)}
+          onSubmit={() => handleFormSubmit(item?.noteId)}
         ></ActionButtons>
       ),
     },
@@ -107,9 +108,53 @@ const Notes: React.FC = () => {
     setCurrentNoteId(null);
   };
 
-  const handleSubmit = (noteId: number) => {
-    console.log(`Submitted party with ID: ${noteId}`);
+  const handleEditClick = (note) => {
+    setFormOpen(true);
+    setSelectedNote(note);
   };
+
+  const handleOpenForm = () => {
+    setFormOpen(true);
+    setSelectedNote(null); 
+  };
+  
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setSelectedNote(null);
+  };
+
+  const exampleNoteData = {
+    noteTypeId: '2',  // Assuming this is a string ID
+    noteId: '21',  // Assuming this is a string ID
+    title: 'tgggggggggggggggggggggggggggggggggfh',
+    partyId: '203',  // Assuming party ID is a string
+    location: 'Ho',
+    description: 'Update ts',
+    property: { Color: 'red' },  // Example of a JSON property
+    azureUserId: 'fd78de01-3de4-4cd7-8080-27e9aa6b6008'  // Azure User ID
+  };
+
+  const handleFormSubmit = async (formData) => {
+    if (selectedNote) {
+      try {
+        const updatedNote = await updateNote(exampleNoteData);
+        setNotes(notes.map(note => note.noteId === updatedNote.details ? updatedNote : note));
+      } catch (error) {
+        console.error('Error updating note:', error);
+      }
+    } else {
+      try {
+        const newNote = await createNote(exampleNoteData);
+        setNotes([...notes, newNote]);
+      } catch (error) {
+        console.error('Error creating note:', error);
+      }
+    }
+    setConfirmOpen(false);
+    setCurrentNoteId(null);
+    handleCloseForm(); 
+  };
+  
 
   const handleDeleteClick = (noteId: number) => {
     setCurrentNoteId(noteId);
@@ -130,20 +175,35 @@ const Notes: React.FC = () => {
     setConfirmOpen(false);
     setCurrentNoteId(null);
   };
-
+  
   return (
     <>
-      <Grid xs={12} sx={{ mb: 1 }}>
-        <NotesDialog isEdit={false}></NotesDialog>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Button
+            variant="contained"
+            onClick={handleOpenForm}
+            color="primary">
+              Add Note
+          </Button>
+          <NotesDialog
+            isOpen={formOpen}
+            onClose={handleCloseForm}
+            onSubmit={handleFormSubmit}
+            formData={selectedNote}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <DynamicTable data={notes} columns={myColumns} />
+          <GenericConfirmDialog
+            open={confirmOpen}
+            onCancel={handleCancel}
+            onConfirm={confirmDelete}
+            title="Confirm Deletion"
+            content="Are you sure you want to delete this note?"
+          />
+        </Grid>
       </Grid>
-      <DynamicTable data={notes} columns={myColumns}></DynamicTable>
-      <GenericConfirmDialog
-        open={confirmOpen}
-        onCancel={handleCancel}
-        onConfirm={confirmDelete}
-        title="Confirm Deletion"
-        content="Are you sure you want to delete this note?"
-      />
     </>
   );
 };

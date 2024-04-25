@@ -1,5 +1,4 @@
 import { TextField } from "@mui/material";
-import { error } from "console";
 
 interface TextBoxProps {
   label: string;
@@ -7,6 +6,8 @@ interface TextBoxProps {
   onChange: any;
   disabled?: boolean;
   helperText?: any;
+  rows?: number;
+  multiline?: boolean;
   error?: boolean;
 }
 
@@ -15,7 +16,9 @@ const TextBox: React.FC<TextBoxProps> = ({
   value,
   onChange,
   disabled,
+  rows,
   helperText,
+  multiline,
   error,
 }) => (
   <TextField
@@ -29,6 +32,9 @@ const TextBox: React.FC<TextBoxProps> = ({
     margin="dense"
     error={error}
     helperText={helperText}
+    multiline={multiline || !!rows}
+    rows={rows} 
   />
 );
+
 export default TextBox;

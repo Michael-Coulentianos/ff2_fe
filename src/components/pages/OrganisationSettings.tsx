@@ -29,7 +29,7 @@ const OrganizationSettings: React.FC = () => {
     const fetchOrganizations = async () => {
       try {
         const data = await getOrganizations();
-        setOrganizations(data.details);
+        setOrganizations(data);
       } catch (error: any) {
         console.error("Error fetching organizations:", error.message);
       }
