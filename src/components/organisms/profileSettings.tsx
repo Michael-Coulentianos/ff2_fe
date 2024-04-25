@@ -54,7 +54,7 @@ export const UserProfileForm: React.FC = () => {
         AzureUserId: activeAccount.localAccountId,
       }));
     }
-  }, [activeAccount]);
+  }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserProfile({

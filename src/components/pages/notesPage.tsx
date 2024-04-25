@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
+import {
+  Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote, createNote, updateNote, getNoteById } from "../../apiService";
+import { getNotes, deleteNote, createNote, updateNote, getNoteById, getNoteById } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
-import GenericConfirmDialog from '../organisms/genericConfirmDialog';
+import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 
 interface DataItem {
   id: string;
@@ -41,7 +49,17 @@ const Notes: React.FC = () => {
 
     setIsLoading(false);
   }, []);
+  const handleEditClick = () => {};
 
+  const fetchNoteById = async (id: number) => {
+    console.log(id);
+    try {
+      const res = await getNoteById(id);
+      console.log(res);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   const myColumns: ColumnConfig[] = [
     {
       label: "Owner",
@@ -73,9 +91,9 @@ const Notes: React.FC = () => {
       dataKey: "actionBtns",
       renderCell: (item) => (
         <ActionButtons
-          onEdit={() => handleEditClick(item)}
+          onEdit={() => fetchNoteById(item?.noteId)}
           onDelete={() => handleDeleteClick(item?.noteId)}
-          onSubmit={() => null}
+          onSubmit={() => handleSubmit(item?.noteId)}
         ></ActionButtons>
       ),
     },
@@ -148,9 +166,11 @@ const Notes: React.FC = () => {
     if (currentNoteId !== null) {
       try {
         await deleteNote(currentNoteId);
-        setNotes(prevNotes => prevNotes.filter(note => note.noteId !== currentNoteId));
+        setNotes((prevNotes) =>
+          prevNotes.filter((note) => note.noteId !== currentNoteId)
+        );
       } catch (error) {
-        console.error('Failed to delete note:', error);
+        console.error("Failed to delete note:", error);
       }
     }
     setConfirmOpen(false);
