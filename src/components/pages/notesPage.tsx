@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote, createNote, updateNote, getNoteById, getNoteById } from "../../apiService";
+import { getNotes, deleteNote, createNote, updateNote, getNoteById } from "../../apiService";
 import Loading from "./loading";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -49,7 +49,6 @@ const Notes: React.FC = () => {
 
     setIsLoading(false);
   }, []);
-  const handleEditClick = () => {};
 
   const fetchNoteById = async (id: number) => {
     console.log(id);
@@ -91,9 +90,9 @@ const Notes: React.FC = () => {
       dataKey: "actionBtns",
       renderCell: (item) => (
         <ActionButtons
-          onEdit={() => fetchNoteById(item?.noteId)}
+          onEdit={() => handleEditClick(item?.noteId)}
           onDelete={() => handleDeleteClick(item?.noteId)}
-          onSubmit={() => handleSubmit(item?.noteId)}
+          onSubmit={() => handleFormSubmit(item?.noteId)}
         ></ActionButtons>
       ),
     },
