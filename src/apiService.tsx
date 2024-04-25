@@ -276,7 +276,7 @@ export const getNotes = async (): Promise<Note[]> => {
   }
 };
 
-export const getNoteById = async (noteId: number): Promise<Note[]> => {
+export const getNoteById = async (noteId: number): Promise<Note> => {
   try {
     const config = {
       headers: {
@@ -284,7 +284,7 @@ export const getNoteById = async (noteId: number): Promise<Note[]> => {
       }
     };
 
-      const response = await api.get<ApiResponse<Note[]>>("Notes", config);
+      const response = await api.get<ApiResponse<Note>>("NoteById", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -335,15 +335,7 @@ export const updateNote = async(note: Partial<Note>): Promise<ApiResponse<string
     }
 
     const result: ApiResponse<string> = await response.json();
-    const details = JSON.parse(result.details);
-    const matches = details.match(/NoteTypeId = (\d+)/);
-
-    if (!matches || matches.length < 2) {
-      throw new Error("NoteTypeId not found in response details.");
-    }
-    else{
-      result.details = matches[1];
-    }
+    result.details = note.noteId ?? '';
 
     console.log('Update successful:', result);
     return result;
@@ -380,7 +372,6 @@ export const deleteNote = async (noteId: number): Promise<void> => {
     }
   }
 };
-
 
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {

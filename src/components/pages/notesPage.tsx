@@ -118,10 +118,7 @@ const Notes: React.FC = () => {
   };
 
   const handleFormSubmit = async (formData) => {
-    console.log("trying");
     if (selectedNote) {
-    console.log("update");
-
       try {
         const updatedNote = await updateNote(exampleNoteData);
         setNotes(notes.map(note => note.noteId === updatedNote.details ? updatedNote : note));
@@ -129,8 +126,6 @@ const Notes: React.FC = () => {
         console.error('Error updating note:', error);
       }
     } else {
-    console.log("add");
-
       try {
         const newNote = await createNote(exampleNoteData);
         setNotes([...notes, newNote]);
