@@ -4,7 +4,7 @@ import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import { getNotes, deleteNote, createNote, updateNote, getNoteById } from "../../apiService";
 import Loading from "./loading";
-import FormDialog from "../organisms/formDialog";
+import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from '../organisms/genericConfirmDialog';
 
 interface DataItem {
@@ -167,7 +167,7 @@ const Notes: React.FC = () => {
             color="primary">
               Add Note
           </Button>
-          <FormDialog
+          <NotesDialog
             isOpen={formOpen}
             onClose={handleCloseForm}
             onSubmit={handleFormSubmit}
