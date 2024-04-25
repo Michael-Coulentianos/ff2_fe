@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizationById, getOrganizations } from "../../apiService";
+import {
+  createOrganization2,
+  getOrganizationById,
+  getOrganizations,
+  updateOrganisation,
+} from "../../apiService";
 import Loading from "./loading";
-import { Organization } from "../../models/organization.interface";
 
 interface Dataorg {
   id: string;
@@ -21,7 +25,8 @@ interface ColumnConfig {
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -42,51 +47,61 @@ const OrganizationSettings: React.FC = () => {
     return <Loading></Loading>;
   }
 
-  const handleDelete = (id: string) => {
-    console.log(`Deleting org with ID: ${id}`);
-    setSelectedId(id);
-  };
-  const handleSubmit = (id: string) => {
-    console.log(`Submitted org with ID: ${id}`);
-    setSelectedId(id);
-  };
-
-  const fetchOrgById = async (id: number) => {
-    console.log(id);
+  const handleEdit = async (id) => {
     try {
-      const res = await getOrganizationById(id);
-      console.log(res);
+      const org = await getOrganizationById(id);
+      // setSelectedOrganization(org[0]);
+      setFormOpen(true);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const handleEdit = (id: string) => {
-    console.log(`Edit org with ID: ${id}`);
-    setSelectedId(id);
+  const handleDeleteClick = (noteId: number) => {
+    // setCurrentNoteId(noteId);
+    // setConfirmOpen(true);
   };
 
-  const handleCreateOrganization = async (organization: Organization) => {
-    try {
-      const response = await fetch("/api/CreateOrganization", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(organization),
-      });
+  const handleOpenForm = () => {
+    setFormOpen(true);
+    // setSelectedOrganization(null);
+  };
 
-      if (response.ok) {
-        console.log(
-          `Submitted org with Name: ${organization.contactPerson[0].fullName}`
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setSelectedOrganization(null);
+  };
+  const handleFormSubmit = async (formData) => {
+    console.log(formData, "formData");
+
+    if (selectedOrganization) {
+      console.log(selectedOrganization, "selectedOrganization");
+
+      try {
+        const updatedOrganization = await updateOrganisation(
+          formData?.organizationId,
+          formData
         );
-        console.log("Organization created successfully!");
-      } else {
-        console.error("Error creating organization:", response.statusText);
+        setOrganizations(
+          organizations.map((organization) =>
+            organization.organizationId === updatedOrganization
+              ? updatedOrganization
+              : organization
+          )
+        );
+      } catch (error) {
+        console.error("Error updating organization:", error);
       }
-    } catch (error) {
-      console.error("Error sending data:", error);
+    } else {
+      try {
+        console.log(formData, "new organization?");
+        const newOrganization = await createOrganization2(formData);
+        setOrganizations([...organizations, newOrganization]);
+      } catch (error) {
+        console.error("Error creating organization:", error);
+      }
     }
+    handleCloseForm();
   };
 
   const myColumns: ColumnConfig[] = [
@@ -139,9 +154,8 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "action",
       renderCell: (org) => (
         <ActionButtons
-          onEdit={() => fetchOrgById(org.organizationId)}
-          onDelete={() => handleDelete(org.organizationId)}
-          onSubmit={() => handleCreateOrganization}
+          onEdit={() => handleEdit(org.organizationId)}
+          onDelete={() => handleDeleteClick(org.organizationId)}
         ></ActionButtons>
       ),
     },
@@ -151,10 +165,14 @@ const OrganizationSettings: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <Grid xs={12} sx={{ mb: 1 }}>
+        <Button variant="contained" onClick={handleOpenForm} color="primary">
+          Add Organization
+        </Button>
         <OrganizationDialog
-          isEdit={false}
-          onSubmit={handleCreateOrganization}
-          onEdit={() => handleEdit}
+          isOpen={formOpen}
+          onClose={handleCloseForm}
+          onSubmit={handleFormSubmit}
+          formData={selectedOrganization}
         ></OrganizationDialog>
       </Grid>
       <Grid xs={12}>
