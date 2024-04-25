@@ -38,6 +38,7 @@ const validationSchema = yup.object({
   noteType: yup.string().required("Note type is required"),
   riskPercentage: yup.string().required("Note type is required"),
   infectionType: yup.string().required("Note type is required"),
+  subType: yup.string().required("Note type is required"),
 });
 
 interface FormDialogProps {
@@ -59,6 +60,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
@@ -92,7 +94,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
       reset(formData);
     }
   }, [formData, isOpen, reset]);
-
+  const watchNoteType = watch("noteType");
   return (
     <Container>
       <MuiDialog onClose={onClose} open={isOpen}>
@@ -150,6 +152,79 @@ const NotesDialog: React.FC<FormDialogProps> = ({
                     </TextField>
                   )}
                 />
+                {watchNoteType === "Damage" && (
+                  <Controller
+                    name="subType"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Sub-Type"
+                        fullWidth
+                        margin="dense"
+                        onChange={(e) => field.onChange(e.target.value)}
+                      >
+                        {["UV", "hail", "wind", "animal"].map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                )}
+                {watchNoteType === "Infection" && (
+                  <Controller
+                    name="subType"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Sub-Type"
+                        fullWidth
+                        margin="dense"
+                        onChange={(e) => field.onChange(e.target.value)}
+                      >
+                        {[
+                          "insects",
+                          "nematodes",
+                          "fungus",
+                          "pest",
+                          "bacteria",
+                          "virus",
+                        ].map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                )}
+                {watchNoteType === "Water" && (
+                  <Controller
+                    name="subType"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Sub-Type"
+                        fullWidth
+                        margin="dense"
+                        onChange={(e) => field.onChange(e.target.value)}
+                      >
+                        {["Logging", "Damage", "Shortage"].map((type) => (
+                          <MenuItem key={type} value={type}>
+                            {type}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                )}
                 <Controller
                   name="location"
                   control={control}
@@ -178,6 +253,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
               </Grid>
             </Grid>
           </DialogContent>
+
           <DialogActions>
             <Button
               variant="contained"
