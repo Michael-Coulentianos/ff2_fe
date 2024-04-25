@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Grid, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-import { getNotes, deleteNote, createNote, updateNote } from "../../apiService";
+import { getNotes, deleteNote, createNote, updateNote, getNoteById } from "../../apiService";
 import Loading from "./loading";
 import FormDialog from "../organisms/formDialog";
 import GenericConfirmDialog from '../organisms/genericConfirmDialog';
