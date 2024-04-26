@@ -94,7 +94,9 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
       reset(formData);
     }
   }, [formData, isOpen, reset]);
+  
   const watchNoteType = watch("noteType");
+
   return (
     <Container>
       <MuiDialog onClose={onClose} open={isOpen}>

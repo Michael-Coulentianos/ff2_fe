@@ -3,9 +3,12 @@ import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getOrganizationById } from "../../apiService";
+import { getOrganizations, deleteOrganization, createOrganization } from "../../apiService";
 import Loading from "./loading";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import { Organization } from "../../models/organization.interface";
+import { Address } from "../../models/address.interface";
+import { ContactPerson } from "../../models/contactPerson.interface";
 
 interface DataItem {
   id: string;
@@ -19,12 +22,13 @@ interface ColumnConfig {
 }
 
 const OrganizationSettings: React.FC = () => {
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState<DataItem | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +44,18 @@ const OrganizationSettings: React.FC = () => {
 
     fetchData();
   }, []);
+  
+  const handleOpenForm = () => {
+    setSelectedOrg(null);
+    setCurrentOrgId(null); 
+    setFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setSelectedOrg(null);
+    setCurrentOrgId(null);
+  };
 
   const handleEdit = (org) => {
     setCurrentOrgId(org.partyId);
@@ -48,11 +64,12 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const handleDelete = (org) => {
-    setConfirmOpen(true);
     setCurrentOrgId(org.partyId);
+    setSelectedOrg(org);
+    setFormOpen(true);
   };
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: Organization) => {
     setIsLoading(true);
     try {
       if (selectedOrg) {
@@ -64,10 +81,8 @@ const OrganizationSettings: React.FC = () => {
       console.error('Error submitting organization:', error);
     }
     setIsLoading(false);
-    setFormOpen(false);
     setConfirmOpen(false);
-    setCurrentOrgId(null);
-    setSelectedOrg(null);
+    handleCloseForm();
   };
 
   const handleConfirm = async () => {
@@ -80,8 +95,7 @@ const OrganizationSettings: React.FC = () => {
         console.error("Failed to delete organization:", error);
       }
       setConfirmOpen(false);
-      setCurrentOrgId(null);
-      setIsLoading(false);
+      handleCloseForm();
     }
   };
 
@@ -92,8 +106,8 @@ const OrganizationSettings: React.FC = () => {
       renderCell: (item) => <>{item.name}</>,
     },
     {
-      label: "Registration  number",
-      dataKey: "registrationNum",
+      label: "Registration number",
+      dataKey: "registrationNumber",
       renderCell: (item) => <>{item.registrationNumber}</>,
     },
     {
@@ -103,10 +117,10 @@ const OrganizationSettings: React.FC = () => {
     },
     {
       label: "Contact information",
-      dataKey: "contactInformation",
+      dataKey: "contactPerson",
       renderCell: (item) => (
         <>
-          {item.contactPerson.map((person) => (
+          {item.contactPerson.map((person: ContactPerson) => (
             <p key={person.contactPersonId}>
               {person.fullName}
               <p>Contact Number: {person.contactNumber}</p>
@@ -118,10 +132,10 @@ const OrganizationSettings: React.FC = () => {
     },
     {
       label: "Address",
-      dataKey: "address",
+      dataKey: "physicalAddress",
       renderCell: (item) => (
         <>
-          {item.physicalAddress.map((address) => (
+          {item.physicalAddress.map((address: Address) => (
             <p key={address.addressId}>
               {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
               {address.code}
@@ -146,10 +160,10 @@ const OrganizationSettings: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <Grid xs={12} sx={{ mb: 1 }}>
-        <Button variant="contained" onClick={() => setFormOpen(true)} color="primary">
+        <Button variant="contained" onClick={() => handleOpenForm()} color="primary">
           Add Organization
         </Button>
-        <OrganizationDialog isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} formData={selectedOrg} />
+        <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} />
       </Grid>
       <Grid xs={12}>
         <DynamicTable data={organizations} columns={myColumns} />

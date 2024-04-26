@@ -27,17 +27,9 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
     throw new Error(error.response.data);
   }
 };
-export const createOrganization = async (organization: Organization) => {
-  try {
-    const response = await api.post("/CreateOrganization", organization);
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response.data);
-  }
-};
 
 //Organisation CRUD APIs
-export const createOrganization2 = async (organization: Partial<Organization>): Promise<Organization> => {
+export const createOrganization = async (organization: Partial<Organization>): Promise<Organization> => {
   try {
     const response = await api.post<ApiResponse<Organization>>("/CreateOrganization",organization);
     return response.data.details;
