@@ -30,14 +30,14 @@ const validationSchema = yup.object({
   infectionType: yup.string().required("Note type is required"),
 });
 
-interface FormDialogProps {
+interface NotesDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData: any) => void;
   formData?: any;
 }
 
-const NotesDialog: React.FC<FormDialogProps> = ({
+const NotesDialog: React.FC<NotesDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,

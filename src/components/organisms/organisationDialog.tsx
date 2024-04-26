@@ -38,9 +38,10 @@ export const validationSchema = yup.object().shape({
 });
 
 interface OrganizationDialogProps {
-  isEdit: boolean;
-  onEdit: () => void;
-  onSubmit?: any;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: any) => void;
+  formData?: any;
 }
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
@@ -53,8 +54,10 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
-  isEdit,
-  onEdit,
+  isOpen,
+  onClose,
+  onSubmit,
+  formData
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -67,7 +70,7 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit2 = async (data) => {
     try {
       const response = await createOrganization(data);
       console.log(response.message);
@@ -94,24 +97,15 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     }
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
-  const handleEdit = () => {
-    setModalOpen(true);
-    onEdit();
-  };
-
   return (
     <>
-      {isEdit && (
+      {isOpen && (
         <IconButton onClick={handleEdit}>
           <EditIcon />
         </IconButton>
       )}
       <Container>
-        {!isEdit && (
+        {!isOpen && (
           <Button
             variant="contained"
             color="primary"
@@ -121,9 +115,8 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           </Button>
         )}
         <MuiDialog
-          onClose={handleCloseModal}
+          onClose={onClose} open={isOpen}
           aria-labelledby="customized-dialog-title"
-          open={modalOpen}
         >
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
             <Grid container direction="row">
@@ -134,7 +127,7 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           </DialogTitle>
           <IconButton
             aria-label="close"
-            onClick={handleCloseModal}
+            onClick={onClose}
             size="small"
             sx={{
               position: "absolute",

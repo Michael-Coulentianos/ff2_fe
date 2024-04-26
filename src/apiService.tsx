@@ -67,7 +67,7 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganisation = async (
+export const updateOrganization = async (
   organizationId: number,
   details: Partial<Organization>
 ): Promise<Organization> => {

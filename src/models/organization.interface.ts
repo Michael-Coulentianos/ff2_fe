@@ -17,6 +17,7 @@ interface Address {
 }
 
 export interface Organization {
+  id: string; 
   partyId: number;
   organizationId: number;
   partyIdentifier: string;
