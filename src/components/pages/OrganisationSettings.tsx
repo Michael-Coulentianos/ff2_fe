@@ -5,7 +5,6 @@ import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getOrganizationById} from "../../apiService";
 import Loading from "./loading";
-import { Organization } from "../../models/organization.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 
 interface DataItem {
@@ -45,12 +44,13 @@ const OrganizationSettings: React.FC = () => {
    * - handleSubmit: Sets the selected ID to the provided ID and logs the submission of an organization.
    */
 
-  const handleDelete = (id: number) => {
-    setCurrentOrgId(id);
+  const handleDelete = (org) => {
+    setConfirmOpen(true);
+    setCurrentOrgId(org.partyId);
   };
 
   const handleEdit = (org) => {
-    setCurrentOrgId(org.organizationId);
+    setCurrentOrgId(org.partyId);
     setSelectedOrg(org);
     setFormOpen(true);
   };
@@ -77,8 +77,9 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const handleOpenForm = () => {
-    setFormOpen(true);
     setCurrentOrgId(null); 
+    setSelectedOrg(null);
+    setFormOpen(true);
   };
   
   const handleCloseForm = () => {
@@ -96,8 +97,9 @@ const OrganizationSettings: React.FC = () => {
       try {
         await deleteOrganization(currentOrgId);
         setOrganizations((prevOrgs) =>
-          prevOrgs.filter((organization) => organization.organizationId !== currentOrgId)
+          prevOrgs.filter((organization) => organization.partyID !== currentOrgId)
         );
+        console.log("Organization with ID", currentOrgId, "was deleted.");
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
@@ -106,29 +108,6 @@ const OrganizationSettings: React.FC = () => {
     setCurrentOrgId(null);
   };
   
-  const handleFormSubmit = async (organization: Organization) => {
-    try {
-      const response = await fetch("/api/CreateOrganization", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(organization),
-      });
-
-      if (response.ok) {
-        console.log(
-          `Submitted org with Name: ${organization.contactPerson[0].fullName}`
-        );
-        console.log("Organization created successfully!");
-      } else {
-        console.error("Error creating organization:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error sending data:", error);
-    }
-  };
-
 /**
  * API functions to fetch organization data.
  * - fetchOrgById: Asynchronously retrieves an organization by its ID. Logs the ID and the fetched data,
@@ -155,28 +134,29 @@ const OrganizationSettings: React.FC = () => {
     }
   };
 
+
   const myColumns: ColumnConfig[] = [
     {
       label: "Company name",
       dataKey: "name",
-      renderCell: (org) => <>{org.name}</>,
+      renderCell: (item) => <>{item.name}</>,
     },
     {
       label: "Registration  number",
       dataKey: "registrationNum",
-      renderCell: (org) => <>{org.registrationNumber}</>,
+      renderCell: (item) => <>{item.registrationNumber}</>,
     },
     {
       label: "VAT number",
       dataKey: "VAT",
-      renderCell: (org) => <>{org.vatNumber}</>,
+      renderCell: (item) => <>{item.vatNumber}</>,
     },
     {
       label: "Contact information",
       dataKey: "contactInformation",
-      renderCell: (org) => (
+      renderCell: (item) => (
         <>
-          {org.contactPerson.map((person) => (
+          {item.contactPerson.map((person) => (
             <p key={person.contactPersonId}>
               {person.fullName}
               <p>Contact Number: {person.contactNumber}</p>
@@ -189,9 +169,9 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Address",
       dataKey: "address",
-      renderCell: (org) => (
+      renderCell: (item) => (
         <>
-          {org.physicalAddress.map((address) => (
+          {item.physicalAddress.map((address) => (
             <p key={address.addressId}>
               {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
               {address.code}
@@ -203,11 +183,11 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Action Buttons",
       dataKey: "action",
-      renderCell: (org) => (
+      renderCell: (item) => (
         <ActionButtons
-          onEdit={() => fetchOrgById(org.organizationId)}
-          onDelete={() => handleDelete(org.organizationId)}
-          onSubmit={() => handleCreateOrganization}
+          onEdit={() => handleEdit(item)}
+          onDelete={() => handleDelete(item)}
+          onSubmit={() => handleSubmit}
         ></ActionButtons>
       ),
     },
@@ -226,7 +206,7 @@ const OrganizationSettings: React.FC = () => {
         <OrganizationDialog
           isOpen={formOpen}
           onClose={handleCloseForm}
-          onSubmit={handleFormSubmit}
+          onSubmit={handleSubmit}
           formData={selectedOrg}
         ></OrganizationDialog>
       </Grid>

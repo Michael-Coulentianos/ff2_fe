@@ -90,19 +90,30 @@ export const updateOrganization = async (
   }
 };
 
-export const deleteOrganization = async (
-  organizationId: number
-): Promise<void> => {
+export const deleteOrganization = async (partyId: number): Promise<void> => {
   try {
-    const response = await api.delete<void>(
-      `/DeleteOrganization/${organizationId}`
-    );
-    return response.data;
+    const response = await api.delete(`RemoveOrganization`, {
+      data: {
+        PartyId: partyId,
+        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+      },
+    });
+
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`Deletion failed with message: ${response.data.message}`);
+    }
+
+    if (response.data.details) {
+      console.log('Deletion details:', response.data.details);
+    }
+
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(`Failed to delete organization: ${error.response.data}`);
+      throw new Error(`Failed to delete organization: ${error.response.data.error || error.response.data}`);
+    } else if (error.request) {
+      throw new Error('No response received during the deletion process');
     } else {
-      throw new Error("Something went wrong while deleting the organization");
+      throw new Error(`Error during the deletion process: ${error.message}`);
     }
   }
 };

@@ -1,15 +1,5 @@
-import React, { useState } from "react";
-import {
-  Container,
-  IconButton,
-  Grid,
-  styled,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Dialog,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Container, IconButton, Grid, styled, DialogTitle, DialogContent, DialogActions, Button, Dialog } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,6 +9,15 @@ import { createOrganization } from "../../apiService";
 import { Controller, useForm } from "react-hook-form";
 import { Organization } from "../../models/organization.interface";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+const MuiDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+}));
 
 export const validationSchema = yup.object().shape({
   orgName: yup.string().required("This field is required"),
@@ -44,22 +43,12 @@ interface OrganizationDialogProps {
   formData?: any;
 }
 
-const MuiDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
-
 const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
   formData
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
   const {
     control,
     handleSubmit,
@@ -70,50 +59,24 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit2 = async (data) => {
-    try {
-      const response = await createOrganization(data);
-      console.log(response.message);
-      console.log("data org interface", data);
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (responseData.errors) {
-          for (let key in responseData.errors) {
-            setError(response, {
-              type: "manual",
-              message: responseData.errors[key],
-            });
-          }
-        }
-        throw new Error("Failed to create org");
-      }
-      alert("org created successfully");
-      setModalOpen(false);
-      reset();
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
+  const resetFormFields = () => {
+    reset({
+      orgName: "",
+      vatNumber: "",
+      LegalEntityTypeId: "",
+      registrationNumber: "",
+      emailAddress: "",
+      contactNumber: "",
+      fullName: "",
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      code: "",
+    });
+  };  
 
   return (
-    <>
-      {isOpen && (
-        <IconButton onClick={handleEdit}>
-          <EditIcon />
-        </IconButton>
-      )}
       <Container>
-        {!isOpen && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setModalOpen(true)}
-          >
-            Add
-          </Button>
-        )}
         <MuiDialog
           onClose={onClose} open={isOpen}
           aria-labelledby="customized-dialog-title"
@@ -121,7 +84,7 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
             <Grid container direction="row">
               <Grid item xs={12}>
-                Organization Settings
+                {formData ? "Update Organization" : "Add Organization"}
               </Grid>
             </Grid>
           </DialogTitle>
@@ -138,7 +101,7 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
           >
             <CloseIcon />
           </IconButton>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit((data) => { onSubmit(data); onClose(); })}>
             <DialogContent dividers>
               <Grid container spacing={3}>
                 <Grid item xs={6}>
@@ -286,15 +249,13 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                 variant="contained"
                 color="primary"
                 type="submit"
-                startIcon={<SaveIcon />}
-              >
-                Add
+                startIcon={<SaveIcon />}>
+                {formData ? "Update" : "Save"}
               </Button>
             </DialogActions>
           </form>
         </MuiDialog>
       </Container>
-    </>
   );
 };
 
