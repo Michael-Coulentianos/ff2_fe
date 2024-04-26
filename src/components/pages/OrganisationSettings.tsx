@@ -3,7 +3,7 @@ import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getOrganizationById} from "../../apiService";
+import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getOrganizationById } from "../../apiService";
 import Loading from "./loading";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 
@@ -24,30 +24,22 @@ const OrganizationSettings: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState(null);
-
+  const [selectedOrg, setSelectedOrg] = useState<DataItem | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchOrganizations();
-    setIsLoading(false);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getOrganizations();
+        setOrganizations(data);
+      } catch (error) {
+        console.error("Error fetching organizations:", error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchData();
   }, []);
- 
-  if (isLoading) {
-    return <Loading></Loading>;
-  }
-
-  /**
-   * Handlers for editing, deleting, and submitting an organization.
-   * - handleEdit: Sets the selected ID to the provided ID and logs the edit action for an organization.
-   * - handleDelete: Sets the selected ID to the provided ID and logs the deletion of an organization.
-   * - handleSubmit: Sets the selected ID to the provided ID and logs the submission of an organization.
-   */
-
-  const handleDelete = (org) => {
-    setConfirmOpen(true);
-    setCurrentOrgId(org.partyId);
-  };
 
   const handleEdit = (org) => {
     setCurrentOrgId(org.partyId);
@@ -55,135 +47,43 @@ const OrganizationSettings: React.FC = () => {
     setFormOpen(true);
   };
 
-  const handleSubmit = async (formData) => {
-    if (selectedOrg) {
-      try {
-        // const updatedOrg = await updateOrganization(formData);
-        // setOrganizations(organizations.map(org => org.organizationId === updatedOrg ? updatedOrg : org));
-      } catch (error) {
-        console.error('Error updating organization:', error);
+  const handleDelete = (org) => {
+    setConfirmOpen(true);
+    setCurrentOrgId(org.partyId);
+  };
+
+  const handleSubmit = async (formData: any) => {
+    setIsLoading(true);
+    try {
+      if (selectedOrg) {
+        //await updateOrganization(formData);
+      } else {
+        await createOrganization(formData);
       }
-    } else {
-      try {
-        const newOrganization = await createOrganization(formData);
-        setOrganizations([...organizations, newOrganization]);
-      } catch (error) {
-        console.error('Error creating organization:', error);
-      }
+    } catch (error) {
+      console.error('Error submitting organization:', error);
     }
-    setConfirmOpen(false);
-    setCurrentOrgId(null);
-    handleCloseForm(); 
-  };
-
-  const handleOpenForm = () => {
-    setCurrentOrgId(null); 
-    setSelectedOrg(null);
-    setFormOpen(true);
-  };
-  
-  const handleCloseForm = () => {
+    setIsLoading(false);
     setFormOpen(false);
-    setCurrentOrgId(null);
-  };
-
-  const handleCancel = () => {
     setConfirmOpen(false);
     setCurrentOrgId(null);
+    setSelectedOrg(null);
   };
 
   const handleConfirm = async () => {
-    if (currentOrgId !== null) {
+    if (currentOrgId) {
+      setIsLoading(true);
       try {
         await deleteOrganization(currentOrgId);
-        setOrganizations((prevOrgs) =>
-          prevOrgs.filter((organization) => organization.partyID !== currentOrgId)
-        );
-        console.log("Organization with ID", currentOrgId, "was deleted.");
+        setOrganizations(organizations.filter(org => org.id !== currentOrgId));
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
-    }
-    setConfirmOpen(false);
-    setCurrentOrgId(null);
-  };
-  
-/**
- * API functions to fetch organization data.
- * - fetchOrgById: Asynchronously retrieves an organization by its ID. Logs the ID and the fetched data,
- *                 and handles errors by logging them to the console.
- * - fetchOrganizations: Asynchronously fetches all organizations, updates the state with the fetched data,
- *                       and handles errors by logging detailed error messages to the console.
- */
-  const fetchOrgById = async (id: number) => {
-    console.log(id);
-    try {
-      const res = await getOrganizationById(id);
-      console.log(res);
-  const handleEdit = async (id) => {
-    try {
-      const org = await getOrganizationById(id);
-      // setSelectedOrganization(org[0]);
-      setFormOpen(true);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      setConfirmOpen(false);
+      setCurrentOrgId(null);
+      setIsLoading(false);
     }
   };
-
-  const fetchOrganizations = async () => {
-    try {
-      const data = await getOrganizations();
-      setOrganizations(data);
-    } catch (error: any) {
-      console.error("Error fetching organizations:", error.message);
-    }
-  const handleDeleteClick = (noteId: number) => {
-    // setCurrentNoteId(noteId);
-    // setConfirmOpen(true);
-  };
-
-  const handleOpenForm = () => {
-    setFormOpen(true);
-    // setSelectedOrganization(null);
-  };
-
-  const handleCloseForm = () => {
-    setFormOpen(false);
-    setSelectedOrganization(null);
-  };
-  const handleFormSubmit = async (formData) => {
-    console.log(formData, "formData");
-
-    if (selectedOrganization) {
-      console.log(selectedOrganization, "selectedOrganization");
-
-      try {
-        const updatedOrganization = await updateOrganisation(
-          formData?.organizationId,
-          formData
-        );
-        setOrganizations(
-          organizations.map((organization) =>
-            organization.organizationId === updatedOrganization
-              ? updatedOrganization
-              : organization
-          )
-        );
-      } catch (error) {
-        console.error("Error updating organization:", error);
-      }
-    } else {
-      try {
-        console.log(formData, "new organization?");
-        const newOrganization = await createOrganization2(formData);
-        setOrganizations([...organizations, newOrganization]);
-      } catch (error) {
-        console.error("Error creating organization:", error);
-      }
-    }
-    handleCloseForm();
-  };
-
 
   const myColumns: ColumnConfig[] = [
     {
@@ -237,9 +137,6 @@ const OrganizationSettings: React.FC = () => {
         <ActionButtons
           onEdit={() => handleEdit(item)}
           onDelete={() => handleDelete(item)}
-          onSubmit={() => handleSubmit}
-          onEdit={() => handleEdit(org.organizationId)}
-          onDelete={() => handleDeleteClick(org.organizationId)}
         ></ActionButtons>
       ),
     },
@@ -249,28 +146,14 @@ const OrganizationSettings: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <Grid xs={12} sx={{ mb: 1 }}>
-        <Button
-          variant="contained"
-          onClick={handleOpenForm}
-          color="primary">
-            Add Organization
+        <Button variant="contained" onClick={() => setFormOpen(true)} color="primary">
+          Add Organization
         </Button>
-        <OrganizationDialog
-          isOpen={formOpen}
-          onClose={handleCloseForm}
-          onSubmit={handleSubmit}
-          formData={selectedOrg}
-        ></OrganizationDialog>
+        <OrganizationDialog isOpen={formOpen} onClose={() => setFormOpen(false)} onSubmit={handleSubmit} formData={selectedOrg} />
       </Grid>
       <Grid xs={12}>
-        <DynamicTable data={organizations} columns={myColumns}></DynamicTable>
-        <GenericConfirmDialog
-            open={confirmOpen}
-            onCancel={handleCancel}
-            onConfirm={handleConfirm}
-            title="Confirm Deletion"
-            content="Are you sure you want to delete this organization?"
-          />
+        <DynamicTable data={organizations} columns={myColumns} />
+        <GenericConfirmDialog open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirm} title="Confirm Deletion" content="Are you sure you want to delete this organization?" />
       </Grid>
     </>
   );
