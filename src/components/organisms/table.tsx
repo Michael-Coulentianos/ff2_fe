@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, Paper, Pagination } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, Paper, Pagination, makeStyles } from "@mui/material";
 
 interface TableData {
   id: string;
@@ -18,11 +18,13 @@ interface DynamicTableProps {
   rowsPerPage: number;
 }
 
+
 const DynamicTable: React.FC<DynamicTableProps> = ({ data, columns, rowsPerPage }) => {
   const [page, setPage] = React.useState(1);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+  
   return (
     <Container>
       <TableContainer component={Paper}>

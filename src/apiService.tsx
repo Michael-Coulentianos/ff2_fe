@@ -31,7 +31,11 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
 //Organisation CRUD APIs
 export const createOrganization = async (organization: Partial<Organization>): Promise<Organization> => {
   try {
-    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization",organization);
+    
+    console.log("formData", organization);
+    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization", organization);
+    console.log("response", response);
+
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
+import ExpandDetails from "../molecules/expandDetails";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations, deleteOrganization, createOrganization } from "../../apiService";
@@ -115,35 +116,18 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "VAT",
       renderCell: (item) => <>{item.vatNumber}</>,
     },
-    // {
-    //   label: "Contact information",
-    //   dataKey: "contactPerson",
-    //   renderCell: (item) => (
-    //     <>
-    //       {item.contactPerson.map((person: ContactPerson) => (
-    //         <p key={person.contactPersonId}>
-    //           {person.fullName}
-    //           <p>Contact Number: {person.contactNumber}</p>
-    //           <p>Email Address: {person.emailAddress}</p>
-    //         </p>
-    //       ))}
-    //     </>
-    //   ),
-    // },
-    // {
-    //   label: "Address",
-    //   dataKey: "physicalAddress",
-    //   renderCell: (item) => (
-    //     <>
-    //       {item.physicalAddress.map((address: Address) => (
-    //         <p key={address.addressId}>
-    //           {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
-    //           {address.code}
-    //         </p>
-    //       ))}
-    //     </>
-    //   ),
-    // },
+    {
+      label: "Contact Information",
+      dataKey: "contactPerson",
+      renderCell: (item) => <>
+        {item.contactPerson.map((person: ContactPerson) => (
+          <p key={person.contactPersonId}>
+            {person.fullName}
+            <p>Contact Number: {person.contactNumber}</p>
+            <p>Email Address: {person.emailAddress}</p>
+          </p>
+        ))}</>
+    },
     {
       label: "Action Buttons",
       dataKey: "action",
@@ -156,6 +140,30 @@ const OrganizationSettings: React.FC = () => {
     },
   ];
 
+     // {
+    //   label: "Contact Information",
+    //   dataKey: "contactPerson",
+    //   renderCell: (item) => (
+    //     <ExpandDetails
+    //       content={`Here's a random fact: ${item.id}`}
+    //       summary="Random Fact"
+    //     />
+    //   ),
+    // },
+    // {
+    //   label: "Address",
+    //   dataKey: "physicalAddress",
+    //   renderCell: (item) => (
+    //     <ExpandDetails content={item.physicalAddress[0]}>
+    //       {/* {item.physicalAddress.map((address: Address) => (
+    //         <p key={address.addressId}>
+    //           {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
+    //           {address.code}
+    //         </p>
+    //       ))} */}
+    //     </ExpandDetails>
+    //   ),
+    // },
   return (
     <>
       {isLoading && <Loading />}

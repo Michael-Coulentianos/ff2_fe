@@ -6,6 +6,7 @@ import * as yup from "yup";
 import TextBox from "../atom/textBox";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Organization } from '../../models/organization.interface';
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -32,8 +33,8 @@ const validationSchema = yup.object().shape({
 interface OrganizationProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: any) => void;
-  formData?: any;
+  onSubmit: (formData: Organization) => void;
+  formData?: Organization | null;
 }
 
 const OrganizationDialog: React.FC<OrganizationProps> = ({
@@ -52,13 +53,13 @@ const OrganizationDialog: React.FC<OrganizationProps> = ({
           orgName: formData.name || "",
           vatNumber: formData.vatNumber || "",
           registrationNumber: formData.registrationNumber || "",
-          emailAddress: formData.emailAddress || "",
-          contactNumber: formData.contactNumber || "",
-          fullName: formData.fullName || "",
-          addressLine1: formData.addressLine1 || "",
-          addressLine2: formData.addressLine2 || "",
-          city: formData.city || "",
-          code: formData.code || "",
+          emailAddress: formData.contactPerson[0].emailAddress || "",
+          contactNumber: formData.contactPerson[0].contactNumber || "",
+          fullName: formData.contactPerson[0].fullName || "",
+          addressLine1: formData.physicalAddress[0].addressLine1 || "",
+          addressLine2: formData.physicalAddress[0].addressLine2 || "",
+          city: formData.physicalAddress[0].city || "",
+          code: formData.physicalAddress[0].code || "",
         });
     }
     else{
