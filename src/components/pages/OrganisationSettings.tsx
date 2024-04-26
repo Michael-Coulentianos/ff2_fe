@@ -120,6 +120,11 @@ const OrganizationSettings: React.FC = () => {
     try {
       const res = await getOrganizationById(id);
       console.log(res);
+  const handleEdit = async (id) => {
+    try {
+      const org = await getOrganizationById(id);
+      // setSelectedOrganization(org[0]);
+      setFormOpen(true);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -132,6 +137,51 @@ const OrganizationSettings: React.FC = () => {
     } catch (error: any) {
       console.error("Error fetching organizations:", error.message);
     }
+  const handleDeleteClick = (noteId: number) => {
+    // setCurrentNoteId(noteId);
+    // setConfirmOpen(true);
+  };
+
+  const handleOpenForm = () => {
+    setFormOpen(true);
+    // setSelectedOrganization(null);
+  };
+
+  const handleCloseForm = () => {
+    setFormOpen(false);
+    setSelectedOrganization(null);
+  };
+  const handleFormSubmit = async (formData) => {
+    console.log(formData, "formData");
+
+    if (selectedOrganization) {
+      console.log(selectedOrganization, "selectedOrganization");
+
+      try {
+        const updatedOrganization = await updateOrganisation(
+          formData?.organizationId,
+          formData
+        );
+        setOrganizations(
+          organizations.map((organization) =>
+            organization.organizationId === updatedOrganization
+              ? updatedOrganization
+              : organization
+          )
+        );
+      } catch (error) {
+        console.error("Error updating organization:", error);
+      }
+    } else {
+      try {
+        console.log(formData, "new organization?");
+        const newOrganization = await createOrganization2(formData);
+        setOrganizations([...organizations, newOrganization]);
+      } catch (error) {
+        console.error("Error creating organization:", error);
+      }
+    }
+    handleCloseForm();
   };
 
 
@@ -188,6 +238,8 @@ const OrganizationSettings: React.FC = () => {
           onEdit={() => handleEdit(item)}
           onDelete={() => handleDelete(item)}
           onSubmit={() => handleSubmit}
+          onEdit={() => handleEdit(org.organizationId)}
+          onDelete={() => handleDeleteClick(org.organizationId)}
         ></ActionButtons>
       ),
     },

@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Container, IconButton, Grid, styled, DialogTitle, DialogContent, DialogActions, Button, Dialog } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import * as yup from "yup";
 import TextBox from "../atom/textBox";
-import { createOrganization } from "../../apiService";
 import { Controller, useForm } from "react-hook-form";
-import { Organization } from "../../models/organization.interface";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
@@ -53,8 +50,6 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
     control,
     handleSubmit,
     formState: { errors },
-    setError,
-    reset,
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
@@ -186,47 +181,47 @@ const OrganizationDialog: React.FC<OrganizationDialogProps> = ({
                     )}
                   />
 
-                  <Controller
-                    name="addressLine1"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Address Line 1"
-                        error={!!errors?.addressLine1}
-                        helperText={errors?.addressLine1?.message}
-                      />
-                    )}
-                  />
+                <Controller
+                  name="addressLine1"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="Address Line 1"
+                      error={!!errors?.addressLine1}
+                      helperText={errors?.addressLine1?.message}
+                    />
+                  )}
+                />
 
-                  <Controller
-                    name="addressLine2"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="Address Line 2"
-                        error={!!errors?.addressLine2}
-                        helperText={errors?.addressLine2?.message}
-                      />
-                    )}
-                  />
+                <Controller
+                  name="addressLine2"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="Address Line 2"
+                      error={!!errors?.addressLine2}
+                      helperText={errors?.addressLine2?.message}
+                    />
+                  )}
+                />
 
-                  <Controller
-                    name="city"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <TextBox
-                        {...field}
-                        label="City"
-                        error={!!errors?.city}
-                        helperText={errors?.city?.message}
-                      />
-                    )}
-                  />
+                <Controller
+                  name="city"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="City"
+                      error={!!errors?.city}
+                      helperText={errors?.city?.message}
+                    />
+                  )}
+                />
 
                   <Controller
                     name="code"

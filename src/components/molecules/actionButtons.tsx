@@ -6,18 +6,14 @@ import EditIcon from "@mui/icons-material/Edit";
 interface ActionButtonsProps {
   onEdit: () => void;
   onDelete: () => void;
-  onSubmit: () => void;
 }
 
-const ActionButtons: React.FC<ActionButtonsProps> = ({
-  onEdit,
-  onDelete,
-  onSubmit,
-}) => (
+const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete }) => (
   <>
     <IconButton onClick={onEdit}>
       <EditIcon />
     </IconButton>
+
     <IconButton onClick={onDelete}>
       <DeleteIcon />
     </IconButton>
