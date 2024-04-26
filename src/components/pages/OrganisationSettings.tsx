@@ -90,7 +90,7 @@ const OrganizationSettings: React.FC = () => {
       setIsLoading(true);
       try {
         await deleteOrganization(currentOrgId);
-        setOrganizations(organizations.filter(org => org.id !== currentOrgId));
+        setOrganizations(organizations.filter(org => org.partyId !== currentOrgId));
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
@@ -115,35 +115,35 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "VAT",
       renderCell: (item) => <>{item.vatNumber}</>,
     },
-    {
-      label: "Contact information",
-      dataKey: "contactPerson",
-      renderCell: (item) => (
-        <>
-          {item.contactPerson.map((person: ContactPerson) => (
-            <p key={person.contactPersonId}>
-              {person.fullName}
-              <p>Contact Number: {person.contactNumber}</p>
-              <p>Email Address: {person.emailAddress}</p>
-            </p>
-          ))}
-        </>
-      ),
-    },
-    {
-      label: "Address",
-      dataKey: "physicalAddress",
-      renderCell: (item) => (
-        <>
-          {item.physicalAddress.map((address: Address) => (
-            <p key={address.addressId}>
-              {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
-              {address.code}
-            </p>
-          ))}
-        </>
-      ),
-    },
+    // {
+    //   label: "Contact information",
+    //   dataKey: "contactPerson",
+    //   renderCell: (item) => (
+    //     <>
+    //       {item.contactPerson.map((person: ContactPerson) => (
+    //         <p key={person.contactPersonId}>
+    //           {person.fullName}
+    //           <p>Contact Number: {person.contactNumber}</p>
+    //           <p>Email Address: {person.emailAddress}</p>
+    //         </p>
+    //       ))}
+    //     </>
+    //   ),
+    // },
+    // {
+    //   label: "Address",
+    //   dataKey: "physicalAddress",
+    //   renderCell: (item) => (
+    //     <>
+    //       {item.physicalAddress.map((address: Address) => (
+    //         <p key={address.addressId}>
+    //           {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
+    //           {address.code}
+    //         </p>
+    //       ))}
+    //     </>
+    //   ),
+    // },
     {
       label: "Action Buttons",
       dataKey: "action",
@@ -166,7 +166,7 @@ const OrganizationSettings: React.FC = () => {
         <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} />
       </Grid>
       <Grid xs={12}>
-        <DynamicTable data={organizations} columns={myColumns} />
+        <DynamicTable data={organizations} columns={myColumns} rowsPerPage={5} />
         <GenericConfirmDialog open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirm} title="Confirm Deletion" content="Are you sure you want to delete this organization?" />
       </Grid>
     </>

@@ -171,7 +171,7 @@ const Notes: React.FC = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <DynamicTable data={notes} columns={myColumns} />
+          <DynamicTable data={notes} columns={myColumns} rowsPerPage={5}/>
           <GenericConfirmDialog
             open={confirmOpen}
             onCancel={handleCancel}
