@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
-import ExpandDetails from "../molecules/expandDetails";
+import ExpandDetails from "../atom/expandDetails";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
 import { getOrganizations, deleteOrganization, createOrganization } from "../../apiService";
 import Loading from "./loading";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { Organization } from "../../models/organization.interface";
-import { Address } from "../../models/address.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
 
 interface DataItem {
