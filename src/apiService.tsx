@@ -2,6 +2,7 @@ import axios from "axios";
 import { Note } from "./models/note.interface";
 import { NoteType } from "./models/noteType.interface";
 import { Farm } from "./models/farm.interface";
+import { LegalEntity } from "./models/legalEntity.interface";
 import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
@@ -63,25 +64,19 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganization = async (
-  organizationId: number,
-  details: Partial<Organization>
-): Promise<Organization> => {
+export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
   try {
-    const response = await api.put<Organization>(
-      `/UpdateOrganizationDetails/${organizationId}`,
-      details
-    );
+    
+    console.log("formData", organization);
+    const response = await api.put<ApiResponse<string>>("/CreateOrganization", organization);
+    console.log("response", response);
+
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(
-        `Failed to update organization details: ${error.response.data}`
-      );
+      throw new Error(`Failed to update organization: ${error.response.data}`);
     } else {
-      throw new Error(
-        "Something went wrong while updating the organization details"
-      );
+      throw new Error("Something went wrong while updating the organization");
     }
   }
 };
@@ -418,5 +413,25 @@ export const getNoteTypeById = async (noteTypeId: number): Promise<NoteType> => 
     } else {
       throw new Error('Something went wrong while fetching note type');
     }
+  }
+};
+
+//LegalEntities CRUD APIs
+export const getLegalEntities = async (): Promise<LegalEntity[]> => {
+  try {
+      const response = await api.get<ApiResponse<LegalEntity[]>>("LegalEntities");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
   }
 };

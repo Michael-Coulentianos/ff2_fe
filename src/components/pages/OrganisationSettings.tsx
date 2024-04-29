@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
-import ExpandDetails from "../atom/expandDetails";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizations, deleteOrganization, createOrganization } from "../../apiService";
+import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getLegalEntities } from "../../apiService";
 import Loading from "./loading";
+import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { Organization } from "../../models/organization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
@@ -23,6 +23,7 @@ interface ColumnConfig {
 
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState<number | null>(null);
@@ -30,20 +31,26 @@ const OrganizationSettings: React.FC = () => {
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
 
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getOrganizations();
-        setOrganizations(data);
-      } catch (error) {
-        console.error("Error fetching organizations:", error);
+  function useFetchData(fetchFunction, setData, setIsLoading) {
+    useEffect(() => {
+      async function fetchData() {
+        setIsLoading(true);
+        try {
+          const data = await fetchFunction();
+          setData(data);
+        } catch (error) {
+          console.error(`Error fetching data from ${fetchFunction.name}:`, error);
+        } finally {
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
-    };
+  
+      fetchData();
+    }, [fetchFunction, setData, setIsLoading]);
+  }
 
-    fetchData();
-  }, []);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
   
   const handleOpenForm = () => {
     setSelectedOrg(null);
@@ -52,9 +59,9 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const handleCloseForm = () => {
-    setFormOpen(false);
     setSelectedOrg(null);
-    setCurrentOrgId(null);
+    setCurrentOrgId(null); 
+    setFormOpen(false);
   };
 
   const handleEdit = (org) => {
@@ -66,14 +73,14 @@ const OrganizationSettings: React.FC = () => {
   const handleDelete = (org) => {
     setCurrentOrgId(org.partyId);
     setSelectedOrg(org);
-    setFormOpen(true);
+    setConfirmOpen(true);
   };
 
   const handleSubmit = async (formData: Organization) => {
     setIsLoading(true);
     try {
       if (selectedOrg) {
-        //await updateOrganization(formData);
+        await updateOrganization(formData);
       } else {
         await createOrganization(formData);
       }
@@ -139,30 +146,6 @@ const OrganizationSettings: React.FC = () => {
     },
   ];
 
-     // {
-    //   label: "Contact Information",
-    //   dataKey: "contactPerson",
-    //   renderCell: (item) => (
-    //     <ExpandDetails
-    //       content={`Here's a random fact: ${item.id}`}
-    //       summary="Random Fact"
-    //     />
-    //   ),
-    // },
-    // {
-    //   label: "Address",
-    //   dataKey: "physicalAddress",
-    //   renderCell: (item) => (
-    //     <ExpandDetails content={item.physicalAddress[0]}>
-    //       {/* {item.physicalAddress.map((address: Address) => (
-    //         <p key={address.addressId}>
-    //           {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
-    //           {address.code}
-    //         </p>
-    //       ))} */}
-    //     </ExpandDetails>
-    //   ),
-    // },
   return (
     <>
       {isLoading && <Loading />}
@@ -170,7 +153,7 @@ const OrganizationSettings: React.FC = () => {
         <Button variant="contained" onClick={() => handleOpenForm()} color="primary">
           Add Organization
         </Button>
-        <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} />
+        <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} legalEntities={legalEntities}/>
       </Grid>
       <Grid xs={12}>
         <DynamicTable data={organizations} columns={myColumns} rowsPerPage={5} />

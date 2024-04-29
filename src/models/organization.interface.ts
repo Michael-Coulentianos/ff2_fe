@@ -9,6 +9,7 @@ export interface Organization {
   name: string;
   vatNumber: string;
   legalEntityTypeName: string;
+  LegalEntityTypeId: number;
   registrationNumber: string;
   createdDate: string;
   contactPerson: ContactPerson[];
