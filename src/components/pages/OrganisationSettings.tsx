@@ -1,161 +1,146 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import {
-  createOrganization2,
-  getOrganizationById,
-  getOrganizations,
-  updateOrganisation,
-} from "../../apiService";
+import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getLegalEntities } from "../../apiService";
 import Loading from "./loading";
+import { LegalEntity } from "../../models/legalEntity.interface";
+import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import { Organization } from "../../models/organization.interface";
+import { ContactPerson } from "../../models/contactPerson.interface";
 
-interface Dataorg {
+interface DataItem {
   id: string;
   [key: string]: any;
 }
 
 interface ColumnConfig {
   label: string;
-  dataKey: keyof Dataorg;
-  renderCell: (org: Dataorg) => React.ReactNode;
+  dataKey: keyof DataItem;
+  renderCell: (item: DataItem) => React.ReactNode;
 }
 
 const OrganizationSettings: React.FC = () => {
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [currentOrgId, setCurrentOrgId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
 
-  useEffect(() => {
-    setIsLoading(true);
 
-    const fetchOrganizations = async () => {
-      try {
-        const data = await getOrganizations();
-        setOrganizations(data);
-      } catch (error: any) {
-        console.error("Error fetching organizations:", error.message);
+  function useFetchData(fetchFunction, setData, setIsLoading) {
+    useEffect(() => {
+      async function fetchData() {
+        setIsLoading(true);
+        try {
+          const data = await fetchFunction();
+          setData(data);
+        } catch (error) {
+          console.error(`Error fetching data from ${fetchFunction.name}:`, error);
+        } finally {
+          setIsLoading(false);
+        }
       }
-    };
-
-    fetchOrganizations();
-    setIsLoading(false);
-  }, []);
-  if (isLoading) {
-    return <Loading></Loading>;
+  
+      fetchData();
+    }, [fetchFunction, setData, setIsLoading]);
   }
 
-  const handleEdit = async (id) => {
-    try {
-      const org = await getOrganizationById(id);
-      // setSelectedOrganization(org[0]);
-      setFormOpen(true);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const handleDeleteClick = (noteId: number) => {
-    // setCurrentNoteId(noteId);
-    // setConfirmOpen(true);
-  };
-
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
+  
   const handleOpenForm = () => {
+    setSelectedOrg(null);
+    setCurrentOrgId(null); 
     setFormOpen(true);
-    // setSelectedOrganization(null);
   };
 
   const handleCloseForm = () => {
+    setSelectedOrg(null);
+    setCurrentOrgId(null); 
     setFormOpen(false);
-    setSelectedOrganization(null);
   };
-  const handleFormSubmit = async (formData) => {
-    console.log(formData, "formData");
 
-    if (selectedOrganization) {
-      console.log(selectedOrganization, "selectedOrganization");
+  const handleEdit = (org) => {
+    setCurrentOrgId(org.partyId);
+    setSelectedOrg(org);
+    setFormOpen(true);
+  };
 
-      try {
-        const updatedOrganization = await updateOrganisation(
-          formData?.organizationId,
-          formData
-        );
-        setOrganizations(
-          organizations.map((organization) =>
-            organization.organizationId === updatedOrganization
-              ? updatedOrganization
-              : organization
-          )
-        );
-      } catch (error) {
-        console.error("Error updating organization:", error);
+  const handleDelete = (org) => {
+    setCurrentOrgId(org.partyId);
+    setSelectedOrg(org);
+    setConfirmOpen(true);
+  };
+
+  const handleSubmit = async (formData: Organization) => {
+    setIsLoading(true);
+    try {
+      if (selectedOrg) {
+        await updateOrganization(formData);
+      } else {
+        await createOrganization(formData);
       }
-    } else {
-      try {
-        console.log(formData, "new organization?");
-        const newOrganization = await createOrganization2(formData);
-        setOrganizations([...organizations, newOrganization]);
-      } catch (error) {
-        console.error("Error creating organization:", error);
-      }
+    } catch (error) {
+      console.error('Error submitting organization:', error);
     }
+    setIsLoading(false);
+    setConfirmOpen(false);
     handleCloseForm();
+  };
+
+  const handleConfirm = async () => {
+    if (currentOrgId) {
+      setIsLoading(true);
+      try {
+        await deleteOrganization(currentOrgId);
+        setOrganizations(organizations.filter(org => org.partyId !== currentOrgId));
+      } catch (error) {
+        console.error("Failed to delete organization:", error);
+      }
+      setConfirmOpen(false);
+      handleCloseForm();
+    }
   };
 
   const myColumns: ColumnConfig[] = [
     {
       label: "Company name",
       dataKey: "name",
-      renderCell: (org) => <>{org.name}</>,
+      renderCell: (item) => <>{item.name}</>,
     },
     {
-      label: "Registration  number",
-      dataKey: "registrationNum",
-      renderCell: (org) => <>{org.registrationNumber}</>,
+      label: "Registration number",
+      dataKey: "registrationNumber",
+      renderCell: (item) => <>{item.registrationNumber}</>,
     },
     {
       label: "VAT number",
       dataKey: "VAT",
-      renderCell: (org) => <>{org.vatNumber}</>,
+      renderCell: (item) => <>{item.vatNumber}</>,
     },
     {
-      label: "Contact information",
-      dataKey: "contactInformation",
-      renderCell: (org) => (
-        <>
-          {org.contactPerson.map((person) => (
-            <p key={person.contactPersonId}>
-              {person.fullName}
-              <p>Contact Number: {person.contactNumber}</p>
-              <p>Email Address: {person.emailAddress}</p>
-            </p>
-          ))}
-        </>
-      ),
-    },
-    {
-      label: "Address",
-      dataKey: "address",
-      renderCell: (org) => (
-        <>
-          {org.physicalAddress.map((address) => (
-            <p key={address.addressId}>
-              {address.addressLine1}, {address.addressLine2}, {address.city},{" "}
-              {address.code}
-            </p>
-          ))}
-        </>
-      ),
+      label: "Contact Information",
+      dataKey: "contactPerson",
+      renderCell: (item) => <>
+        {item.contactPerson.map((person: ContactPerson) => (
+          <p key={person.contactPersonId}>
+            {person.fullName}
+            <p>Contact Number: {person.contactNumber}</p>
+            <p>Email Address: {person.emailAddress}</p>
+          </p>
+        ))}</>
     },
     {
       label: "Action Buttons",
       dataKey: "action",
-      renderCell: (org) => (
+      renderCell: (item) => (
         <ActionButtons
-          onEdit={() => handleEdit(org.organizationId)}
-          onDelete={() => handleDeleteClick(org.organizationId)}
+          onEdit={() => handleEdit(item)}
+          onDelete={() => handleDelete(item)}
         ></ActionButtons>
       ),
     },
@@ -165,18 +150,14 @@ const OrganizationSettings: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <Grid xs={12} sx={{ mb: 1 }}>
-        <Button variant="contained" onClick={handleOpenForm} color="primary">
+        <Button variant="contained" onClick={() => handleOpenForm()} color="primary">
           Add Organization
         </Button>
-        <OrganizationDialog
-          isOpen={formOpen}
-          onClose={handleCloseForm}
-          onSubmit={handleFormSubmit}
-          formData={selectedOrganization}
-        ></OrganizationDialog>
+        <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} legalEntities={legalEntities}/>
       </Grid>
       <Grid xs={12}>
-        <DynamicTable data={organizations} columns={myColumns}></DynamicTable>
+        <DynamicTable data={organizations} columns={myColumns} rowsPerPage={5} />
+        <GenericConfirmDialog open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirm} title="Confirm Deletion" content="Are you sure you want to delete this organization?" />
       </Grid>
     </>
   );

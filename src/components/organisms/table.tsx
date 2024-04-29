@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import {
 
 interface TableData {
   id: string;
-  [key: string]: string;
+  [key: string]: any;
 }
 
 interface ColumnConfig {
@@ -25,15 +25,19 @@ interface ColumnConfig {
 interface DynamicTableProps {
   data: TableData[];
   columns: ColumnConfig[];
+  rowsPerPage: number;
 }
 
-const rowsPerPage = 5;
-
-const DynamicTable: React.FC<DynamicTableProps> = ({ data, columns }) => {
+const DynamicTable: React.FC<DynamicTableProps> = ({
+  data,
+  columns,
+  rowsPerPage,
+}) => {
   const [page, setPage] = React.useState(1);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
+
   return (
     <Container>
       <TableContainer component={Paper}>

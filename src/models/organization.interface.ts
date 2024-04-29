@@ -1,28 +1,15 @@
-interface ContactPerson {
-  contactPersonId: number;
-  contactPersonUniqueIdentifier: string;
-  fullName: string;
-  contactNumber: string;
-  emailAddress: string;
-  contactType: string;
-}
-
-interface Address {
-  addressId: number;
-  addressUniqueIdentifier: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  code: string;
-}
+import { ContactPerson } from './contactPerson.interface';
+import { Address } from './address.interface';
 
 export interface Organization {
+  id: string; 
   partyId: number;
   organizationId: number;
   partyIdentifier: string;
   name: string;
   vatNumber: string;
   legalEntityTypeName: string;
+  LegalEntityTypeId: number;
   registrationNumber: string;
   createdDate: string;
   contactPerson: ContactPerson[];

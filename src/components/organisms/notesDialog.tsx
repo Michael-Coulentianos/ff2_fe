@@ -96,7 +96,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
         if (!formData) {
           reset({
             title: "",
-            date:"",
+            date: "",
             location: "",
             description: "",
             noteType: "Default",
@@ -117,11 +117,10 @@ const NotesDialog: React.FC<FormDialogProps> = ({
   const handleAttachmentClick = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const selectedFile = event.target.files?.[0]; // Access the selected file
+    const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       console.log("Selected file:", selectedFile.name);
-      setSelectedFileName(selectedFile.name); // Set the file name in state
-      // You can handle the selected file (e.g., upload it to a server, etc.)
+      setSelectedFileName(selectedFile.name);
     }
   };
 
@@ -479,7 +478,6 @@ const NotesDialog: React.FC<FormDialogProps> = ({
                           {...field}
                           label="Attachment"
                           value={selectedFileName}
-                          
                         />
                       )}
                     />
