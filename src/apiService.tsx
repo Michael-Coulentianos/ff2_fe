@@ -6,6 +6,7 @@ import { LegalEntity } from "./models/legalEntity.interface";
 import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
+import { CreateOrganization } from "./models/createOrganization.interface";
 
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
@@ -30,13 +31,11 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
 };
 
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<Organization>): Promise<Organization> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
   try {
+    organization.azureUserId = "fd78de01-3de4-4cd7-8080-27e9aa6b6008";
+    const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
     
-    console.log("formData", organization);
-    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization", organization);
-    console.log("response", response);
-
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -64,12 +63,14 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
+export const updateOrganization = async (organization: Partial<CreateOrganization>): Promise<ApiResponse<string>> => {
   try {
     
-    console.log("formData", organization);
-    const response = await api.put<ApiResponse<string>>("/CreateOrganization", organization);
-    console.log("response", response);
+    organization.azureUserId = "fd78de01-3de4-4cd7-8080-27e9aa6b6008";
+    console.log("Req", organization);
+
+    const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);
+    console.log("Response", response);
 
     return response.data;
   } catch (error: any) {
