@@ -22,6 +22,7 @@ import { getNoteTypes } from "../../apiService";
 import MapComponent from "./locationMap";
 import AddAttachmentButton from "../atom/attachmentButton";
 import ColoredRadio from "../molecules/coloredRadioBtns";
+import FormSection from "../atom/FormSection";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -92,6 +93,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
       try {
         const fetchedNoteTypes = await getNoteTypes();
         setNoteTypes(fetchedNoteTypes);
+console.log(fetchedNoteTypes,"ftech");
 
         if (!formData) {
           reset({
@@ -127,6 +129,172 @@ const NotesDialog: React.FC<FormDialogProps> = ({
   const watchNoteType = watch("noteType");
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
+  const watchYieldEstimate = watch("yieldEstimate");
+
+console.log(noteTypes);
+
+  const fieldDefinitions = {
+    generalNoteDetails: [
+      {
+        id: "noteType",
+        label: "Note Type",
+        type: "select",
+        options: ["Default", "Severity", "Yield Estimate", "Crop Analysis"].map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
+          </MenuItem>
+        )),
+      },
+      { id: "title", label: "Note Title", type: "text" },
+      { id: "description", label: "Description", type: "text" },
+      { id: "date", label: "Note Date", type: "text" },
+    ],
+    generalNoteDetails2: [
+      { id: "attachment", label: "Add file", type: "attachment" },
+      { id: "location", label: "Location", type: "map" },
+    ],
+    severityNote: [
+      {
+        id: "severityType",
+        label: "Severity Type",
+        type: "select",
+        options: ["Damage", "Infection", "Water"].map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
+          </MenuItem>
+        )),
+      },
+      {
+        id: "subType",
+        label: "Sub-Type",
+        type: "select",
+        options: (
+          <>
+            {watchseverityType === "Damage" &&
+              ["UV", "Hail", "Wind", "Animal"].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+
+            {watchseverityType === "Infection" &&
+              [
+                "Insects",
+                "Nematodes",
+                "Fungus",
+                "Pest",
+                "Bacteria",
+                "Virus",
+              ].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+
+            {watchseverityType === "Water" &&
+              ["Logging", "Damage", "Shortage"].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+          </>
+        ),
+      },
+      { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
+    ],
+    yieldEstimateNote: [
+      { id: "description", label: "Description", type: "text" },
+      {
+        id: "cropType",
+        label: "Note Date",
+        type: "select",
+        options: [
+          "Yellow Maize",
+          "White Maize",
+          "Soybeans",
+          "Dry beans",
+          "Sugarcane",
+          "Wheat",
+          "Barley",
+          "Tabaco",
+          "Potatoes",
+          "Cotton",
+          "Sunflower",
+        ].map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
+          </MenuItem>
+        )),
+      },
+    ],
+    yieldEstimateCalculation: [
+      { id: "yieldEstimateHeads", label: "Heads/Plants per 10m", type: "text" },
+      { id: "yieldEstimateRowWidth", label: "Row Width", type: "text" },
+      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" },
+    ],
+    cropAnalysisNote: [
+      {
+        id: "cropAnalysisType",
+        label: "cropAnalysisType",
+        type: "select",
+        options: ["Phenological phase", "Soil type", "Deficiency type"].map(
+          (type) => (
+            <MenuItem key={type} value={type}>
+              {type}
+            </MenuItem>
+          )
+        ),
+      },
+      {
+        id: "subType",
+        label: "Sub-Type",
+        type: "select",
+        options: (
+          <>
+            {watchcropAnalysisType === "Phenological phase" &&
+              [
+                "Germination",
+                "Vegetative Stage",
+                "Reproductive Stage",
+                "Maturity",
+                "Senescence",
+                "Harvest",
+              ].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            {watchcropAnalysisType === "Soil type" &&
+              ["Clay", "Sandy", "Silt", "Loamy", "Peaty", "Chalky"].map(
+                (type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                )
+              )}
+            {watchcropAnalysisType === "Deficiency type" &&
+              [
+                "Calcium(Ca)",
+                "Nitrogen(N)",
+                "Phosphate(PO)",
+                "Sulphur(S)",
+                "Iron(fe)",
+                "Potassium(K)",
+                "Magnesium(Mg)",
+                "Manganese(Mn)",
+                "Zinc(Zn)",
+              ].map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+          </>
+        ),
+      },
+     
+    ],
+  };
+
   return (
     <Container>
       <MuiDialog onClose={onClose} open={isOpen}>
@@ -152,7 +320,49 @@ const NotesDialog: React.FC<FormDialogProps> = ({
           <DialogContent dividers>
             <Grid container>
               <Grid item xs={12}>
-                <Controller
+                <FormSection
+                  title="Note Details"
+                  fields={fieldDefinitions.generalNoteDetails}
+                  control={control}
+                  errors={errors}
+                  columns={2}
+                />
+          
+                {watchNoteType === "Yield Estimate" && (
+                  <FormSection
+                    title="Yield Estimate"
+                    fields={fieldDefinitions.yieldEstimateNote}
+                    control={control}
+                    errors={errors}
+                    columns={2}
+                  />
+                )}
+                {watchNoteType === "Damage" && (
+                  <FormSection
+                    title="Severity Note"
+                    fields={fieldDefinitions.severityNote}
+                    control={control}
+                    errors={errors}
+                    columns={2}
+                  />
+                )}
+                {watchNoteType === "Crop/Soil Analysis" && (
+                  <FormSection
+                    title="Crop Analysis"
+                    fields={fieldDefinitions.cropAnalysisNote}
+                    control={control}
+                    errors={errors}
+                    columns={2}
+                  />
+                )}
+                <FormSection
+                  title=""
+                  fields={fieldDefinitions.generalNoteDetails2}
+                  control={control}
+                  errors={errors}
+                  columns={1}
+                />
+                {/* <Controller
                   name="title"
                   control={control}
                   render={({ field }) => (
@@ -256,36 +466,6 @@ const NotesDialog: React.FC<FormDialogProps> = ({
                     />
                     <ColoredRadio></ColoredRadio>
                   </>
-                )}
-                {watchNoteType === "Infection" && (
-                  <Controller
-                    name="subType"
-                    control={control}
-                    render={({ field }) => (
-                      <>
-                        <TextBox
-                          {...field}
-                          select
-                          label="Sub-Type"
-                          onChange={(e) => field.onChange(e.target.value)}
-                        >
-                          {[
-                            "insects",
-                            "nematodes",
-                            "fungus",
-                            "pest",
-                            "bacteria",
-                            "virus",
-                          ].map((type) => (
-                            <MenuItem key={type} value={type}>
-                              {type}
-                            </MenuItem>
-                          ))}
-                        </TextBox>
-                        <ColoredRadio></ColoredRadio>
-                      </>
-                    )}
-                  />
                 )}
                 {watchNoteType === "Yield Estimate" && (
                   <>
@@ -494,7 +674,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
                       onClick={() => handleAttachmentClick}
                     />
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
             </Grid>
           </DialogContent>

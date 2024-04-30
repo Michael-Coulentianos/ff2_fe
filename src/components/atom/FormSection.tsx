@@ -23,42 +23,54 @@ const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
               control={control}
               defaultValue=""
               render={({ field: { onChange, onBlur, value, ref } }) => {
-                if (field.type === 'select') {
-                  return (
-                    <TextField
-                      select
-                      label={field.label}
-                      fullWidth
-                      margin="dense"
-                      value={value}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      error={!!errors[field.id]}
-                      helperText={errors[field.id]?.message}
-                      inputRef={ref}
-                    >
-                      {field.options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  );
-                } else {
-                  return (
-                    <FormControl
-                      id={field.id}
-                      label={field.label}
-                      placeholder={field.placeholder}
-                      type={field.type}
-                      value={value}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      error={!!errors[field.id]}
-                      helperText={errors[field.id]?.message}
-                      fullWidth
-                    />
-                  );
+                switch (field.type) {
+                  case "select":
+                    return (
+                      <TextBox
+                        select
+                        label={field.label}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                        inputRef={ref}
+                      >
+                        {field?.options?.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </TextBox>
+                    );
+                  case "radioGroup":
+                    return <ColoredRadio />;
+                  case "attachment":
+                    return (
+                      <AddAttachmentButton onClick={() => onAttachmentClick} />
+                    );
+                  case "map":
+                    return (
+                      <MapComponent
+                        label="Location"
+                        error={!!errors.location}
+                        helperText={errors.location?.message}
+                      />
+                    );
+                  default:
+                    return (
+                      <TextBox
+                        id={field.id}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                      />
+                    );
                 }
               }}
             />
