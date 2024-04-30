@@ -13,13 +13,17 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "x-api-key": "7E80B3AB-A941-4C36-BA76-6ECA579F3CCB",
-    "X-AzureUserId": "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
   },
 });
 
-// const newFarmData: Omit<Farm, "id"> = {
-//   organizationId: 6
-// };
+export const setAzureUserId = (userId) => {
+  api.interceptors.request.use(config => {
+    config.headers['X-AzureUserId'] = userId;
+    return config;
+  }, error => {
+    return Promise.reject(error);
+  });
+}
 
 export const updateUserProfile = async (userProfile: UserProfile) => {
   try {

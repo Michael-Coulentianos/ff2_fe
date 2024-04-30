@@ -29,7 +29,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 
 const App = ({ instance }) => {
   const [open, setOpen] = useState(false);
-
   const handleDrawerOpen = () => {
     setOpen(true);
   };

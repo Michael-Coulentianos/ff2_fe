@@ -10,6 +10,7 @@ import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { Organization } from "../../models/organization.interface";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
+import { useMsal } from "@azure/msal-react";
 
 interface DataItem {
   id: string;
@@ -30,6 +31,8 @@ const OrganizationSettings: React.FC = () => {
   const [formOpen, setFormOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any | null>(null);
 
+  const { instance } = useMsal();
+  const activeAccount = instance.getActiveAccount();
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -74,11 +77,13 @@ const OrganizationSettings: React.FC = () => {
 
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
+
     try {
       if (selectedOrg) {
         console.log("Submitting organization:", formData);
         formData.contactPerson[0].contactDetail = formData.contactPerson[0].contactNumber;
         formData.contactPerson[1].contactDetail = formData.contactPerson[0].emailAddress;
+        formData.azureUserId = activeAccount? activeAccount.localAccountId : "";
         await updateOrganization(formData);
         setOrganizations(organizations.map(org => org.partyId === formData.partyId ? formData : org));
       } else {
@@ -96,7 +101,7 @@ const OrganizationSettings: React.FC = () => {
           partyId: 0,
           organizationId: 0,
           partyIdentifier: "",
-          azureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+          azureUserId: activeAccount? activeAccount.localAccountId : "",
           createdDate: "",
           sameAddress: formData.sameAddress
         };

@@ -42,9 +42,13 @@ export const UserProfileForm: React.FC = () => {
     activeAccount = instance.getActiveAccount();
   }
 
+  console.log(activeAccount);
   const [userProfile, setUserProfile] = useState<UserProfile>({
-    givenName: activeAccount ? activeAccount.name : "",
-    mobilePhone: activeAccount ? activeAccount.name : "",
+    givenName: activeAccount ? activeAccount.idTokenClaims?.given_name: "",
+    mobilePhone: activeAccount ? activeAccount.idTokenClaims?.extension_Cellphone : "",
+    surname: "",
+    displayName: "",
+    azureUserId: activeAccount.localAccountId
   });
 
   useEffect(() => {

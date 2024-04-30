@@ -3,6 +3,7 @@ import { Address } from './address.interface';
 
 export interface Organization {
   id: number; 
+  azureUserId: string;
   partyId: number;
   organizationId: number;
   partyIdentifier: string;
