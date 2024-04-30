@@ -77,8 +77,10 @@ const OrganizationSettings: React.FC = () => {
     try {
       if (selectedOrg) {
         console.log("Submitting organization:", formData);
-
+        formData.contactPerson[0].contactDetail = formData.contactPerson[0].contactNumber;
+        formData.contactPerson[1].contactDetail = formData.contactPerson[0].emailAddress;
         await updateOrganization(formData);
+        setOrganizations(organizations.map(org => org.partyId === formData.partyId ? formData : org));
       } else {
 
         const org: CreateOrganization = {

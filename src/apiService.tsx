@@ -62,7 +62,7 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganization = async (organization: Partial<CreateOrganization>): Promise<ApiResponse<string>> => {
+export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
   try {
     
     console.log("Req", organization);
