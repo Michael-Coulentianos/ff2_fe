@@ -93,6 +93,7 @@ const NotesDialog: React.FC<FormDialogProps> = ({
       try {
         const fetchedNoteTypes = await getNoteTypes();
         setNoteTypes(fetchedNoteTypes);
+console.log(fetchedNoteTypes,"ftech");
 
         if (!formData) {
           reset({
@@ -129,7 +130,8 @@ const NotesDialog: React.FC<FormDialogProps> = ({
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
   const watchYieldEstimate = watch("yieldEstimate");
-console.log(getNoteTypes);
+
+console.log(noteTypes);
 
   const fieldDefinitions = {
     generalNoteDetails: [
@@ -137,10 +139,11 @@ console.log(getNoteTypes);
         id: "noteType",
         label: "Note Type",
         type: "select",
-        options: noteTypes.map((field) => ({
-          label: field.name,
-          value: field.noteTypeId,
-        })),
+        options: ["Default", "Severity", "Yield Estimate", "Crop Analysis"].map((type) => (
+          <MenuItem key={type} value={type}>
+            {type}
+          </MenuItem>
+        )),
       },
       { id: "title", label: "Note Title", type: "text" },
       { id: "description", label: "Description", type: "text" },
@@ -324,6 +327,7 @@ console.log(getNoteTypes);
                   errors={errors}
                   columns={2}
                 />
+          
                 {watchNoteType === "Yield Estimate" && (
                   <FormSection
                     title="Yield Estimate"
