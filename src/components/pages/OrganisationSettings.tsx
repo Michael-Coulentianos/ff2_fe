@@ -80,25 +80,27 @@ const OrganizationSettings: React.FC = () => {
 
         await updateOrganization(formData);
       } else {
+
         const org: CreateOrganization = {
           name: formData.name,
           physicalAddress: formData.physicalAddress[0],
-          postalAddress: formData.postalAddress[0],
+          postalAddress: formData.sameAddress ? formData.physicalAddress[0] : formData.postalAddress[0] || formData.physicalAddress[0],
           contactPerson: formData.contactPerson[0],
           registrationNumber: formData.registrationNumber,
           vatNumber: formData.vatNumber,
           legalEntityTypeId: formData.legalEntityTypeId,
-          legalEntityTypeName: formData.legalEntityTypeName,
+          legalEntityTypeName: "",
           id: "",
           partyId: 0,
           organizationId: 0,
           partyIdentifier: "",
-          azureUserId: "",
+          azureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
           createdDate: "",
-          sameAddress: false
+          sameAddress: formData.sameAddress
         };
-        console.log("Submitting organization:", org);
+        
         await createOrganization(org);
+        setOrganizations([...organizations, formData]);
       }
     } catch (error) {
       console.error('Error submitting organization:', error);

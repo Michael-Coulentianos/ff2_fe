@@ -33,7 +33,6 @@ export const updateUserProfile = async (userProfile: UserProfile) => {
 //Organisation CRUD APIs
 export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
   try {
-    organization.azureUserId = "fd78de01-3de4-4cd7-8080-27e9aa6b6008";
     const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
     
     return response.data.details;
@@ -66,7 +65,6 @@ export const getOrganizations = async (): Promise<Organization[]> => {
 export const updateOrganization = async (organization: Partial<CreateOrganization>): Promise<ApiResponse<string>> => {
   try {
     
-    organization.azureUserId = "fd78de01-3de4-4cd7-8080-27e9aa6b6008";
     console.log("Req", organization);
 
     const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);

@@ -68,7 +68,7 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
     contact: [
       { id: 'contactPerson[0].fullName', label: 'Full Name', type: 'text' },
       { id: 'contactPerson[0].contactNumber', label: 'Contact Number', type: 'text' },
-      { id: 'contactPerson[1].emailAddress', label: 'Email', type: 'email' }
+      { id: 'contactPerson[0].emailAddress', label: 'Email', type: 'email' }
     ],
     address: [
       { id: 'physicalAddress[0].addressLine1', label: 'Address Line 1', type: 'text' },
