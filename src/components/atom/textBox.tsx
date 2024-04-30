@@ -1,7 +1,10 @@
 import { TextField } from "@mui/material";
 
 interface TextBoxProps {
+  id?: string;
   label: string;
+  placeholder?: string;
+  type?: string;
   value: any;
   onChange: any;
   disabled?: boolean;
@@ -11,12 +14,18 @@ interface TextBoxProps {
   error?: boolean;
   select?: boolean;
   children?: any;
+  onBlur?: () => void;
+  inputRef?: any;
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
+  id,
   label,
+  placeholder,
+  type,
   value,
   onChange,
+  onBlur,
   disabled,
   rows,
   helperText,
@@ -24,6 +33,7 @@ const TextBox: React.FC<TextBoxProps> = ({
   error,
   children,
   select,
+  inputRef,
 }) => (
   <TextField
     select={select}
@@ -39,6 +49,11 @@ const TextBox: React.FC<TextBoxProps> = ({
     helperText={helperText}
     multiline={multiline || !!rows}
     rows={rows}
+    id={id}
+    placeholder={placeholder}
+    type={type}
+    onBlur={onBlur}
+    inputRef={inputRef}
   >
     {children}
   </TextField>

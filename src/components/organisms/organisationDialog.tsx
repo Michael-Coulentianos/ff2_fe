@@ -71,7 +71,10 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
       { id: 'name', label: 'Organization Name', type: 'text' },
       { id: 'vatNumber', label: 'VAT Number', type: 'text' },
       { id: 'registrationNumber', label: 'Registration Number', type: 'text' },
-      { id: 'legalEntityTypeName', label: 'Legal Entity Type', type: 'select', options: legalEntities.map(entity => ({ label: entity.name, value: entity.legalEntityTypeId })) }
+      {
+        id: 'legalEntityTypeName', label: 'Legal Entity Type', type: 'select',
+        options: legalEntities.map(entity => ({ label: entity.name, value: entity.legalEntityTypeId }))
+      }
     ],
     contact: [
       { id: 'fullName', label: 'Full Name', type: 'text' },

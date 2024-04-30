@@ -1,10 +1,10 @@
-import React from 'react';
-import { TextField } from '@mui/material';
+import React from "react";
+import { TextField } from "@mui/material";
 
 interface FormControlProps {
-  id: string;
+  id?: string;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   type?: string;
   value?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -20,15 +20,15 @@ function FormControl({
   id,
   label,
   placeholder,
-  type = 'text',
-  value = '',
+  type = "text",
+  value = "",
   onChange,
   onBlur,
   error,
   helperText,
   multiline,
   rows,
-  fullWidth = true 
+  fullWidth = true,
 }: FormControlProps) {
   return (
     <TextField
