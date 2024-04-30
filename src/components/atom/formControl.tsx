@@ -13,7 +13,7 @@ interface FormControlProps {
   helperText?: string;
   multiline?: boolean;
   rows?: number;
-  fullWidth?: boolean; // Optional property added
+  fullWidth?: boolean;
 }
 
 function FormControl({

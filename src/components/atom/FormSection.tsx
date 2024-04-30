@@ -3,17 +3,19 @@ import { Controller } from 'react-hook-form';
 import { Grid, Typography, TextField, MenuItem } from '@mui/material';
 import FormControl from './FormControl';
 
-const FormSection = ({ title, fields, control, errors, columns = 1 }) => {
+const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
   return (
     <React.Fragment>
       <Grid container alignItems="center" spacing={2}>
-        <Grid item xs={12}>
-          <Typography variant="h6" style={{ marginBottom: 8 }}>
-            {title}
-          </Typography>
-        </Grid>
+        {title && (
+          <Grid item xs={12}>
+            <Typography variant="h6" style={{ marginBottom: 4 }}>
+              {title}
+            </Typography>
+          </Grid>
+        )}
         {fields.map((field) => (
           <Grid item xs={12} sm={gridColumnWidth} key={field.id}>
             <Controller
@@ -68,4 +70,3 @@ const FormSection = ({ title, fields, control, errors, columns = 1 }) => {
 };
 
 export default FormSection;
-

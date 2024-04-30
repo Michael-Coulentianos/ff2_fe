@@ -25,12 +25,38 @@ export const setAzureUserId = (userId) => {
   });
 }
 
-export const updateUserProfile = async (userProfile: UserProfile) => {
+//User Profile CRUD APIs
+export const getUserProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await api.put("/UpdateUserProfile", userProfile);
+    const response = await api.get<ApiResponse<UserProfile>>("UserDetails");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to retrieve user details: ${error.response.data.message || error.message}`);
+    } else {
+      throw new Error('Something went wrong while retrieving user detials');
+    }
+  }
+};
+
+export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ApiResponse<string>> => {
+  try {
+    
+    console.log("Req", userProfile);
+    const response = await api.put<ApiResponse<string>>("/UpdateUserProfile", userProfile);
+    console.log("Response", response);
+
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response.data);
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to update user details: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while updating the user details");
+    }
   }
 };
 

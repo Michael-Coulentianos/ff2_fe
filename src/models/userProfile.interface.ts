@@ -3,5 +3,6 @@ export interface UserProfile {
   surname: string;
   displayName: string;
   mobilePhone: string;
+  userId: string;
   azureUserId: string;
 }
