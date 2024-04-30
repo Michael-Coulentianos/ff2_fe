@@ -1,7 +1,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Grid, Typography, TextField, MenuItem } from '@mui/material';
-import FormControl from './formControl';
+import FormControl from './FormControl';
 
 const FormSection = ({ title, fields, control, errors, columns = 1 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
