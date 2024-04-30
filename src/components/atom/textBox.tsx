@@ -9,6 +9,8 @@ interface TextBoxProps {
   rows?: number;
   multiline?: boolean;
   error?: boolean;
+  select?: boolean;
+  children?: any;
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
@@ -20,8 +22,11 @@ const TextBox: React.FC<TextBoxProps> = ({
   helperText,
   multiline,
   error,
+  children,
+  select,
 }) => (
   <TextField
+    select={select}
     label={label}
     value={value}
     onChange={onChange}
@@ -33,8 +38,10 @@ const TextBox: React.FC<TextBoxProps> = ({
     error={error}
     helperText={helperText}
     multiline={multiline || !!rows}
-    rows={rows} 
-  />
+    rows={rows}
+  >
+    {children}
+  </TextField>
 );
 
 export default TextBox;

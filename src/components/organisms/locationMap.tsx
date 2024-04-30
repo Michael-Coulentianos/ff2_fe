@@ -19,9 +19,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     if (e.latLng) {
       const newPosition = e.latLng.toJSON();
       setPosition(newPosition);
-      // Save the location data
-      console.log(newPosition);
-      // Convert the position to an address
+
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ location: newPosition }, (results, status) => {
         if (status === "OK" && results && results[0]) {
@@ -35,10 +33,11 @@ const MapComponent: React.FC<MapComponentProps> = ({
     <>
       <LoadScript googleMapsApiKey="AIzaSyAyy8BzMlKKQCPsQRgvhMW4MxfjGuIEWUc">
         <GoogleMap
-          mapContainerStyle={{ height: "200px", width: "400px" }}
+          mapContainerStyle={{ height: "300px" }}
           center={position}
           zoom={10}
           onClick={handleClick}
+          mapTypeId="satellite"
         >
           {position && <Marker position={position} />}
         </GoogleMap>

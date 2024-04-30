@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  TextField,
   MenuItem,
   Container,
   IconButton,
@@ -21,6 +20,8 @@ import TextBox from "../atom/textBox";
 import { NoteType } from "../../models/noteType.interface";
 import { getNoteTypes } from "../../apiService";
 import MapComponent from "./locationMap";
+import AddAttachmentButton from "../atom/attachmentButton";
+import ColoredRadio from "../molecules/coloredRadioBtns";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -35,20 +36,36 @@ const validationSchema = yup.object({
   title: yup.string().required("This field is required"),
   location: yup.string().required("This field is required"),
   description: yup.string().required("This field is required"),
-  noteType: yup.string().required("Note type is required"),
-  riskPercentage: yup.string().required("Note type is required"),
-  infectionType: yup.string().required("Note type is required"),
-  subType: yup.string().required("Note type is required"),
+  noteType: yup.string().required("This field is required"),
+  riskPercentage: yup.string().required("This field is required"),
+  infectionType: yup.string().required("This field is required"),
+  subType: yup.string().required("This field is required"),
+  attachment: yup.string().required("This field is required"),
+  date: yup.string().required("This field is required"),
+  severityType: yup.string().required("This field is required"),
+  yieldEstimate: yup.string().required("This field is required"),
+  cropType: yup.string().required("This field is required"),
+  yieldEstimateHeads: yup.string().required("This field is required"),
+  yieldEstimateRowWidth: yup.string().required("This field is required"),
+  yieldEstimateGrams: yup.string().required("This field is required"),
+  cropAnalysisType: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
+  //: yup.string().required("This field is required"),
 });
 
-interface NotesDialogProps {
+interface FormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (formData) => void;
   formData?: any;
 }
 
-const NotesDialog: React.FC<NotesDialogProps> = ({
+const NotesDialog: React.FC<FormDialogProps> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -79,6 +96,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
         if (!formData) {
           reset({
             title: "",
+            date: "",
             location: "",
             description: "",
             noteType: "Default",
@@ -94,9 +112,21 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
       reset(formData);
     }
   }, [formData, isOpen, reset]);
-  
-  const watchNoteType = watch("noteType");
 
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const handleAttachmentClick = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      console.log("Selected file:", selectedFile.name);
+      setSelectedFileName(selectedFile.name);
+    }
+  };
+
+  const watchNoteType = watch("noteType");
+  const watchseverityType = watch("severityType");
+  const watchcropAnalysisType = watch("cropAnalysisType");
   return (
     <Container>
       <MuiDialog onClose={onClose} open={isOpen}>
@@ -120,7 +150,7 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
           })}
         >
           <DialogContent dividers>
-            <Grid container spacing={3}>
+            <Grid container>
               <Grid item xs={12}>
                 <Controller
                   name="title"
@@ -135,15 +165,25 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                   )}
                 />
                 <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <TextBox
+                      {...field}
+                      label="Date"
+                      error={!!errors.date}
+                      helperText={errors.date?.message}
+                    />
+                  )}
+                />
+                <Controller
                   name="noteType"
                   control={control}
                   render={({ field }) => (
-                    <TextField
+                    <TextBox
                       {...field}
                       select
                       label="Note Type"
-                      fullWidth
-                      margin="dense"
                       onChange={(e) => field.onChange(e.target.value)}
                     >
                       {noteTypes.map((type) => (
@@ -151,81 +191,252 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                           {type.name}
                         </MenuItem>
                       ))}
-                    </TextField>
+                    </TextBox>
                   )}
                 />
                 {watchNoteType === "Damage" && (
-                  <Controller
-                    name="subType"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        label="Sub-Type"
-                        fullWidth
-                        margin="dense"
-                        onChange={(e) => field.onChange(e.target.value)}
-                      >
-                        {["UV", "hail", "wind", "animal"].map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    )}
-                  />
+                  <>
+                    <Controller
+                      name="severityType"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          select
+                          label="Severity Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {["Damage", "Infection", "Water"].map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </TextBox>
+                      )}
+                    />
+                    <Controller
+                      name="subType"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          select
+                          label="Sub-Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {watchseverityType === "Damage" &&
+                            ["UV", "Hail", "Wind", "Animal"].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+
+                          {watchseverityType === "Infection" &&
+                            [
+                              "Insects",
+                              "Nematodes",
+                              "Fungus",
+                              "Pest",
+                              "Bacteria",
+                              "Virus",
+                            ].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+
+                          {watchseverityType === "Water" &&
+                            ["Logging", "Damage", "Shortage"].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+                        </TextBox>
+                      )}
+                    />
+                    <ColoredRadio></ColoredRadio>
+                  </>
                 )}
                 {watchNoteType === "Infection" && (
                   <Controller
                     name="subType"
                     control={control}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        label="Sub-Type"
-                        fullWidth
-                        margin="dense"
-                        onChange={(e) => field.onChange(e.target.value)}
-                      >
-                        {[
-                          "insects",
-                          "nematodes",
-                          "fungus",
-                          "pest",
-                          "bacteria",
-                          "virus",
-                        ].map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </TextField>
+                      <>
+                        <TextBox
+                          {...field}
+                          select
+                          label="Sub-Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {[
+                            "insects",
+                            "nematodes",
+                            "fungus",
+                            "pest",
+                            "bacteria",
+                            "virus",
+                          ].map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </TextBox>
+                        <ColoredRadio></ColoredRadio>
+                      </>
                     )}
                   />
                 )}
-                {watchNoteType === "Water" && (
-                  <Controller
-                    name="subType"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        select
-                        label="Sub-Type"
-                        fullWidth
-                        margin="dense"
-                        onChange={(e) => field.onChange(e.target.value)}
-                      >
-                        {["Logging", "Damage", "Shortage"].map((type) => (
-                          <MenuItem key={type} value={type}>
-                            {type}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    )}
-                  />
+                {watchNoteType === "Yield Estimate" && (
+                  <>
+                    <Controller
+                      name="cropType"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          select
+                          label="Sub-Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {[
+                            "Yellow Maize",
+                            "White Maize",
+                            "Soybeans",
+                            "Dry beans",
+                            "Sugarcane",
+                            "Wheat",
+                            "Barley",
+                            "Tabaco",
+                            "Potatoes",
+                            "Cotton",
+                            "Sunflower",
+                          ].map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </TextBox>
+                      )}
+                    />
+                    <Controller
+                      name="yieldEstimateHeads"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          label="Heads/Plants per 10m"
+                          error={!!errors.yieldEstimate}
+                          helperText={errors.yieldEstimate?.message}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="yieldEstimateRowWidth"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          label="Row Width"
+                          error={!!errors.yieldEstimate}
+                          helperText={errors.yieldEstimate?.message}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="yieldEstimateGrams"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          label="Grams per head/plant"
+                          error={!!errors.yieldEstimate}
+                          helperText={errors.yieldEstimate?.message}
+                        />
+                      )}
+                    />
+                  </>
+                )}
+                {watchNoteType === "Crop/Soil Analysis" && (
+                  <>
+                    <Controller
+                      name="cropAnalysisType"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          select
+                          label="Analysis-Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {[
+                            "Phenological phase",
+                            "Soil type",
+                            "Deficiency type",
+                          ].map((type) => (
+                            <MenuItem key={type} value={type}>
+                              {type}
+                            </MenuItem>
+                          ))}
+                        </TextBox>
+                      )}
+                    />
+                    <Controller
+                      name="cropAnalysisType"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          select
+                          label="Sub-Type"
+                          onChange={(e) => field.onChange(e.target.value)}
+                        >
+                          {watchcropAnalysisType === "Phenological phase" &&
+                            [
+                              "Germination",
+                              "Vegetative Stage",
+                              "Reproductive Stage",
+                              "Maturity",
+                              "Senescence",
+                              "Harvest",
+                            ].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+                          {watchcropAnalysisType === "Soil type" &&
+                            [
+                              "Clay",
+                              "Sandy",
+                              "Silt",
+                              "Loamy",
+                              "Peaty",
+                              "Chalky",
+                            ].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+                          {watchcropAnalysisType === "Deficiency type" &&
+                            [
+                              "Calcium(Ca)",
+                              "Nitrogen(N)",
+                              "Phosphate(PO)",
+                              "Sulphur(S)",
+                              "Iron(fe)",
+                              "Potassium(K)",
+                              "Magnesium(Mg)",
+                              "Manganese(Mn)",
+                              "Zinc(Zn)",
+                            ].map((type) => (
+                              <MenuItem key={type} value={type}>
+                                {type}
+                              </MenuItem>
+                            ))}
+                        </TextBox>
+                      )}
+                    />
+                  </>
                 )}
                 <Controller
                   name="location"
@@ -252,6 +463,38 @@ const NotesDialog: React.FC<NotesDialogProps> = ({
                     />
                   )}
                 />
+                <Grid
+                  container
+                  sx={{
+                    marginTop: 1,
+                  }}
+                >
+                  <Grid item xs={8}>
+                    <Controller
+                      name="attachment"
+                      control={control}
+                      render={({ field }) => (
+                        <TextBox
+                          {...field}
+                          label="Attachment"
+                          value={selectedFileName}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    sx={{
+                      marginTop: 1,
+                      paddingLeft: 1,
+                    }}
+                  >
+                    <AddAttachmentButton
+                      onClick={() => handleAttachmentClick}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </DialogContent>
