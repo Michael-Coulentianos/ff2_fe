@@ -5,6 +5,7 @@ import TextBox from "./textBox";
 import ColoredRadio from "../molecules/coloredRadioBtns";
 import AddAttachmentButton from "./attachmentButton";
 import MapComponent from "../organisms/locationMap";
+import DateSelector from "./dateSelect";
 
 const FormSection = ({
   title,
@@ -13,12 +14,13 @@ const FormSection = ({
   errors,
   columns = 1,
   onAttachmentClick = () => {},
+
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
   return (
     <React.Fragment>
-      <Grid container alignItems="center" spacing={1}>
+      <Grid container spacing={1}>
         <Grid item xs={12}>
           <Typography variant="subtitle1" style={{ marginBottom: 1 }}>
             {title}
@@ -54,9 +56,7 @@ const FormSection = ({
                   case "radioGroup":
                     return <ColoredRadio />;
                   case "attachment":
-                    return (
-                      <AddAttachmentButton onClick={() => onAttachmentClick} />
-                    );
+                    return <AddAttachmentButton />;
                   case "map":
                     return (
                       <MapComponent
@@ -64,6 +64,26 @@ const FormSection = ({
                         error={!!errors.location}
                         helperText={errors.location?.message}
                       />
+                    );
+                  case "multiText":
+                    return (
+                      <TextBox
+                        id={field.id}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                        multiline
+                        rows={2}
+                      />
+                    );
+                  case "date":
+                    return (
+                      <DateSelector></DateSelector>
                     );
                   default:
                     return (
