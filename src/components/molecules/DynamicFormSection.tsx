@@ -2,7 +2,7 @@ import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Grid, Typography, MenuItem } from '@mui/material';
 import Textbox from '../atom/textBox';
-import AttachmentButton from '../atom/AttachmentButton';
+import AttachmentButton from '../atom/attachmentButton';
 import FieldMapComponent from './FieldMapComponent';
 import ColoredRadio from './ColoredRadio';
 
