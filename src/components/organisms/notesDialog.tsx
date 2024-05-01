@@ -20,7 +20,7 @@ import TextBox from "../atom/textBox";
 import { NoteType } from "../../models/noteType.interface";
 import { getNoteTypes } from "../../apiService";
 import MapComponent from "./locationMap";
-import AddAttachmentButton from "../atom/AttachmentButton";
+import AttachmentButton from "../atom/attachmentButton";
 import ColoredRadio from "../molecules/ColoredRadio";
 import FormSection from "../molecules/DynamicFormSection";
 
