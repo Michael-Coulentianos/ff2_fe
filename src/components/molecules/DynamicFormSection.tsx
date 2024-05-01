@@ -1,9 +1,12 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Grid, Typography, TextField, MenuItem } from '@mui/material';
-import FormControl from './FormControl';
+import { Grid, Typography, MenuItem } from '@mui/material';
+import Textbox from '../atom/textBox';
+import AttachmentButton from '../atom/AttachmentButton';
+import FieldMapComponent from './FieldMapComponent';
+import ColoredRadio from './ColoredRadio';
 
-const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
+const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
   return (
@@ -23,11 +26,14 @@ const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
               control={control}
               defaultValue=""
               render={({ field: { onChange, onBlur, value, ref } }) => {
+                let FieldComponent = <Textbox id={field.id} label={field.label} placeholder={field.placeholder} type={field.type} value={value} onChange={onChange} onBlur={onBlur} error={!!errors[field.id]} helperText={errors[field.id]?.message} inputRef={ref} />;
+
                 switch (field.type) {
                   case "select":
-                    return (
-                      <TextBox
+                    FieldComponent = (
+                      <Textbox
                         select
+                        id={field.id}
                         label={field.label}
                         value={value}
                         onChange={onChange}
@@ -36,42 +42,27 @@ const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
                         helperText={errors[field.id]?.message}
                         inputRef={ref}
                       >
-                        {field?.options?.map((option) => (
+                        {field.options?.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
                             {option.label}
                           </MenuItem>
                         ))}
-                      </TextBox>
+                      </Textbox>
                     );
+                    break;
                   case "radioGroup":
-                    return <ColoredRadio />;
+                    FieldComponent = <ColoredRadio />;
+                    break;
                   case "attachment":
-                    return (
-                      <AddAttachmentButton onClick={() => onAttachmentClick} />
-                    );
+                    FieldComponent = <AttachmentButton onClick={function (): void {
+                      throw new Error('Function not implemented.');
+                    } } />;
+                    break;
                   case "map":
-                    return (
-                      <MapComponent
-                        label="Location"
-                        error={!!errors.location}
-                        helperText={errors.location?.message}
-                      />
-                    );
-                  default:
-                    return (
-                      <TextBox
-                        id={field.id}
-                        label={field.label}
-                        placeholder={field.placeholder}
-                        type={field.type}
-                        value={value}
-                        onChange={onChange}
-                        onBlur={onBlur}
-                        error={!!errors[field.id]}
-                        helperText={errors[field.id]?.message}
-                      />
-                    );
+                    FieldComponent = <FieldMapComponent />;
+                    break;
                 }
+                return FieldComponent;
               }}
             />
           </Grid>
@@ -81,4 +72,4 @@ const FormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
   );
 };
 
-export default FormSection;
+export default DynamicFormSection;

@@ -1,5 +1,5 @@
 import { Grid, Typography } from "@mui/material";
-import FieldMapComponent from "../molecules/mappingComponent";
+import FieldMapComponent from "../molecules/FieldMapComponent";
 
 const HomeDashboard = () => {
   return (

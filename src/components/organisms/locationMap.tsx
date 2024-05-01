@@ -7,6 +7,7 @@ interface MapComponentProps {
   error: boolean;
   helperText: any;
 }
+
 const MapComponent: React.FC<MapComponentProps> = ({
   label,
   error,
@@ -45,7 +46,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       <TextBox
         label={label}
         value={address}
-        onChange={undefined}
+        onChange={() => {}}
         error={error}
         helperText={helperText}
         disabled

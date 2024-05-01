@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import FormSection from '../atom/FormSection';
+import FormSection from '../molecules/DynamicFormSection';
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { updateUserProfile, getUserProfile } from "../../apiService";
 import { UserProfile } from "../../models/userProfile.interface";

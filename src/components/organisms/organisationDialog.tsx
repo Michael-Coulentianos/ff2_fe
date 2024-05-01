@@ -5,7 +5,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import FormSection from '../atom/FormSection';
+import FormSection from '../molecules/DynamicFormSection';
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": { padding: theme.spacing(2) },

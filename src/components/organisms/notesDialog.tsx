@@ -20,9 +20,9 @@ import TextBox from "../atom/textBox";
 import { NoteType } from "../../models/noteType.interface";
 import { getNoteTypes } from "../../apiService";
 import MapComponent from "./locationMap";
-import AddAttachmentButton from "../atom/attachmentButton";
-import ColoredRadio from "../molecules/coloredRadioBtns";
-import FormSection from "../atom/FormSection";
+import AddAttachmentButton from "../atom/AttachmentButton";
+import ColoredRadio from "../molecules/ColoredRadio";
+import FormSection from "../molecules/DynamicFormSection";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {

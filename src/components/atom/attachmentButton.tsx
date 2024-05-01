@@ -2,10 +2,10 @@ import React from "react";
 import { Button } from "@mui/material";
 import { AttachFile } from "@mui/icons-material";
 
-interface AddAttachmentButtonProps {
+interface AttachmentButtonProps {
   onClick: () => void; }
 
-const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
+const AttachmentButton: React.FC<AttachmentButtonProps> = ({
   onClick,
 }) => {
   return (
@@ -20,4 +20,4 @@ const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
   );
 };
 
-export default AddAttachmentButton;
+export default AttachmentButton;
