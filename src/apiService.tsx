@@ -6,37 +6,65 @@ import { LegalEntity } from "./models/legalEntity.interface";
 import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
+import { CreateOrganization } from "./models/createOrganization.interface";
 
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
   headers: {
     "Content-Type": "application/json",
     "x-api-key": "7E80B3AB-A941-4C36-BA76-6ECA579F3CCB",
-    "X-AzureUserId": "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
   },
 });
 
-// const newFarmData: Omit<Farm, "id"> = {
-//   organizationId: 6
-// };
+export const setAzureUserId = (userId) => {
+  api.interceptors.request.use(config => {
+    config.headers['X-AzureUserId'] = userId;
+    return config;
+  }, error => {
+    return Promise.reject(error);
+  });
+}
 
-export const updateUserProfile = async (userProfile: UserProfile) => {
+//User Profile CRUD APIs
+export const getUserProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await api.put("/UpdateUserProfile", userProfile);
+    const response = await api.get<ApiResponse<UserProfile>>("UserDetails");
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`API call unsuccessful: ${response.data.message}`);
+    }
+
+    return response.data.details;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to retrieve user details: ${error.response.data.message || error.message}`);
+    } else {
+      throw new Error('Something went wrong while retrieving user detials');
+    }
+  }
+};
+
+export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ApiResponse<string>> => {
+  try {
+    
+    console.log("Req", userProfile);
+    const response = await api.put<ApiResponse<string>>("/UpdateUserProfile", userProfile);
+    console.log("Response", response);
+
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response.data);
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to update user details: ${error.response.data}`);
+    } else {
+      throw new Error("Something went wrong while updating the user details");
+    }
   }
 };
 
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<Organization>): Promise<Organization> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
   try {
+    const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
     
-    console.log("formData", organization);
-    const response = await api.post<ApiResponse<Organization>>("/CreateOrganization", organization);
-    console.log("response", response);
-
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -67,9 +95,10 @@ export const getOrganizations = async (): Promise<Organization[]> => {
 export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
   try {
     
-    console.log("formData", organization);
-    const response = await api.put<ApiResponse<string>>("/CreateOrganization", organization);
-    console.log("response", response);
+    console.log("Req", organization);
+
+    const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);
+    console.log("Response", response);
 
     return response.data;
   } catch (error: any) {

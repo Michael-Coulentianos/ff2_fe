@@ -1,31 +1,23 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  IconButton,
-  Grid,
-  styled,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Dialog,
-} from "@mui/material";
-import { useMsal } from "@azure/msal-react";
-import { UserProfile } from "../../models/userProfile.interface";
-import { updateUserProfile } from "../../apiService";
+import { Button, IconButton, Grid, styled, DialogTitle, DialogContent, DialogActions, Dialog } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import TextBox from "../atom/textBox";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import FormSection from '../molecules/DynamicFormSection';
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import { updateUserProfile, getUserProfile } from "../../apiService";
+import { UserProfile } from "../../models/userProfile.interface";
 
-export const validationSchema = yup.object().shape({
-  givenName: yup.string().required("This field is required"),
-  mobilePhone: yup.string().required("This field is required").min(10),
+const validationSchema = yup.object({
+  givenName: yup.string().required("Given Name is required"),
+  surname: yup.string().required("Surname is required"),
+  displayName: yup.string().required("Display Name is required"),
+  mobilePhone: yup.string().required("Mobile Phone is required").min(10, "Mobile Phone must be at least 10 digits"),
 });
 
-const MuiDialog = styled(Dialog)(({ theme }) => ({
+const StyledDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
   },
@@ -34,53 +26,40 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export const UserProfileForm: React.FC = () => {
-  const { instance } = useMsal();
-  let activeAccount;
-
-  if (instance) {
-    activeAccount = instance.getActiveAccount();
-  }
-
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    givenName: activeAccount ? activeAccount.name : "",
-    mobilePhone: activeAccount ? activeAccount.name : "",
+export const UserProfileForm = () => {
+  const [userProfile, setUserProfile] = useState<UserProfile>();
+  const [modalOpen, setModalOpen] = useState(false);
+  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema),
   });
 
   useEffect(() => {
-    if (activeAccount) {
-      setUserProfile((prevProfile) => ({
-        ...prevProfile,
-        AzureUserId: activeAccount.localAccountId,
-      }));
-    }
-  }, []);
+    const fetchUserProfile = async () => {
+      const data = await getUserProfile();
+      setUserProfile(data);
+      reset(data); // Pre-fill the form with fetched data
+    };
+    fetchUserProfile();
+  }, [reset]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserProfile({
-      ...userProfile,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleFormSubmit = async (data) => {
     try {
-      const response = await updateUserProfile(userProfile);
-      console.log(response.data);
-    } catch (error: any) {
-      throw new Error(error.response.data);
+      data.azureUserId = userProfile ? userProfile?.userId : "";
+      const response = await updateUserProfile(data);
+      console.log("Profile Updated:", response);
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Failed to update user profile:", error);
     }
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const {
-    control,
-
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-  });
+  const fieldDefinitions = {
+    profileDetails: [
+      { id: 'givenName', label: 'Name', type: 'text' },
+      { id: 'surname', label: 'Last Name', type: 'text' },
+      { id: 'displayName', label: 'Display Name', type: 'text' },
+      { id: 'mobilePhone', label: 'Contact Number', type: 'text' },
+     ]};
 
   return (
     <>
@@ -88,79 +67,27 @@ export const UserProfileForm: React.FC = () => {
         <ManageAccountsIcon />
       </IconButton>
 
-      <MuiDialog
-        onClose={() => setModalOpen(false)}
-        aria-labelledby="customized-dialog-title"
-        open={modalOpen}
-      >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          <Grid container direction="row">
-            <Grid item xs={12}>
-              Update Profile
-            </Grid>
-          </Grid>
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={() => setModalOpen(false)}
-          size="small"
-          sx={{
-            position: "absolute",
-            right: 10,
-            top: 15,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
+      <StyledDialog onClose={() => setModalOpen(false)} open={modalOpen} aria-labelledby="update-profile-dialog">
+        <DialogTitle id="update-profile-dialog">Update Profile</DialogTitle>
+        <IconButton aria-label="close" onClick={() => setModalOpen(false)} sx={{ position: "absolute", right: 10, top: 10, color: (theme) => theme.palette.grey[500] }}>
           <CloseIcon />
         </IconButton>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
           <DialogContent dividers>
-            <Grid container spacing={3}>
-              <Grid item xs={6}>
-                <Controller
-                  name="givenName"
-                  control={control}
-                  defaultValue={userProfile.givenName}
-                  render={({ field }) => (
-                    <TextBox
-                      {...field}
-                      onChange={handleChange}
-                      label="Given Name"
-                      error={!!errors?.givenName}
-                      helperText={errors?.givenName?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="mobilePhone"
-                  control={control}
-                  defaultValue={userProfile.mobilePhone}
-                  render={({ field }) => (
-                    <TextBox
-                      {...field}
-                      onChange={handleChange}
-                      label="Mobile Phone"
-                      error={!!errors?.mobilePhone}
-                      helperText={errors?.mobilePhone?.message}
-                    />
-                  )}
-                />
-              </Grid>
+            <Grid container spacing={2} sx={{ padding: 2 }}>
+            <FormSection 
+                fields={fieldDefinitions.profileDetails} 
+                control={control} 
+                errors={errors} 
+                columns={1}
+              />
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              startIcon={<SaveIcon />}
-            >
-              Update
-            </Button>
+            <Button variant="contained" color="primary" type="submit" startIcon={<SaveIcon />}>Update</Button>
           </DialogActions>
         </form>
-      </MuiDialog>
+      </StyledDialog>
     </>
   );
 };

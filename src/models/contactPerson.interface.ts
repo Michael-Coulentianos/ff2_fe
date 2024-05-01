@@ -3,6 +3,7 @@ export interface ContactPerson {
   contactPersonUniqueIdentifier: string;
   fullName: string;
   contactNumber: string;
+  contactDetail: string;
   emailAddress: string;
   contactType: string;
 }

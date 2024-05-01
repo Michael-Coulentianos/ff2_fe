@@ -8,7 +8,9 @@ import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { Organization } from "../../models/organization.interface";
+import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
+import { useMsal } from "@azure/msal-react";
 
 interface DataItem {
   id: string;
@@ -22,14 +24,15 @@ interface ColumnConfig {
 }
 
 const OrganizationSettings: React.FC = () => {
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [currentOrgId, setCurrentOrgId] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<any | null>(null);
 
+  const { instance } = useMsal();
+  const activeAccount = instance.getActiveAccount();
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -54,35 +57,57 @@ const OrganizationSettings: React.FC = () => {
   
   const handleOpenForm = () => {
     setSelectedOrg(null);
-    setCurrentOrgId(null); 
     setFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setSelectedOrg(null);
-    setCurrentOrgId(null); 
     setFormOpen(false);
   };
 
   const handleEdit = (org) => {
-    setCurrentOrgId(org.partyId);
     setSelectedOrg(org);
     setFormOpen(true);
   };
 
   const handleDelete = (org) => {
-    setCurrentOrgId(org.partyId);
     setSelectedOrg(org);
     setConfirmOpen(true);
   };
 
-  const handleSubmit = async (formData: Organization) => {
+  const handleSubmit = async (formData: any) => {
     setIsLoading(true);
+
     try {
       if (selectedOrg) {
+        console.log("Submitting organization:", formData);
+        formData.contactPerson[0].contactDetail = formData.contactPerson[0].contactNumber;
+        formData.contactPerson[1].contactDetail = formData.contactPerson[0].emailAddress;
+        formData.azureUserId = activeAccount? activeAccount.localAccountId : "";
         await updateOrganization(formData);
+        setOrganizations(organizations.map(org => org.partyId === formData.partyId ? formData : org));
       } else {
-        await createOrganization(formData);
+
+        const org: CreateOrganization = {
+          name: formData.name,
+          physicalAddress: formData.physicalAddress[0],
+          postalAddress: formData.sameAddress ? formData.physicalAddress[0] : formData.postalAddress[0] || formData.physicalAddress[0],
+          contactPerson: formData.contactPerson[0],
+          registrationNumber: formData.registrationNumber,
+          vatNumber: formData.vatNumber,
+          legalEntityTypeId: formData.legalEntityTypeId,
+          legalEntityTypeName: "",
+          id: "",
+          partyId: 0,
+          organizationId: 0,
+          partyIdentifier: "",
+          azureUserId: activeAccount? activeAccount.localAccountId : "",
+          createdDate: "",
+          sameAddress: formData.sameAddress
+        };
+        
+        await createOrganization(org);
+        setOrganizations([...organizations, formData]);
       }
     } catch (error) {
       console.error('Error submitting organization:', error);
@@ -93,11 +118,11 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const handleConfirm = async () => {
-    if (currentOrgId) {
+    if (selectedOrg) {
       setIsLoading(true);
       try {
-        await deleteOrganization(currentOrgId);
-        setOrganizations(organizations.filter(org => org.partyId !== currentOrgId));
+        await deleteOrganization(selectedOrg.partyId);
+        setOrganizations(organizations.filter(org => org.partyId !== selectedOrg.partyId));
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }

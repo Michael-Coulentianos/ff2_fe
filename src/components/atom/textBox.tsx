@@ -1,4 +1,5 @@
-import { TextField } from "@mui/material";
+import React from 'react';
+import { TextField } from '@mui/material';
 
 interface TextBoxProps {
   id?: string;
@@ -6,15 +7,16 @@ interface TextBoxProps {
   placeholder?: string;
   type?: string;
   value: any;
-  onChange: any;
-  disabled?: boolean;
-  helperText?: any;
-  rows?: number;
-  multiline?: boolean;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
   error?: boolean;
+  helperText?: any;
+  multiline?: boolean;
+  rows?: number;
+  fullWidth?: boolean;
+  disabled?: boolean;
   select?: boolean;
   children?: any;
-  onBlur?: () => void;
   inputRef?: any;
 }
 
@@ -22,17 +24,18 @@ const TextBox: React.FC<TextBoxProps> = ({
   id,
   label,
   placeholder,
-  type,
+  type = 'text',
   value,
   onChange,
   onBlur,
-  disabled,
-  rows,
+  error,
   helperText,
   multiline,
-  error,
-  children,
+  rows,
+  fullWidth = true,
+  disabled,
   select,
+  children,
   inputRef,
 }) => (
   <TextField
@@ -40,11 +43,11 @@ const TextBox: React.FC<TextBoxProps> = ({
     label={label}
     value={value}
     onChange={onChange}
-    fullWidth
+    fullWidth={fullWidth}
     disabled={disabled}
     variant="outlined"
-    size="small"
-    margin="dense"
+    size={select ? "small" : "medium"}
+    margin={select ? "dense" : "normal"}
     error={error}
     helperText={helperText}
     multiline={multiline || !!rows}

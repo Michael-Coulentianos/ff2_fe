@@ -23,6 +23,7 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
+import { setAzureUserId } from '../../apiService';
 const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
@@ -50,10 +51,13 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
 
   const { instance } = useMsal();
 
-  // if (instance) {
-  //   let activeAccount;
-  //   activeAccount = instance.getActiveAccount();
-  // }
+  if (instance) {
+    const activeAccount = instance.getActiveAccount();
+    if(activeAccount)
+      {
+      setAzureUserId(activeAccount.localAccountId);
+    }
+  }
 
   const handleLoginRedirect = () => {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));

@@ -5,61 +5,53 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import FormSection from '../atom/FormSection';
+import FormSection from '../molecules/DynamicFormSection';
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": { padding: theme.spacing(2) },
   "& .MuiDialogActions-root": { padding: theme.spacing(1) }
 }));
 
-const validationSchema = yup.object().shape({
-  name: yup.string().required("Organization name is required"),
-  vatNumber: yup.string().required("VAT number is required"),
-  registrationNumber: yup.string().required("Registration number is required"),
-  emailAddress: yup.string().email("Invalid email format").required("Email address is required"),
-  contactNumber: yup.string().required("Contact number is required"),
-  fullName: yup.string().required("Full name is required"),
-  addressLine1: yup.string().required("Address line 1 is required"),
-  addressLine2: yup.string().required("Address line 2 is required"),
-  city: yup.string().required("City is required"),
-  code: yup.string().required("Postal code is required"),
-  legalEntityTypeName: yup.string().required("Legal entity selection is required"),
-  sameAddress: yup.boolean().optional()
+const organizationSchema = yup.object().shape({
+  partyId: yup.number().optional(),
+  contactPersonId: yup.number().optional(),
+  fullName: yup.string().optional(),
+  contactNumber: yup.string().optional(),
+  contactType: yup.string().optional(),
+  emailAddress: yup.string().email().optional(),
+  organizationId: yup.number().optional(),
+  name: yup.string().optional(),
+  vatNumber: yup.string().optional(),
+  legalEntityTypeName: yup.string().optional(),
+  legalEntityTypeId: yup.number().optional(),
+  registrationNumber: yup.string().optional(),
+  addressId: yup.number().optional(), 
+  addressLine1: yup.string().optional(),
+  addressLine2: yup.string().optional(),
+  city: yup.string().optional(),
+  code: yup.string().optional(),
+  sameAddress: yup.boolean().optional(),
 });
 
 const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData }) => {
   const { control, handleSubmit, reset, formState: { errors }, watch  } = useForm({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(organizationSchema),
     defaultValues: {
-      name: "",
-      vatNumber: "",
-      registrationNumber: "",
-      emailAddress: "",
-      contactNumber: "",
-      fullName: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      code: "",
-      legalEntityTypeName: "",
-      sameAddress: false
     }
   });
 
   useEffect(() => {
-    if (isOpen && formData) {
+    if (isOpen) {
       const initialValues = {
         ...formData,
-        emailAddress: formData.contactPerson?.[0]?.emailAddress || "",
-        contactNumber: formData.contactPerson?.[0]?.contactNumber || "",
-        fullName: formData.contactPerson?.[0]?.fullName || "",
-        addressLine1: formData.physicalAddress?.[0]?.addressLine1 || "",
-        addressLine2: formData.physicalAddress?.[0]?.addressLine2 || "",
-        city: formData.physicalAddress?.[0]?.city || "",
-        code: formData.physicalAddress?.[0]?.code || "",
-        legalEntityTypeName: formData.legalEntityTypeName || "",
-        sameAddress: formData.sameAddress || false,
+        contactPerson: formData?.contactPerson || [{ fullName: "", contactNumber: "", emailAddress: "" }],
+        physicalAddress: formData?.physicalAddress || [{ addressLine1: "", addressLine2: "", city: "", code: "" }],
+        postalAddress: formData?.postalAddress || [{ addressLine1: "", addressLine2: "", city: "", code: "" }],
+        legalEntityTypeId: formData?.legalEntityTypeId || 1,
+        legalEntityTypeName: formData?.legalEntityTypeName || "",
+        sameAddress: formData?.sameAddress || false,
       };
+      console.log("Initial Values:", initialValues);
       reset(initialValues);
     }
   }, [formData, isOpen, reset]);
@@ -71,27 +63,24 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
       { id: 'name', label: 'Organization Name', type: 'text' },
       { id: 'vatNumber', label: 'VAT Number', type: 'text' },
       { id: 'registrationNumber', label: 'Registration Number', type: 'text' },
-      {
-        id: 'legalEntityTypeName', label: 'Legal Entity Type', type: 'select',
-        options: legalEntities.map(entity => ({ label: entity.name, value: entity.legalEntityTypeId }))
-      }
+      { id: 'legalEntityTypeId', label: 'Legal Entity Type', type: 'select', options: legalEntities.map(entity => ({ label: entity.name, value: entity.legalEntityTypeId })) }
     ],
     contact: [
-      { id: 'fullName', label: 'Full Name', type: 'text' },
-      { id: 'contactNumber', label: 'Contact Number', type: 'text' },
-      { id: 'emailAddress', label: 'Email', type: 'email' }
+      { id: 'contactPerson[0].fullName', label: 'Full Name', type: 'text' },
+      { id: 'contactPerson[0].contactNumber', label: 'Contact Number', type: 'text' },
+      { id: 'contactPerson[0].emailAddress', label: 'Email', type: 'email' }
     ],
     address: [
-      { id: 'addressLine1', label: 'Address Line 1', type: 'text' },
-      { id: 'addressLine2', label: 'Address Line 2', type: 'text' },
-      { id: 'city', label: 'City', type: 'text' },
-      { id: 'code', label: 'Postal Code', type: 'text' }
+      { id: 'physicalAddress[0].addressLine1', label: 'Address Line 1', type: 'text' },
+      { id: 'physicalAddress[0].addressLine2', label: 'Address Line 2', type: 'text' },
+      { id: 'physicalAddress[0].city', label: 'City', type: 'text' },
+      { id: 'physicalAddress[0].code', label: 'Postal Code', type: 'text' }
     ],
     postal: [
-      { id: 'postalAddressLine1', label: 'Address Line 1', type: 'text' },
-      { id: 'postalAddressLine2', label: 'Address Line 2', type: 'text' },
-      { id: 'postalCity', label: 'City', type: 'text' },
-      { id: 'postalCode', label: 'Postal Code', type: 'text' }
+      { id: 'postalAddress[0].addressLine1', label: 'Address Line 1', type: 'text' },
+      { id: 'postalAddress[0].addressLine2', label: 'Address Line 2', type: 'text' },
+      { id: 'postalAddress[0].city', label: 'City', type: 'text' },
+      { id: 'postalAddress[0].code', label: 'Postal Code', type: 'text' }
     ]
   };
 
@@ -110,21 +99,21 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
                 fields={fieldDefinitions.organizationDetails} 
                 control={control} 
                 errors={errors} 
-                columns={2}
+                columns={4}
               />
               <FormSection 
                 title="Contact Details" 
                 fields={fieldDefinitions.contact} 
                 control={control} 
                 errors={errors} 
-                columns={2}
+                columns={3}
               />
               <FormSection 
                 title="Physical Address" 
                 fields={fieldDefinitions.address} 
                 control={control} 
                 errors={errors} 
-                columns={2}
+                columns={4}
               />
               <Controller
                 name="sameAddress"
@@ -139,7 +128,7 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
                         color="primary" 
                       />
                     }
-                    label="Postal address the same as physical address"
+                    label="Postal address the same"
                   />
                 )}
               />
@@ -149,7 +138,7 @@ const OrganizationDialog = ({ isOpen, onClose, onSubmit, legalEntities, formData
                   fields={fieldDefinitions.postal}
                   control={control} 
                   errors={errors} 
-                  columns={2}
+                  columns={4}
                 />
               )}
             </Grid>
