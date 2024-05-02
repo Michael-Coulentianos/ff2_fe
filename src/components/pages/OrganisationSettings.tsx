@@ -3,7 +3,13 @@ import { Grid, Button } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
-import { getOrganizations, deleteOrganization, createOrganization, updateOrganization, getLegalEntities } from "../../apiService";
+import {
+  getOrganizations,
+  deleteOrganization,
+  createOrganization,
+  updateOrganization,
+  getLegalEntities,
+} from "../../apiService";
 import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -41,19 +47,22 @@ const OrganizationSettings: React.FC = () => {
           const data = await fetchFunction();
           setData(data);
         } catch (error) {
-          console.error(`Error fetching data from ${fetchFunction.name}:`, error);
+          console.error(
+            `Error fetching data from ${fetchFunction.name}:`,
+            error
+          );
         } finally {
           setIsLoading(false);
         }
       }
-  
+
       fetchData();
     }, [fetchFunction, setData, setIsLoading]);
   }
 
   useFetchData(getOrganizations, setOrganizations, setIsLoading);
   useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
-  
+
   const handleOpenForm = () => {
     setSelectedOrg(null);
     setFormOpen(true);
@@ -80,17 +89,26 @@ const OrganizationSettings: React.FC = () => {
     try {
       if (selectedOrg) {
         console.log("Submitting organization:", formData);
-        formData.contactPerson[0].contactDetail = formData.contactPerson[0].contactNumber;
-        formData.contactPerson[1].contactDetail = formData.contactPerson[0].emailAddress;
-        formData.azureUserId = activeAccount? activeAccount.localAccountId : "";
+        formData.contactPerson[0].contactDetail =
+          formData.contactPerson[0].contactNumber;
+        formData.contactPerson[1].contactDetail =
+          formData.contactPerson[0].emailAddress;
+        formData.azureUserId = activeAccount
+          ? activeAccount.localAccountId
+          : "";
         await updateOrganization(formData);
-        setOrganizations(organizations.map(org => org.partyId === formData.partyId ? formData : org));
+        setOrganizations(
+          organizations.map((org) =>
+            org.partyId === formData.partyId ? formData : org
+          )
+        );
       } else {
-
         const org: CreateOrganization = {
           name: formData.name,
           physicalAddress: formData.physicalAddress[0],
-          postalAddress: formData.sameAddress ? formData.physicalAddress[0] : formData.postalAddress[0] || formData.physicalAddress[0],
+          postalAddress: formData.sameAddress
+            ? formData.physicalAddress[0]
+            : formData.postalAddress[0] || formData.physicalAddress[0],
           contactPerson: formData.contactPerson[0],
           registrationNumber: formData.registrationNumber,
           vatNumber: formData.vatNumber,
@@ -100,16 +118,16 @@ const OrganizationSettings: React.FC = () => {
           partyId: 0,
           organizationId: 0,
           partyIdentifier: "",
-          azureUserId: activeAccount? activeAccount.localAccountId : "",
+          azureUserId: activeAccount ? activeAccount.localAccountId : "",
           createdDate: "",
-          sameAddress: formData.sameAddress
+          sameAddress: formData.sameAddress,
         };
-        
+
         await createOrganization(org);
         setOrganizations([...organizations, formData]);
       }
     } catch (error) {
-      console.error('Error submitting organization:', error);
+      console.error("Error submitting organization:", error);
     }
     setIsLoading(false);
     setConfirmOpen(false);
@@ -121,7 +139,9 @@ const OrganizationSettings: React.FC = () => {
       setIsLoading(true);
       try {
         await deleteOrganization(selectedOrg.partyId);
-        setOrganizations(organizations.filter(org => org.partyId !== selectedOrg.partyId));
+        setOrganizations(
+          organizations.filter((org) => org.partyId !== selectedOrg.partyId)
+        );
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
@@ -149,14 +169,17 @@ const OrganizationSettings: React.FC = () => {
     {
       label: "Contact Information",
       dataKey: "contactPerson",
-      renderCell: (item) => <>
-        {item.contactPerson.map((person: ContactPerson) => (
-          <p key={person.contactPersonId}>
-            {person.fullName}
-            <p>Contact Number: {person.contactNumber}</p>
-            <p>Email Address: {person.emailAddress}</p>
-          </p>
-        ))}</>
+      renderCell: (item) => (
+        <>
+          {item.contactPerson.map((person: ContactPerson) => (
+            <p key={person.contactPersonId}>
+              {person.fullName}
+              <p>Contact Number: {person.contactNumber}</p>
+              <p>Email Address: {person.emailAddress}</p>
+            </p>
+          ))}
+        </>
+      ),
     },
     {
       label: "Action Buttons",
@@ -173,16 +196,40 @@ const OrganizationSettings: React.FC = () => {
   return (
     <>
       {isLoading && <Loading />}
-      <Grid xs={12} sx={{ mb: 1 }}>
-        <Button variant="contained" onClick={() => handleOpenForm()} color="primary">
-          Add Organization
-        </Button>
-        <OrganizationDialog isOpen={formOpen} onClose={() => handleCloseForm()} onSubmit={handleSubmit} formData={selectedOrg} legalEntities={legalEntities}/>
-      </Grid>
-      <Grid xs={12}>
-        <DynamicTable data={organizations} columns={myColumns} rowsPerPage={5} />
-        <GenericConfirmDialog open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={handleConfirm} title="Confirm Deletion" content="Are you sure you want to delete this organization?" />
-      </Grid>
+      {!isLoading && (
+        <>
+          <Grid xs={12} sx={{ mb: 1 }}>
+            <Button
+              variant="contained"
+              onClick={() => handleOpenForm()}
+              color="primary"
+            >
+              Add Organization
+            </Button>
+            <OrganizationDialog
+              isOpen={formOpen}
+              onClose={() => handleCloseForm()}
+              onSubmit={handleSubmit}
+              formData={selectedOrg}
+              legalEntities={legalEntities}
+            />
+          </Grid>
+          <Grid xs={12}>
+            <DynamicTable
+              data={organizations}
+              columns={myColumns}
+              rowsPerPage={5}
+            />
+            <GenericConfirmDialog
+              open={confirmOpen}
+              onCancel={() => setConfirmOpen(false)}
+              onConfirm={handleConfirm}
+              title="Confirm Deletion"
+              content="Are you sure you want to delete this organization?"
+            />
+          </Grid>
+        </>
+      )}
     </>
   );
 };

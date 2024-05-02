@@ -6,8 +6,8 @@ const Loading = () => {
     <div>
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>Version 2</p>
-        <CircularProgress color="inherit" />
+        <p color="#3C4F18">Version 2.1</p>
+        <CircularProgress color="primary" />
       </header>
     </div>
   );
