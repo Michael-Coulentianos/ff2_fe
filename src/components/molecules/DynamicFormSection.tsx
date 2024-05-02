@@ -47,11 +47,11 @@ const FormSection = ({
                         helperText={errors[field.id]?.message}
                         inputRef={ref}
                       >
-                        {field?.options?.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
+                        {Array.isArray(field.options) ? field.options.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      )) : <MenuItem disabled>No Options Available</MenuItem>}
                       </TextBox>
                     );
                   case "radioGroup":

@@ -237,20 +237,19 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 };
 
 //Note CRUD APIs
-export const createNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+  console.log("Going to create on api:", note);
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
   formData.append('Title', note.title ?? '');
-  formData.append('PartyId', note.partyId ?? '');
+  formData.append('PartyId','225');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
   
-  if (note.property) {
-    formData.append('Property', JSON.stringify(note.property));
-  }
-  if (note.azureUserId) {
-    formData.append('AzureUserId', note.azureUserId);
-  }
+  // if (note.property) {
+  //   formData.append('Property', JSON.stringify(note.property));
+  // }
+  formData.append('AzureUserId', 'E25C69BF-3815-4937-A2A2-78D878441DE7');
 
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
@@ -270,21 +269,10 @@ export const createNote = async(note: Partial<Note>): Promise<ApiResponse<string
     }
 
     const result: ApiResponse<string> = await response.json();
-    const details = JSON.parse(result.details);
-    const matches = details.match(/NoteTypeId = (\d+)/);
-
-    if (!matches || matches.length < 2) {
-      throw new Error("NoteTypeId not found in response details.");
-    }
-    else{
-      result.details = matches[1];
-    }
-
-    console.log('Update successful:', result);
     return result;
   } catch (error: any) {
-    console.error('Error during note update:', error);
-    throw new Error(`Error updating note: ${error.message || 'Unknown error'}`);
+    console.error('Error during note create:', error);
+    throw new Error(`Error creating note: ${error.message || 'Unknown error'}`);
   }
 };
 

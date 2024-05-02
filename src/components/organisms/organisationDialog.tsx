@@ -63,6 +63,8 @@ const OrganizationDialog = ({
     defaultValues: {},
   });
 
+  const checkboxValue = watch("sameAddress");
+
   useEffect(() => {
     if (isOpen) {
       const initialValues = {
@@ -76,16 +78,13 @@ const OrganizationDialog = ({
         postalAddress: formData?.postalAddress || [
           { addressLine1: "", addressLine2: "", city: "", code: "" },
         ],
-        legalEntityTypeId: formData?.legalEntityTypeId || 1,
+        legalEntityTypeId: formData?.legalEntityTypeId || (legalEntities?.[0]?.legalEntityTypeId || ''),
         legalEntityTypeName: formData?.legalEntityTypeName || "",
         sameAddress: formData?.sameAddress || false,
       };
-      console.log("Initial Values:", initialValues);
       reset(initialValues);
     }
-  }, [formData, isOpen, reset]);
-
-  const checkboxValue = watch("sameAddress");
+  }, [formData, isOpen, legalEntities, reset]);
 
   const fieldDefinitions = {
     organizationDetails: [

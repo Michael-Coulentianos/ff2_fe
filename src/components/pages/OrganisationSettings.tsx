@@ -63,6 +63,15 @@ const OrganizationSettings: React.FC = () => {
   useFetchData(getOrganizations, setOrganizations, setIsLoading);
   useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
 
+  // Organization Form Handlers
+// --------------------------
+// handleOpenForm: Resets and opens the form for new entries.
+// handleCloseForm: Resets and closes the form, cancelling any ongoing edits.
+// handleEdit: Initializes form with selected organization's data for editing.
+// handleDelete: Prepares and prompts confirmation dialog for deleting an organization.
+// handleSubmit: Submits the form data for creating or updating organizations, handles UI state transitions and updates the organization list.
+// handleConfirm: Executes deletion of an organization after confirmation, updates the organization list, and resets UI state.
+
   const handleOpenForm = () => {
     setSelectedOrg(null);
     setFormOpen(true);
@@ -85,10 +94,8 @@ const OrganizationSettings: React.FC = () => {
 
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
-
     try {
       if (selectedOrg) {
-        console.log("Submitting organization:", formData);
         formData.contactPerson[0].contactDetail =
           formData.contactPerson[0].contactNumber;
         formData.contactPerson[1].contactDetail =
@@ -122,7 +129,7 @@ const OrganizationSettings: React.FC = () => {
           createdDate: "",
           sameAddress: formData.sameAddress,
         };
-
+        
         await createOrganization(org);
         setOrganizations([...organizations, formData]);
       }
