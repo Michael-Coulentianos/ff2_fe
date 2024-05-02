@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  MenuItem,
   Container,
   IconButton,
   Grid,
@@ -11,16 +10,13 @@ import {
   Button,
   Dialog,
 } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import TextBox from "../atom/textBox";
 import { NoteType } from "../../models/noteType.interface";
 import { getNoteTypes } from "../../apiService";
-import MapComponent from "./locationMap";
-import AddAttachmentButton from "../atom/attachmentButton";
 import FormSection from "../molecules/DynamicFormSection";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({
@@ -120,13 +116,13 @@ const NotesDialog: React.FC<FormDialogProps> = ({
             cropSubType: "",
             severityScale: "",
           };
-          fetchNoteTypes();
           reset(initialValues);
         }
       } catch (error) {
         console.error("Failed to fetch note types:", error);
       }
     };
+    fetchNoteTypes();
   }, [formData, isOpen, reset]);
 
   const fieldDefinitions = {

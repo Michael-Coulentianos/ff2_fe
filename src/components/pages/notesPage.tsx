@@ -11,7 +11,6 @@ import {
 } from "../../apiService";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import ColoredRadio from "../molecules/ColoredRadio";
 
 interface DataItem {
   id: string;

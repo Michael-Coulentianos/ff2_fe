@@ -4,15 +4,8 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  Typography,
   FormLabel,
 } from "@mui/material";
-import { useController, Control } from "react-hook-form";
-
-interface Props {
-  control: Control;
-  name: string;
-}
 
 const ColoredRadio = () => {
   return (

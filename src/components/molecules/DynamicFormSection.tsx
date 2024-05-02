@@ -1,15 +1,14 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { Grid, Typography, MenuItem } from "@mui/material";
-import AddAttachmentButton from "../atom/attachmentButton";
+import ColoredRadio from "./ColoredRadio";
 import DateSelector from "../atom/dateSelect";
+import AddAttachmentButton from "../atom/attachmentButton";
 import TextBox from "../atom/textBox";
 import MapComponent from "../organisms/locationMap";
-import ColoredRadio from "./ColoredRadio";
-
 
 const FormSection = ({
-  title,
+  title = "",
   fields,
   control,
   errors,
@@ -21,11 +20,13 @@ const FormSection = ({
   return (
     <React.Fragment>
       <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" style={{ marginBottom: 1 }}>
-            {title}
-          </Typography>
-        </Grid>
+        {title && (
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" style={{ marginBottom: 1 }}>
+              {title}
+            </Typography>
+          </Grid>
+        )}
         {fields?.map((field) => (
           <Grid item xs={12} sm={gridColumnWidth} key={field.id}>
             <Controller

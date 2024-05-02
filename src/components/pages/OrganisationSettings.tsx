@@ -7,7 +7,6 @@ import { getOrganizations, deleteOrganization, createOrganization, updateOrganiz
 import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { Organization } from "../../models/organization.interface";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
 import { useMsal } from "@azure/msal-react";
