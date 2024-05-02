@@ -4,7 +4,6 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  Typography,
   FormLabel,
 } from "@mui/material";
 import { useController, Control } from "react-hook-form";

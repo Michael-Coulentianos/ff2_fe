@@ -5,8 +5,9 @@ import Textbox from '../atom/textBox';
 import AttachmentButton from '../atom/attachmentButton';
 import FieldMapComponent from './FieldMapComponent';
 import ColoredRadio from './ColoredRadio';
+import DateSelector from "../atom/dateSelect";
 
-const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1 }) => {
+const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1, onAttachmentClick = () => {} }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
   return (
@@ -54,13 +55,27 @@ const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1 }
                     FieldComponent = <ColoredRadio />;
                     break;
                   case "attachment":
-                    FieldComponent = <AttachmentButton onClick={function (): void {
-                      throw new Error('Function not implemented.');
-                    } } />;
+                    FieldComponent = <AttachmentButton />;
                     break;
                   case "map":
                     FieldComponent = <FieldMapComponent />;
                     break;
+                  case "date":
+                    FieldComponent = <DateSelector />;
+                    break;
+                  default: 
+                    FieldComponent =
+                    <Textbox
+                          id={field.id}
+                          label={field.label}
+                          placeholder={field.placeholder}
+                          type={field.type}
+                          value={value}
+                          onChange={onChange}
+                          onBlur={onBlur}
+                          error={!!errors[field.id]}
+                          helperText={errors[field.id]?.message}
+                        />
                 }
                 return FieldComponent;
               }}
