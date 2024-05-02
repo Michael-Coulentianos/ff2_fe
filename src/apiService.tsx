@@ -406,8 +406,11 @@ export const deleteNote = async (noteId: number): Promise<void> => {
 
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {
+  console.log("tytytyty");
+
   try {
     const response = await api.get<ApiResponse<NoteType[]>>("NoteTypes");
+    console.log(response);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
