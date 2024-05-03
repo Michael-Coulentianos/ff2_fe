@@ -208,16 +208,7 @@ const NotesDialog = ({
           label: org.name,
           value: org.name, 
         })),
-        onChange: (e) => {
-          const selectedName = e.target.value; 
-          const foundOrg = organizations.find(org => org.name === selectedName);
-          if (foundOrg) {
-            setValue('partyId', foundOrg.partyId);
-            setValue('party', foundOrg.name);
-          } else {
-            console.error('Selected organization not found:', selectedName);
-          }
-        }
+        onChange: (selectedName) => setValue('partyId', organizations.find(nt => nt.name === selectedName)?.partyId)
       },
     ],
     generalNoteDetails0: [
@@ -380,13 +371,13 @@ const NotesDialog = ({
                     columns={2}
                   />
                 )}
-                {/* <FormSection
+                <FormSection
                   title=""
                   fields={fieldDefinitions.generalNoteDetails2}
                   control={control}
                   errors={errors}
                   columns={1}
-                /> */}
+                />
                 <FormSection
                   title=""
                   fields={fieldDefinitions.generalNoteDetails3}
