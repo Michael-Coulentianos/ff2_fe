@@ -108,13 +108,13 @@ const Notes: React.FC = () => {
 
     if (selectedNote) {
       try {
+        formData.azureUserId = activeAccount
+          ? activeAccount.localAccountId
+          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
         formData.property = JSON.stringify(properties);
-        const updatedNote = await updateNote(formData);
-        setNotes(
-          notes.map((note) =>
-            note.noteId === updatedNote.details ? updatedNote : note
-          )
-        );
+        await updateNote(formData);
+        const updatedNotes = notes.filter(note => note.noteId !== formData.noteId);
+        setNotes([...updatedNotes, formData]);
       } catch (error) {
         console.error("Error updating note:", error);
       }

@@ -7,6 +7,7 @@ import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
 import { CreateOrganization } from "./models/createOrganization.interface";
+import { AnyCnameRecord } from "dns";
 
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
@@ -238,6 +239,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 
 //Note CRUD APIs
 export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+  console.log(note);
   
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -317,9 +319,11 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
   }
 };
 
-export const updateNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+  console.log(note);
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
+  formData.append('NoteId', note.noteId ?? '');
   formData.append('Title', note.title ?? '');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');

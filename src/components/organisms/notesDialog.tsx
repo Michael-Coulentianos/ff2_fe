@@ -162,7 +162,6 @@ const NotesDialog = ({
 
   useEffect(() => {
     if (isOpen && formData) {
-      console.log("Form data:", formData);
       const noteProperty = JSON.parse(formData.noteProperty);
       for (const key in noteProperty) {
         if (noteProperty.hasOwnProperty(key)) {
