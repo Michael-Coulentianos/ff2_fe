@@ -95,6 +95,23 @@ const Notes: React.FC = () => {
     formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
     formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
 
+    const currentDate = new Date();
+
+// Extract individual components of the date
+const year = currentDate.getFullYear(); // e.g., 2024
+const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month starts from 0
+const day = String(currentDate.getDate()).padStart(2, '0');
+const hours = String(currentDate.getHours()).padStart(2, '0');
+const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
+
+// Construct the formatted date string
+const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+
+
+    formData.createdDate = formattedDate;
+
     const properties = {};
     addPropertyIfNotEmpty(properties, 'severityType', formData.severityType);
     addPropertyIfNotEmpty(properties, 'severitySubType', formData.severitySubType);
