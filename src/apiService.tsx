@@ -319,20 +319,14 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
 
 export const updateNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
   const formData = new FormData();
-  formData.append('NoteId', note.noteId ?? '');
   formData.append('NoteTypeId', note.noteTypeId ?? '');
   formData.append('Title', note.title ?? '');
-  formData.append('PartyId', note.partyId ?? '');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('AzureUserId', note.azureUserId);
+  formData.append('Property', note.property);
   
-  if (note.property) {
-    formData.append('Property', JSON.stringify(note.property));
-  }
-  if (note.azureUserId) {
-    formData.append('AzureUserId', note.azureUserId);
-  }
-
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/UpdateNote', {
       method: 'PUT',
