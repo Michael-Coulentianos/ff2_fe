@@ -16,7 +16,7 @@ const FormSection = ({
   onAttachmentClick = () => {},
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
-
+  
   return (
     <React.Fragment>
       <Grid container spacing={1}>

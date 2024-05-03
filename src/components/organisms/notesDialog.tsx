@@ -91,6 +91,77 @@ const NotesDialog = ({
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
 
+  const options = getSubTypeOptions(watchseverityType);
+
+  function getSubTypeOptions(watchseverityType) {
+    switch (watchseverityType) {
+      case "Damage":
+        return [
+          { id: 1, label: "UV" },
+          { id: 2, label: "Hail" },
+          { id: 3, label: "Wind" },
+          { id: 4, label: "Animal" }
+        ]; 
+      case "Infection":
+        return [
+          { id: 1, label: "Insects" },
+                { id: 2, label: "Nematodes" },
+                { id: 3, label: "Fungus" },
+                { id: 4, label: "Pest" },
+                { id: 5, label: "Bacteria" },
+                { id: 6, label: "Virus" }
+        ];
+      case "Water":
+        return [
+          { id: 1, label: "Logging" },
+          { id: 2, label: "Damage" },
+          { id: 3, label: "Shortage" }
+        ];
+      default:
+        return []; // Default empty options
+    }
+  }
+
+  const options2 = getSubTypeOptions2(watchcropAnalysisType);
+
+  function getSubTypeOptions2(watchcropAnalysisType) {
+    switch (watchcropAnalysisType) {
+      case "Phenological phase":
+        return [
+          { id: 1, label: "Germination" },
+                { id: 2, label: "Vegetative Stage" },
+                { id: 3, label: "Reproductive Stage" },
+                { id: 4, label: "Maturity" },
+                { id: 5, label: "Senescence" },
+                { id: 6, label: "Harvest" }
+        ]; 
+      case "Soil type":
+        return [
+          { id: 1, label: "Clay" },
+                { id: 2, label: "Sandy" },
+                { id: 3, label: "Silt" },
+                { id: 4, label: "Loamy" },
+                { id: 5, label: "Peaty" },
+                { id: 6, label: "Chalky" }
+        ];
+      case "Deficiency type":
+        return [
+          { id: 1, label: "Calcium(Ca)" },
+                { id: 2, label: "Nitrogen(N)" },
+                { id: 3, label: "Phosphate(PO)" },
+                { id: 4, label: "Sulphur(S)" },
+                { id: 5, label: "Iron(fe)" },
+                { id: 6, label: "Iron(fe)" },
+                { id: 7, label: "Potassium(K)" },
+                { id: 8, label: "Magnesium(Mg)" },
+                { id: 9, label: "Manganese(Mn)" },
+                { id: 10, label: "Zinc(Zn)" }
+        ];
+      default:
+        return []; // Default empty options
+    }
+  }
+
   useEffect(() => {
     if (isOpen && formData) {
       reset({
@@ -125,7 +196,6 @@ const NotesDialog = ({
       });
      }
   }, [formData, isOpen, reset, noteTypes, setValue, watchNoteType, watchParty, organizations]);
-  console.log("Crop Analysis Type:", watchcropAnalysisType);
 
   const fieldDefinitions = {
     generalNoteDetails: [
@@ -187,43 +257,7 @@ const NotesDialog = ({
         id: "severitySubType",
         label: "Sub-Type",
         type: "select",
-        options: (
-          <>
-            {watchseverityType === "Damage" &&
-              [
-                { id: 1, label: "UV" },
-                { id: 2, label: "Hail" },
-                { id: 3, label: "Wind" },
-                { id: 4, label: "Animal" },
-              ]?.map((type) => ({
-                label: type.label,
-                value: type.label,
-              }))}
-
-            {watchseverityType === "Infection" &&
-              [
-                { id: 1, label: "Insects" },
-                { id: 2, label: "Nematodes" },
-                { id: 3, label: "Fungus" },
-                { id: 4, label: "Pest" },
-                { id: 5, label: "Bacteria" },
-                { id: 6, label: "Virus" },
-              ]?.map((type) => ({
-                label: type.label,
-                value: type.label,
-              }))}
-
-            {watchseverityType === "Water" &&
-              [
-                { id: 1, label: "Logging" },
-                { id: 2, label: "Damage" },
-                { id: 3, label: "Shortage" },
-              ]?.map((type) => ({
-                label: type.label,
-                value: type.label,
-              }))}
-          </>
-        ),
+        options: options.map((type) => ({ label: type.label, value: type.label })),
       },
       { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
     ],
@@ -249,16 +283,14 @@ const NotesDialog = ({
           value: type.id,
         })),
       },
-    ],
-    yieldEstimateCalculation: [
       { id: "yieldEstimateHeads", label: "Heads/Plants per 10m", type: "text" },
       { id: "yieldEstimateRowWidth", label: "Row Width", type: "text" },
-      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" },
+      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" }
     ],
     cropAnalysisNote: [
       {
         id: "cropAnalysisType",
-        label: "cropAnalysisType",
+        label: "Crop Analysis Type",
         type: "select",
         options: [
           { id: 1, label: "Phenological phase" },
@@ -273,50 +305,7 @@ const NotesDialog = ({
         id: "cropSubType",
         label: "Sub-Type",
         type: "select",
-        options: (
-          <>
-            {watchcropAnalysisType === "Phenological phase" &&
-              [
-                { id: 1, label: "Germination" },
-                { id: 2, label: "Vegetative Stage" },
-                { id: 3, label: "Reproductive Stage" },
-                { id: 4, label: "Maturity" },
-                { id: 5, label: "Senescence" },
-                { id: 6, label: "Harvest" },
-              ].map((type) => ({
-                label: type.label,
-                value: type.id,
-              }))}
-            {watchcropAnalysisType === "Soil type" &&
-              [
-                { id: 1, label: "Clay" },
-                { id: 2, label: "Sandy" },
-                { id: 3, label: "Silt" },
-                { id: 4, label: "Loamy" },
-                { id: 5, label: "Peaty" },
-                { id: 6, label: "Chalky" },
-              ].map((type) => ({
-                label: type.label,
-                value: type.label,
-              }))}
-            {watchcropAnalysisType === "Deficiency type" &&
-              [
-                { id: 1, label: "Calcium(Ca)" },
-                { id: 2, label: "Nitrogen(N)" },
-                { id: 3, label: "Phosphate(PO)" },
-                { id: 4, label: "Sulphur(S)" },
-                { id: 5, label: "Iron(fe)" },
-                { id: 6, label: "Iron(fe)" },
-                { id: 7, label: "Potassium(K)" },
-                { id: 8, label: "Magnesium(Mg)" },
-                { id: 9, label: "Manganese(Mn)" },
-                { id: 10, label: "Zinc(Zn)" },
-              ].map((type) => ({
-                label: type.label,
-                value: type.label,
-              }))}
-          </>
-        ),
+        options: options2.map((type) => ({ label: type.label, value: type.label })),
       },
     ],
   };
