@@ -320,20 +320,13 @@ const NotesDialog = ({
         <form onSubmit={handleSubmit((onSubmit))}>
           <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
             <Grid container spacing={2} sx={{ padding: 2 }}>
-            <FormSection
-              title=""
-              fields={fieldDefinitions.generalNoteDetails}
-              control={control}
-              errors={errors}
-              columns={2}
-            >
-              {fieldDefinitions.generalNoteDetails.map((field) => (
-                <div key={field.id}>
-                  <label htmlFor={field.id}>{field.label}</label>
-                  <input id={field.id} type={field.type} {...field.props} />
-                </div>
-              ))}
-            </FormSection>
+                <FormSection
+                  title=""
+                  fields={fieldDefinitions.generalNoteDetails}
+                  control={control}
+                  errors={errors}
+                  columns={2}
+                />
 
                 <FormSection
                   title=""
