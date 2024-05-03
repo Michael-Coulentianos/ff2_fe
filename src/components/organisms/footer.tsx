@@ -1,4 +1,4 @@
-import {useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <Box
       sx={{
-        position:"sticky",
+        position: "sticky",
         paddingTop: 1,
         paddingBottom: 1,
         backgroundColor: theme.palette.primary.light,
@@ -19,7 +19,8 @@ export default function Footer() {
         {"Copyright © "}
         <Link color="inherit" href="https://farmersfriend.tech/">
           Farmers Friend
-        </Link>{" "}
+        </Link>
+        {" "}
         {new Date().getFullYear()}
         {"."}
       </Typography>

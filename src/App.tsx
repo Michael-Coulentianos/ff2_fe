@@ -45,7 +45,7 @@ const App = ({ instance }) => {
           handleDrawerOpen={handleDrawerOpen}
           handleDrawerClose={handleDrawerClose}
         ></Header>
-        <Main open={open} sx={{ minHeight: "87vh" }}>
+        <Main open={open} sx={{ minHeight: "88vh" ,marginTop:7}}>
           <Routing />
         </Main>
         <Footer></Footer>
