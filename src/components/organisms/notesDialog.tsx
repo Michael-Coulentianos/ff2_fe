@@ -30,7 +30,6 @@ const MuiDialog = styled(Dialog)(({ theme }) => ({
 const validationSchema = yup.object({
   title: yup.string().optional(),//required("This field is required"),
   noteType: yup.string().optional(),//required("This field is required"),
-  noteTypeId: yup.number().optional(),
   party: yup.string().optional(),
   partyId: yup.number().optional(),
   description: yup.string().optional(),//required("This field is required"),
@@ -76,7 +75,6 @@ const NotesDialog = ({
       severitySubType: "",
       cropType: "",
       noteType: noteTypes.length > 0 ? noteTypes[0].name : '', 
-      noteTypeId: noteTypes.length > 0 ? noteTypes[0].noteTypeId : '',
       yieldEstimateHeads: "",
       yieldEstimateRowWidth: "",
       yieldEstimateGrams: "",
@@ -90,7 +88,7 @@ const NotesDialog = ({
   const watchParty = watch("party");
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
-
+  
   const options = getSubTypeOptions(watchseverityType);
 
   function getSubTypeOptions(watchseverityType) {
@@ -175,11 +173,9 @@ const NotesDialog = ({
         //...defaultValues,
         ...formData,
         noteType: formData.noteType || noteTypes[0]?.name,
-        noteTypeId: formData.noteTypeId || noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId,
         party: formData.party || (organizations.length > 0 ? organizations[0].name : ''),
         partyId: formData.partyId || organizations.find(org => org.name === formData.party)?.partyId
       });
-      setValue('noteTypeId', noteTypes.find(nt => nt.name === watchNoteType)?.noteTypeId);
       setValue('partyId', organizations.find(nt => nt.name === watchParty)?.partyId);
     }
     if (!isOpen) {
@@ -193,7 +189,6 @@ const NotesDialog = ({
         severitySubType: "",
         cropType: "",
         noteType: noteTypes.length > 0 ? noteTypes[0].name : '', 
-        noteTypeId: noteTypes.length > 0 ? noteTypes[0].noteTypeId : '',
         yieldEstimateHeads: "",
         yieldEstimateRowWidth: "",
         yieldEstimateGrams: "",
@@ -229,8 +224,7 @@ const NotesDialog = ({
         options: noteTypes?.map((type) => ({
           label: type.name,
           value: type.name,
-        })),
-        onChange: (selectedName) => setValue('noteTypeId', noteTypes.find(nt => nt.name === selectedName)?.noteTypeId),
+        }))
       },
       { id: "date", label: "Note Date", type: "date" },
     ],

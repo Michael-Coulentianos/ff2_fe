@@ -238,18 +238,15 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 
 //Note CRUD APIs
 export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
-  console.log("Going to create on api:", note);
+  
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
   formData.append('Title', note.title ?? '');
-  formData.append('PartyId','225');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
-  
-  // if (note.property) {
-  //   formData.append('Property', JSON.stringify(note.property));
-  // }
-  formData.append('AzureUserId', 'E25C69BF-3815-4937-A2A2-78D878441DE7');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('AzureUserId', note.azureUserId);
+  formData.append('Property', note.property);
 
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {

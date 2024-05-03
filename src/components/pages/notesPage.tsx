@@ -91,8 +91,10 @@ const Notes: React.FC = () => {
 };
 
   const handleSubmit = async (formData: any) => {
-    formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
 
+    formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
+    formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
+    console.log("Form data:", formData);
     const properties = {};
     addPropertyIfNotEmpty(properties, 'severityType', formData.severityType);
     addPropertyIfNotEmpty(properties, 'severitySubType', formData.severitySubType);
