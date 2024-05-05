@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Button, IconButton, Grid, styled, DialogTitle, DialogContent, DialogActions, Dialog } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
+import {
+  Button,
+  IconButton,
+  Grid,
+  styled,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Dialog,
+} from "@mui/material";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import FormSection from '../molecules/DynamicFormSection';
+import FormSection from "../molecules/DynamicFormSection";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { updateUserProfile, getUserProfile } from "../../apiService";
 import { UserProfile } from "../../models/userProfile.interface";
@@ -14,7 +23,10 @@ const validationSchema = yup.object({
   givenName: yup.string().required("Given Name is required"),
   surname: yup.string().required("Surname is required"),
   displayName: yup.string().required("Display Name is required"),
-  mobilePhone: yup.string().required("Mobile Phone is required").min(10, "Mobile Phone must be at least 10 digits"),
+  mobilePhone: yup
+    .string()
+    .required("Mobile Phone is required")
+    .min(10, "Mobile Phone must be at least 10 digits"),
 });
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
@@ -29,7 +41,12 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 export const UserProfileForm = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [modalOpen, setModalOpen] = useState(false);
-  const { control, handleSubmit, reset, formState: { errors } } = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: yupResolver(validationSchema),
   });
 
@@ -55,11 +72,12 @@ export const UserProfileForm = () => {
 
   const fieldDefinitions = {
     profileDetails: [
-      { id: 'givenName', label: 'Name', type: 'text' },
-      { id: 'surname', label: 'Last Name', type: 'text' },
-      { id: 'displayName', label: 'Display Name', type: 'text' },
-      { id: 'mobilePhone', label: 'Contact Number', type: 'text' },
-     ]};
+      { id: "givenName", label: "Name", type: "text" },
+      { id: "surname", label: "Last Name", type: "text" },
+      { id: "displayName", label: "Display Name", type: "text" },
+      { id: "mobilePhone", label: "Contact Number", type: "text" },
+    ],
+  };
 
   return (
     <>
@@ -67,24 +85,45 @@ export const UserProfileForm = () => {
         <ManageAccountsIcon />
       </IconButton>
 
-      <StyledDialog onClose={() => setModalOpen(false)} open={modalOpen} aria-labelledby="update-profile-dialog">
+      <StyledDialog
+        onClose={() => setModalOpen(false)}
+        open={modalOpen}
+        aria-labelledby="update-profile-dialog"
+      >
         <DialogTitle id="update-profile-dialog">Update Profile</DialogTitle>
-        <IconButton aria-label="close" onClick={() => setModalOpen(false)} sx={{ position: "absolute", right: 10, top: 10, color: (theme) => theme.palette.grey[500] }}>
+        <IconButton
+          aria-label="close"
+          onClick={() => setModalOpen(false)}
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 10,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
           <CloseIcon />
         </IconButton>
         <form onSubmit={handleSubmit(handleFormSubmit)}>
           <DialogContent dividers>
             <Grid container spacing={2} sx={{ padding: 2 }}>
-            <FormSection 
-                fields={fieldDefinitions.profileDetails} 
-                control={control} 
-                errors={errors} 
+              <FormSection
+                fields={fieldDefinitions.profileDetails}
+                control={control}
+                errors={errors}
                 columns={1}
+                title=""
               />
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="primary" type="submit" startIcon={<SaveIcon />}>Update</Button>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              startIcon={<SaveIcon />}
+            >
+              Update
+            </Button>
           </DialogActions>
         </form>
       </StyledDialog>

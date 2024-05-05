@@ -7,6 +7,7 @@ import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
 import { CreateOrganization } from "./models/createOrganization.interface";
+import { AnyCnameRecord } from "dns";
 
 const api = axios.create({
   baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
@@ -237,20 +238,17 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 };
 
 //Note CRUD APIs
-export const createNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+  console.log(note);
+  
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
   formData.append('Title', note.title ?? '');
-  formData.append('PartyId', note.partyId ?? '');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
-  
-  if (note.property) {
-    formData.append('Property', JSON.stringify(note.property));
-  }
-  if (note.azureUserId) {
-    formData.append('AzureUserId', note.azureUserId);
-  }
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('AzureUserId', note.azureUserId);
+  formData.append('Property', note.property);
 
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
@@ -270,21 +268,10 @@ export const createNote = async(note: Partial<Note>): Promise<ApiResponse<string
     }
 
     const result: ApiResponse<string> = await response.json();
-    const details = JSON.parse(result.details);
-    const matches = details.match(/NoteTypeId = (\d+)/);
-
-    if (!matches || matches.length < 2) {
-      throw new Error("NoteTypeId not found in response details.");
-    }
-    else{
-      result.details = matches[1];
-    }
-
-    console.log('Update successful:', result);
     return result;
   } catch (error: any) {
-    console.error('Error during note update:', error);
-    throw new Error(`Error updating note: ${error.message || 'Unknown error'}`);
+    console.error('Error during note create:', error);
+    throw new Error(`Error creating note: ${error.message || 'Unknown error'}`);
   }
 };
 
@@ -332,22 +319,18 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
   }
 };
 
-export const updateNote = async(note: Partial<Note>): Promise<ApiResponse<string>> => {
+export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+  console.log(note);
   const formData = new FormData();
-  formData.append('NoteId', note.noteId ?? '');
   formData.append('NoteTypeId', note.noteTypeId ?? '');
+  formData.append('NoteId', note.noteId ?? '');
   formData.append('Title', note.title ?? '');
-  formData.append('PartyId', note.partyId ?? '');
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
+  formData.append('PartyId', note.partyId ?? '');
+  formData.append('AzureUserId', note.azureUserId);
+  formData.append('Property', note.property);
   
-  if (note.property) {
-    formData.append('Property', JSON.stringify(note.property));
-  }
-  if (note.azureUserId) {
-    formData.append('AzureUserId', note.azureUserId);
-  }
-
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/UpdateNote', {
       method: 'PUT',

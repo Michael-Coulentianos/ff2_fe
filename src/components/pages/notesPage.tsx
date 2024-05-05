@@ -8,10 +8,12 @@ import {
   createNote,
   updateNote,
   getNoteById,
+  getOrganizations,
+  getNoteTypes
 } from "../../apiService";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import ColoredRadio from "../molecules/ColoredRadio";
+import { useMsal } from "@azure/msal-react";
 
 interface DataItem {
   id: string;
@@ -26,38 +28,41 @@ interface ColumnConfig {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
+  const [noteTypes, setNoteTypes] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [currentNoteId, setCurrentNoteId] = useState<number | null>(null);
-  const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedNote, setSelectedNote] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [organizations, setOrganizations] = useState<any[]>([]);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const data = await getNotes();
-        setNotes(data);
-      } catch (error: any) {
-        console.error("Error fetching Notes:", error.message);
+
+  const { instance } = useMsal();
+  const activeAccount = instance.getActiveAccount();
+
+  function useFetchData(fetchFunction, setData, setIsLoading) {
+    useEffect(() => {
+      async function fetchData() {
+        setIsLoading(true);
+        try {
+          const data = await fetchFunction();
+          setData(data);
+        } catch (error) {
+          console.error(
+            `Error fetching data from ${fetchFunction.name}:`,
+            error
+          );
+        } finally {
+          setIsLoading(false);
+        }
       }
-    };
 
-    fetchNotes();
-  }, []);
+      fetchData();
+    }, [fetchFunction, setData, setIsLoading]);
+  }
 
-  const handleCancel = () => {
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
-  };
-
-  const handleEditClick = async (id) => {
-    try {
-      const note = await getNoteById(id);
-      setSelectedNote(note[0]);
-      setFormOpen(true);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -65,58 +70,101 @@ const Notes: React.FC = () => {
   };
 
   const handleCloseForm = () => {
-    setFormOpen(false);
     setSelectedNote(null);
+    setFormOpen(false);
   };
 
-  const handleFormSubmit = async (formData) => {
-    console.log(formData, "formData");
+  const handleEdit = (note) => {
+    setSelectedNote(note);
+    setFormOpen(true);
+  };
+
+  const handleDelete = (note) => {
+    setSelectedNote(note);
+    setConfirmOpen(true);
+  };
+
+  const addPropertyIfNotEmpty = (obj, key, value) => {
+    if (value !== null && value !== "" && value !== undefined) {
+        obj[key] = value;
+    }
+};
+
+  const handleSubmit = async (formData: any) => {
+
+    formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
+    formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
+
+    const currentDate = new Date();
+
+// Extract individual components of the date
+const year = currentDate.getFullYear(); // e.g., 2024
+const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month starts from 0
+const day = String(currentDate.getDate()).padStart(2, '0');
+const hours = String(currentDate.getHours()).padStart(2, '0');
+const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
+
+// Construct the formatted date string
+const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+
+
+    formData.createdDate = formattedDate;
+
+    const properties = {};
+    addPropertyIfNotEmpty(properties, 'severityType', formData.severityType);
+    addPropertyIfNotEmpty(properties, 'severitySubType', formData.severitySubType);
+    addPropertyIfNotEmpty(properties, 'cropType', formData.cropType);
+    addPropertyIfNotEmpty(properties, 'yieldEstimateHeads', formData.yieldEstimateHeads);
+    addPropertyIfNotEmpty(properties, 'yieldEstimateRowWidth', formData.yieldEstimateRowWidth);
+    addPropertyIfNotEmpty(properties, 'yieldEstimateGrams', formData.yieldEstimateGrams);
+    addPropertyIfNotEmpty(properties, 'cropAnalysisType', formData.cropAnalysisType);
+    addPropertyIfNotEmpty(properties, 'cropSubType', formData.cropSubType);
+    addPropertyIfNotEmpty(properties, 'severityScale', formData.severityScale);
 
     if (selectedNote) {
-      console.log(selectedNote, "selectedNote");
-
       try {
-        const updatedNote = await updateNote(formData);
-        setNotes(
-          notes.map((note) =>
-            note.noteId === updatedNote.details ? updatedNote : note
-          )
-        );
+        formData.azureUserId = activeAccount
+          ? activeAccount.localAccountId
+          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
+        formData.property = JSON.stringify(properties);
+        await updateNote(formData);
+        const updatedNotes = notes.filter(note => note.noteId !== formData.noteId);
+        setNotes([...updatedNotes, formData]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
     } else {
       try {
-        console.log(formData, "new note?");
-        const newNote = await createNote(formData);
-        setNotes([...notes, newNote]);
+        formData.azureUserId = activeAccount
+          ? activeAccount.localAccountId
+          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
+        formData.property = JSON.stringify(properties);
+        await createNote(formData);
+        setNotes([...notes, formData]);
       } catch (error) {
         console.error("Error creating note:", error);
       }
     }
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
+    setIsLoading(false);
     handleCloseForm();
   };
 
-  const handleDeleteClick = (noteId: number) => {
-    setCurrentNoteId(noteId);
-    setConfirmOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (currentNoteId !== null) {
+  const handleConfirm = async () => {
+    if (selectedNote) {
+      setIsLoading(true);
       try {
-        await deleteNote(currentNoteId);
-        setNotes((prevNotes) =>
-          prevNotes.filter((note) => note.noteId !== currentNoteId)
+        await deleteNote(selectedNote.noteId);
+        setNotes(
+          notes.filter((note) => note.noteId !== selectedNote.noteId)
         );
       } catch (error) {
-        console.error("Failed to delete note:", error);
+        console.error("Failed to delete organization:", error);
       }
+      setConfirmOpen(false);
+      handleCloseForm();
     }
-    setConfirmOpen(false);
-    setCurrentNoteId(null);
   };
 
   const myColumns: ColumnConfig[] = [
@@ -150,8 +198,8 @@ const Notes: React.FC = () => {
       dataKey: "actionBtns",
       renderCell: (item) => (
         <ActionButtons
-          onEdit={() => handleEditClick(item?.noteId)}
-          onDelete={() => handleDeleteClick(item?.noteId)}
+          onEdit={() => handleEdit(item)}
+          onDelete={() => handleDelete(item)}
         ></ActionButtons>
       ),
     },
@@ -167,16 +215,18 @@ const Notes: React.FC = () => {
           <NotesDialog
             isOpen={formOpen}
             onClose={handleCloseForm}
-            onSubmit={handleFormSubmit}
+            onSubmit={handleSubmit}
             formData={selectedNote}
+            noteTypes={noteTypes}
+            organizations={organizations}
           />
         </Grid>
         <Grid item xs={12}>
           <DynamicTable data={notes} columns={myColumns} rowsPerPage={5}/>
           <GenericConfirmDialog
             open={confirmOpen}
-            onCancel={handleCancel}
-            onConfirm={confirmDelete}
+            onCancel={() => setConfirmOpen(false)}
+            onConfirm={handleConfirm}
             title="Confirm Deletion"
             content="Are you sure you want to delete this note?"
           />

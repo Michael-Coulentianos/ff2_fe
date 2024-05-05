@@ -1,5 +1,5 @@
-import React from 'react';
-import { TextField } from '@mui/material';
+import React from "react";
+import { TextField } from "@mui/material";
 
 interface TextBoxProps {
   id?: string;
@@ -24,7 +24,7 @@ const TextBox: React.FC<TextBoxProps> = ({
   id,
   label,
   placeholder,
-  type = 'text',
+  type = "text",
   value,
   onChange,
   onBlur,
@@ -46,8 +46,8 @@ const TextBox: React.FC<TextBoxProps> = ({
     fullWidth={fullWidth}
     disabled={disabled}
     variant="outlined"
-    size={select ? "small" : "medium"}
-    margin={select ? "dense" : "normal"}
+    size="small"
+    margin="dense"
     error={error}
     helperText={helperText}
     multiline={multiline || !!rows}

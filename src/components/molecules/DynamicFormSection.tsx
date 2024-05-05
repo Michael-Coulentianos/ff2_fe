@@ -1,40 +1,44 @@
-import React from 'react';
-import { Controller } from 'react-hook-form';
-import { Grid, Typography, MenuItem } from '@mui/material';
-import Textbox from '../atom/textBox';
-import AttachmentButton from '../atom/attachmentButton';
-import FieldMapComponent from './FieldMapComponent';
-import ColoredRadio from './ColoredRadio';
+import React from "react";
+import { Controller } from "react-hook-form";
+import { Grid, Typography, MenuItem } from "@mui/material";
+import ColoredRadio from "./ColoredRadio";
 import DateSelector from "../atom/dateSelect";
+import AddAttachmentButton from "../atom/attachmentButton";
+import TextBox from "../atom/textBox";
+import MapComponent from "../organisms/locationMap";
 
-const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1, onAttachmentClick = () => {} }) => {
+const FormSection = ({
+  title = "",
+  fields,
+  control,
+  errors,
+  columns = 1,
+  onAttachmentClick = () => {},
+}) => {
   const gridColumnWidth = Math.floor(12 / columns);
-
+  
   return (
     <React.Fragment>
-      <Grid container alignItems="center" spacing={2}>
+      <Grid container spacing={1}>
         {title && (
           <Grid item xs={12}>
-            <Typography variant="h6" style={{ marginBottom: 4 }}>
+            <Typography variant="subtitle1" style={{ marginBottom: 1 }}>
               {title}
             </Typography>
           </Grid>
         )}
-        {fields.map((field) => (
+        {fields?.map((field) => (
           <Grid item xs={12} sm={gridColumnWidth} key={field.id}>
             <Controller
               name={field.id}
               control={control}
               defaultValue=""
               render={({ field: { onChange, onBlur, value, ref } }) => {
-                let FieldComponent = <Textbox id={field.id} label={field.label} placeholder={field.placeholder} type={field.type} value={value} onChange={onChange} onBlur={onBlur} error={!!errors[field.id]} helperText={errors[field.id]?.message} inputRef={ref} />;
-
                 switch (field.type) {
                   case "select":
-                    FieldComponent = (
-                      <Textbox
+                    return (
+                      <TextBox
                         select
-                        id={field.id}
                         label={field.label}
                         value={value}
                         onChange={onChange}
@@ -43,41 +47,58 @@ const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1, 
                         helperText={errors[field.id]?.message}
                         inputRef={ref}
                       >
-                        {field.options?.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Textbox>
+                        {Array.isArray(field.options) ? field.options.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      )) : <MenuItem disabled>No Options Available</MenuItem>}
+                      </TextBox>
                     );
-                    break;
                   case "radioGroup":
-                    FieldComponent = <ColoredRadio />;
-                    break;
+                    return <ColoredRadio />;
                   case "attachment":
-                    FieldComponent = <AttachmentButton />;
-                    break;
+                    return <AddAttachmentButton />;
                   case "map":
-                    FieldComponent = <FieldMapComponent />;
-                    break;
+                    return (
+                      <MapComponent
+                        label="Location"
+                        error={!!errors.location}
+                        helperText={errors.location?.message}
+                      />
+                    );
+                  case "multiText":
+                    return (
+                      <TextBox
+                        id={field.id}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                        multiline
+                        rows={2}
+                      />
+                    );
                   case "date":
-                    FieldComponent = <DateSelector />;
-                    break;
-                  default: 
-                    FieldComponent =
-                    <Textbox
-                          id={field.id}
-                          label={field.label}
-                          placeholder={field.placeholder}
-                          type={field.type}
-                          value={value}
-                          onChange={onChange}
-                          onBlur={onBlur}
-                          error={!!errors[field.id]}
-                          helperText={errors[field.id]?.message}
-                        />
+                    return <DateSelector></DateSelector>;
+                  default:
+                    return (
+                      <TextBox
+                        id={field.id}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        type={field.type}
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                      />
+                    );
                 }
-                return FieldComponent;
               }}
             />
           </Grid>
@@ -87,4 +108,4 @@ const DynamicFormSection = ({ title = "", fields, control, errors, columns = 1, 
   );
 };
 
-export default DynamicFormSection;
+export default FormSection;
