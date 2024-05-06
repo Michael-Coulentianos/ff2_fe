@@ -53,8 +53,8 @@ export default function ApplicationsMenu() {
             mt: 1.5,
             ml: 5,
             "& .MuiAvatar-root": {
-              width: 32,
-              height: 32,
+              width: 20,
+              height: 20,
               ml: -0.5,
               mr: 1,
             },

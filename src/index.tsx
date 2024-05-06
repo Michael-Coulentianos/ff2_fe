@@ -7,6 +7,7 @@ import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import { msalConfig } from "./auth-config";
 import { Providers } from "@microsoft/mgt-element";
 import { Msal2Provider } from "@microsoft/mgt-msal2-provider";
+import "@fontsource/poppins";
 
 Providers.globalProvider = new Msal2Provider({
   clientId: "REPLACE_WITH_CLIENTID",

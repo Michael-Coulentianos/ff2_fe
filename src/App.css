@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: "Poppins" !important;
 }
 
 .App-logo {
@@ -15,7 +16,8 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10rgb (37, 46, 62) min);
-  color: #3C4F1E;
+  color: #3c4f1e;
+  font-family: "Poppins";
 }
 
 .App-link {
@@ -28,5 +30,14 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 600px) {
+  .css-hyum1k-MuiToolbar-root {
+    min-height: 50px !important;
+  }
+  .css-ymzihv {
+    min-height: 50px !important;
   }
 }

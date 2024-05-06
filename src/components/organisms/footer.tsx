@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 
-export default function Footer() {
+export default function Footer({ open }) {
   const theme = useTheme();
   return (
     <Box
@@ -13,14 +13,15 @@ export default function Footer() {
         paddingBottom: 1,
         backgroundColor: theme.palette.primary.light,
         textAlign: "center",
+        minHeight: "30px",
+        marginLeft: open ? "240px" : "0px",
       }}
     >
       <Typography color="text.light">
         {"Copyright © "}
         <Link color="inherit" href="https://farmersfriend.tech/">
           Farmers Friend
-        </Link>
-        {" "}
+        </Link>{" "}
         {new Date().getFullYear()}
         {"."}
       </Typography>

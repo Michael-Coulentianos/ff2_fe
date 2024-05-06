@@ -9,6 +9,7 @@ import {
   styled,
   useTheme,
   useMediaQuery,
+  Typography,
 } from "@mui/material";
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -24,27 +25,6 @@ import {
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../apiService";
-const drawerWidth = 240;
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
@@ -70,10 +50,12 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   return (
     <Box>
       <CssBaseline />
-      <AppBar
-        sx={{ backgroundColor: theme.palette.common.white }}
+      <MuiAppBar
+        sx={{
+          backgroundColor: theme.palette.common.white,
+          height: "50px",
+        }}
         position="fixed"
-        open={open}
       >
         <Toolbar>
           <NavigationDrawer
@@ -83,7 +65,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           ></NavigationDrawer>
           <ApplicationsMenu></ApplicationsMenu>
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
-            <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
+            <img src={FFlogo} alt="FFlogo" height={"30px"} width={"30px"} />
           </Link>
           {isSmScreen && (
             <Link
@@ -104,41 +86,39 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
               backgroundColor: theme.palette.secondary.main,
               width: "30px",
               height: "30px",
+              "&:hover": {
+                backgroundColor: theme.palette.secondary.light,
+              },
             }}
           >
-            <EditIcon />
+            <EditIcon fontSize="small" />
           </IconButton>
           <SearchBar></SearchBar>
-
           <AuthenticatedTemplate>
             <UserProfileForm></UserProfileForm>
             <IconButton
               aria-label="edit"
               sx={{
                 color: theme.palette.primary.main,
+                width: "30px",
+                height: "30px",
               }}
               onClick={handleLogoutRedirect}
             >
-              <ExitToAppIcon
-                sx={{
-                  color: theme.palette.primary.main,
-                  width: "30px",
-                  height: "30px",
-                }}
-              />
+              <ExitToAppIcon fontSize="small" />
             </IconButton>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <Button
               variant="outlined"
               onClick={handleLoginRedirect}
-              sx={{ height: "30px" }}
+              sx={{ maxHeight: "25px" }}
             >
-              Sign in
+              <Typography noWrap>Sign in</Typography>
             </Button>
           </UnauthenticatedTemplate>
         </Toolbar>
-      </AppBar>
+      </MuiAppBar>
     </Box>
   );
 }

@@ -81,8 +81,15 @@ export const UserProfileForm = () => {
 
   return (
     <>
-      <IconButton onClick={() => setModalOpen(true)} color="primary">
-        <ManageAccountsIcon />
+      <IconButton
+        sx={{
+          width: "30px",
+          height: "30px",
+        }}
+        onClick={() => setModalOpen(true)}
+        color="primary"
+      >
+        <ManageAccountsIcon fontSize="small" />
       </IconButton>
 
       <StyledDialog

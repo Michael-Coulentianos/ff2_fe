@@ -7,6 +7,7 @@ import theme from "./theme";
 import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Routing from "./routing";
+import NavigationDrawer from "./components/organisms/navigationDrawer";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -45,10 +46,15 @@ const App = ({ instance }) => {
           handleDrawerOpen={handleDrawerOpen}
           handleDrawerClose={handleDrawerClose}
         ></Header>
-        <Main open={open} sx={{ minHeight: "88vh" ,marginTop:7}}>
+       
+        <Main
+          open={open}
+          sx={{ minHeight: "86vh", marginTop: 6, padding: "10px" }}
+        >
           <Routing />
         </Main>
-        <Footer></Footer>
+
+        <Footer open={open}></Footer>
       </MsalProvider>
     </ThemeProvider>
   );

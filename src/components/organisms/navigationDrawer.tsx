@@ -1,12 +1,4 @@
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { DataUsage, Grass } from "@mui/icons-material";
-import barnIcon from "../../assets/icons/barnIcon.svg";
-import { useState } from "react";
+import React from "react";
 import {
   Collapse,
   Divider,
@@ -17,23 +9,31 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import theme from "../../theme";
+import { useMsal } from "@azure/msal-react";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { DataUsage, Grass } from "@mui/icons-material";
+import barnIcon from "../../assets/icons/barnIcon.svg";
 import MenuItem from "../molecules/menuItem";
 import DrawerToggleButton from "../atom/drawerToggle";
-import { useMsal } from "@azure/msal-react";
+import theme from "../../theme";
+
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "flex-start",
   padding: theme.spacing(1, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: "space-around",
   backgroundColor: "#3C4F1E",
 }));
 
-const CollapsibleSection = ({ open, text, children }) => {
+const CollapsibleSection = ({ open, children }) => {
   return (
     <Collapse in={open} timeout="auto" unmountOnExit>
       <List component="div" disablePadding>
@@ -42,13 +42,23 @@ const CollapsibleSection = ({ open, text, children }) => {
     </Collapse>
   );
 };
+
+const StyledListItem = styled(ListItem)(({ theme }) => ({
+  "&:hover": {
+    backgroundColor: "#F1A81E",
+    color: "#00000",
+  },
+}));
+
 const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
-  const [openCollapseMyFarm, setOpenCollapseMyFarm] = useState(false);
-  const [openCollapseOperations, setOpenCollapseOperations] = useState(false);
+  const [openCollapseMyFarm, setOpenCollapseMyFarm] = React.useState(false);
+  const [openCollapseOperations, setOpenCollapseOperations] =
+    React.useState(false);
   const [openCollapseCropAndClimate, setOpenCollapseCropAndClimate] =
-    useState(false);
+    React.useState(false);
   const [openCollapseAdministration, setOpenCollapseAdministration] =
-    useState(false);
+    React.useState(false);
+
   const handleOpenHeading = (section) => {
     switch (section) {
       case "My Farm":
@@ -67,15 +77,17 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         break;
     }
   };
+
   const { instance } = useMsal();
   let activeAccount;
 
   if (instance) {
     activeAccount = instance.getActiveAccount();
   }
+
   return (
     <>
-      <DrawerToggleButton open={open} onClick={handleDrawerOpen} />
+      <DrawerToggleButton open={open} onClick={handleDrawerOpen}  />
       <Drawer
         sx={{
           flexShrink: 0,
@@ -83,6 +95,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
             width: drawerWidth,
             boxSizing: "border-box",
             backgroundColor: "#3C4F1E",
+            marginTop: "50px",
           },
         }}
         variant="persistent"
@@ -127,16 +140,19 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
             },
           ].map(({ text, icon, open }, index) => (
             <div key={text}>
-              <ListItem disablePadding onClick={() => handleOpenHeading(text)}>
+              <StyledListItem
+                disablePadding
+                onClick={() => handleOpenHeading(text)}
+              >
                 <MenuItem text={text} icon={icon} href={""} />
                 {open ? (
                   <ArrowDropUpIcon sx={{ color: "white" }} />
                 ) : (
                   <ArrowDropDownIcon sx={{ color: "white" }} />
                 )}
-              </ListItem>
+              </StyledListItem>
               {text === "My Farm" && (
-                <CollapsibleSection open={open} text={undefined}>
+                <CollapsibleSection open={open}>
                   <MenuItem text="Farm Management" icon={undefined} href={""} />
                   <MenuItem
                     text="Fields Management"
@@ -151,7 +167,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                 </CollapsibleSection>
               )}
               {text === "Operations" && (
-                <CollapsibleSection open={open} text={undefined}>
+                <CollapsibleSection open={open}>
                   <MenuItem text="Warehouse" icon={undefined} href={""} />
                   <MenuItem
                     text="Financial Management"
@@ -166,19 +182,15 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                 </CollapsibleSection>
               )}
               {text === "Crop and Climate" && (
-                <CollapsibleSection open={open} text={undefined}>
+                <CollapsibleSection open={open}>
                   <MenuItem text="Climate Data" icon={undefined} href={""} />
                   <MenuItem text="Crop Data" icon={undefined} href={""} />
                   <MenuItem text="Sensor Data" icon={undefined} href={""} />
                 </CollapsibleSection>
               )}
               {text === "Administration" && (
-                <CollapsibleSection open={open} text={undefined}>
-                  <MenuItem
-                    text="Report Generating"
-                    icon={undefined}
-                    href={""}
-                  />
+                <CollapsibleSection open={open}>
+                  <MenuItem text="Reports" icon={undefined} href={""} />
                   <MenuItem text="Documentation" icon={undefined} href={""} />
                   <MenuItem
                     text="Settings"

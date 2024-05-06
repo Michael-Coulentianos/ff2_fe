@@ -22,9 +22,9 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
     sx={{ mr: 1, ...(open && { display: "none" }) }}
   >
     {open ? (
-      <ChevronLeftIcon sx={{ color: "black" }} />
+      <ChevronLeftIcon sx={{ color: "#3C4F1E"}} />
     ) : (
-      <ChevronRightIcon sx={{ color: "black" }} />
+      <ChevronRightIcon sx={{ color: "#3C4F1E"}} />
     )}
   </IconButton>
 );

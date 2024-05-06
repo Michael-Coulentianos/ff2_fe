@@ -14,7 +14,14 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({ text, icon, href }) => (
   <ListItem disablePadding>
-    <ListItemButton href={href}>
+    <ListItemButton
+      href={href}
+      sx={{
+        "&:hover": {
+          backgroundColor: "#F1A81E",
+        },
+      }}
+    >
       <ListItemIcon>{icon}</ListItemIcon>
       <ListItemText primary={text} sx={{ color: "white" }} />
     </ListItemButton>
