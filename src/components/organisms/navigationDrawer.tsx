@@ -87,7 +87,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
 
   return (
     <>
-      <DrawerToggleButton open={open} onClick={handleDrawerOpen}  />
+      <DrawerToggleButton open={open} onClick={handleDrawerOpen} />
       <Drawer
         sx={{
           flexShrink: 0,
@@ -157,12 +157,12 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                   <MenuItem
                     text="Fields Management"
                     icon={undefined}
-                    href={""}
+                    href={"/fields"}
                   />
                   <MenuItem
                     text="Activity Management"
                     icon={undefined}
-                    href={""}
+                    href={"/activity"}
                   />
                 </CollapsibleSection>
               )}

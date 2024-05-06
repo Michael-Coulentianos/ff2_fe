@@ -10,12 +10,11 @@ const HomeDashboard = () => {
         <Paper elevation={3} sx={{ height: "235px", marginTop: 1 }} />
       </Grid>
       <Grid item xs={8}>
-        <FieldMapComponent></FieldMapComponent>
+        <FieldMapComponent height={"230px"}></FieldMapComponent>
       </Grid>
       <Grid item xs={12}>
         <WeatherGraph></WeatherGraph>
       </Grid>
-      
     </Grid>
   );
 };

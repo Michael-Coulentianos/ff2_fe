@@ -6,7 +6,6 @@ import {
   IconButton,
   Link,
   Toolbar,
-  styled,
   useTheme,
   useMediaQuery,
   Typography,
@@ -14,7 +13,7 @@ import {
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import EditIcon from "@mui/icons-material/Edit";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
 import ApplicationsMenu from "../molecules/appMenu";
 import { loginRequest } from "../../../src/auth-config";
@@ -97,7 +96,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           <AuthenticatedTemplate>
             <UserProfileForm></UserProfileForm>
             <IconButton
-              aria-label="edit"
+              aria-label="exit"
               sx={{
                 color: theme.palette.primary.main,
                 width: "30px",
