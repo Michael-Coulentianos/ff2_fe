@@ -14,7 +14,7 @@ import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { CreateOrganization } from "../../models/createOrganization.interface";
-import { ContactPerson } from "../../models/contactPerson.interface";
+import { Contacts } from "../../models/contacts.interface";
 
 interface DataItem {
   id: string;
@@ -172,11 +172,10 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "contactPerson",
       renderCell: (item) => (
         <>
-          {item.contactPerson.map((person: ContactPerson) => (
-            <p key={person.contactPersonId}>
-              {person.fullName}
-              <p>Contact Number: {person.contactNumber}</p>
-              <p>Email Address: {person.emailAddress}</p>
+        {item.contactPerson[0].contacts.map((contact: Contacts) => (
+            <p key={contact.contactId}>
+              {item.contactPerson.fullName}
+              <p>{contact.type}: {contact.details}</p>
             </p>
           ))}
         </>
