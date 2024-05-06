@@ -80,6 +80,8 @@ const OrganizationSettings: React.FC = () => {
   const handleCloseForm = () => {
     setSelectedOrg(null);
     setFormOpen(false);
+    setIsLoading(false);
+    setConfirmOpen(false);
   };
 
   const handleEdit = (org) => {
@@ -136,8 +138,7 @@ const OrganizationSettings: React.FC = () => {
     } catch (error) {
       console.error("Error submitting organization:", error);
     }
-    setIsLoading(false);
-    setConfirmOpen(false);
+    
     handleCloseForm();
   };
 
@@ -152,9 +153,9 @@ const OrganizationSettings: React.FC = () => {
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
-      setConfirmOpen(false);
-      handleCloseForm();
     }
+
+    handleCloseForm();
   };
 
   const myColumns: ColumnConfig[] = [
