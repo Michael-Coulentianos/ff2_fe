@@ -95,7 +95,7 @@ const NotesDialog = ({
           { id: 3, label: "Shortage" },
         ];
       default:
-        return []; // Default empty options
+        return [];
     }
   }
 
@@ -135,7 +135,7 @@ const NotesDialog = ({
           { id: 10, label: "Zinc(Zn)" },
         ];
       default:
-        return []; // Default empty options
+        return [];
     }
   }
 
@@ -359,13 +359,13 @@ const NotesDialog = ({
               columns={2}
             />
           )}
-          <FormSection
+          {/* <FormSection
             title=""
             fields={fieldDefinitions.generalNoteDetails2}
             control={control}
             errors={errors}
             columns={1}
-          />
+          /> */}
           <FormSection
             title=""
             fields={fieldDefinitions.generalNoteDetails3}

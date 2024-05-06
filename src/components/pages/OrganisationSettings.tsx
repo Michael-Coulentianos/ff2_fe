@@ -92,6 +92,7 @@ const OrganizationSettings: React.FC = () => {
 
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
+    formData.legalEntityTypeId = legalEntities.find(nt => nt.name === formData.legalEntityTypeName)?.legalEntityTypeId;
     try {
       if (selectedOrg) {
         formData.contactPerson[0].contactDetail =
@@ -115,7 +116,7 @@ const OrganizationSettings: React.FC = () => {
           registrationNumber: formData.registrationNumber,
           vatNumber: formData.vatNumber,
           legalEntityTypeId: formData.legalEntityTypeId,
-          legalEntityTypeName: "",
+          legalEntityTypeName: formData.legalEntityTypeName,
           id: "",
           partyId: 0,
           organizationId: 0,

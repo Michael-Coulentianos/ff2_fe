@@ -26,7 +26,6 @@ const validationSchema = yup.object({
   name: yup.string().optional(),
   vatNumber: yup.string().optional(),
   legalEntityTypeName: yup.string().optional(),
-  legalEntityTypeId: yup.number().optional(),
   registrationNumber: yup.string().optional(),
   addressId: yup.number().optional(),
   addressLine1: yup.string().optional(),
@@ -69,10 +68,6 @@ const OrganizationDialog = ({
         postalAddress: formData?.postalAddress || [
           { addressLine1: "", addressLine2: "", city: "", code: "" },
         ],
-        legalEntityTypeId:
-          formData?.legalEntityTypeId ||
-          legalEntities?.[0]?.legalEntityTypeId ||
-          "",
         legalEntityTypeName: formData?.legalEntityTypeName || "",
         sameAddress: formData?.sameAddress || false,
       };
@@ -86,23 +81,23 @@ const OrganizationDialog = ({
       { id: "vatNumber", label: "VAT Number", type: "text" },
       { id: "registrationNumber", label: "Registration Number", type: "text" },
       {
-        id: "legalEntityTypeId",
+        id: "legalEntityTypeName",
         label: "Legal Entity Type",
         type: "select",
         options: legalEntities.map((entity) => ({
           label: entity.name,
-          value: entity.legalEntityTypeId,
+          value: entity.name,
         })),
       },
     ],
     contact: [
       { id: "contactPerson[0].fullName", label: "Full Name", type: "text" },
       {
-        id: "contactPerson[0].contactNumber",
+        id: "contactPerson[0].contacts[1].details",
         label: "Contact Number",
         type: "text",
       },
-      { id: "contactPerson[0].emailAddress", label: "Email", type: "email" },
+      { id: "contactPerson[0].contacts[0].details", label: "Email", type: "email" },
     ],
     address: [
       {
