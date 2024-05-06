@@ -1,51 +1,31 @@
-import React, { useEffect } from "react";
-import {
-  Container,
-  IconButton,
-  Grid,
-  styled,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Dialog,
-} from "@mui/material";
+import { useEffect } from "react";
+import { Grid, DialogContent, DialogActions, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
-import CloseIcon from "@mui/icons-material/Close";
 import FormSection from "../molecules/DynamicFormSection";
-
-const MuiDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
-}));
+import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
-  title: yup.string().optional(),//required("This field is required"),
-  noteType: yup.string().optional(),//required("This field is required"),
+  title: yup.string().optional(), //required("This field is required"),
+  noteType: yup.string().optional(), //required("This field is required"),
   party: yup.string().optional(),
   partyId: yup.number().optional(),
-  description: yup.string().optional(),//required("This field is required"),
-  date: yup.string().optional(),//required("This field is required"),
+  description: yup.string().optional(), //required("This field is required"),
+  date: yup.string().optional(), //required("This field is required"),
   attachment: yup.string().optional(),
-  location: yup.string().optional(),//.required("This field is required"),
-  severityType: yup.string().optional(),//.required("This field is required"),
-  severitySubType: yup.string().optional(),//.required("This field is required"),
-  cropType: yup.string().optional(),//.required("This field is required"),
-  yieldEstimateHeads: yup.string().optional(),//.required("This field is required"),
-  yieldEstimateRowWidth: yup.string().optional(),//.required("This field is required"),
-  yieldEstimateGrams: yup.string().optional(),//.required("This field is required"),
-  cropAnalysisType: yup.string().optional(),//required("This field is required"),
-  cropSubType: yup.string().optional(),//.required("This field is required"),
-  severityScale: yup.string().optional(),//.required("This field is required"),
+  location: yup.string().optional(), //.required("This field is required"),
+  severityType: yup.string().optional(), //.required("This field is required"),
+  severitySubType: yup.string().optional(), //.required("This field is required"),
+  cropType: yup.string().optional(), //.required("This field is required"),
+  yieldEstimateHeads: yup.string().optional(), //.required("This field is required"),
+  yieldEstimateRowWidth: yup.string().optional(), //.required("This field is required"),
+  yieldEstimateGrams: yup.string().optional(), //.required("This field is required"),
+  cropAnalysisType: yup.string().optional(), //required("This field is required"),
+  cropSubType: yup.string().optional(), //.required("This field is required"),
+  severityScale: yup.string().optional(), //.required("This field is required"),
 });
-
 
 const NotesDialog = ({
   isOpen,
@@ -73,7 +53,7 @@ const NotesDialog = ({
       severityType: "",
       severitySubType: "",
       cropType: "",
-      noteType: noteTypes.length > 0 ? noteTypes[0].name : '', 
+      noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
       yieldEstimateHeads: "",
       yieldEstimateRowWidth: "",
       yieldEstimateGrams: "",
@@ -87,7 +67,7 @@ const NotesDialog = ({
   const watchParty = watch("party");
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
-  
+
   const options = getSubTypeOptions(watchseverityType);
 
   function getSubTypeOptions(watchseverityType) {
@@ -97,22 +77,22 @@ const NotesDialog = ({
           { id: 1, label: "UV" },
           { id: 2, label: "Hail" },
           { id: 3, label: "Wind" },
-          { id: 4, label: "Animal" }
-        ]; 
+          { id: 4, label: "Animal" },
+        ];
       case "Infection":
         return [
           { id: 1, label: "Insects" },
-                { id: 2, label: "Nematodes" },
-                { id: 3, label: "Fungus" },
-                { id: 4, label: "Pest" },
-                { id: 5, label: "Bacteria" },
-                { id: 6, label: "Virus" }
+          { id: 2, label: "Nematodes" },
+          { id: 3, label: "Fungus" },
+          { id: 4, label: "Pest" },
+          { id: 5, label: "Bacteria" },
+          { id: 6, label: "Virus" },
         ];
       case "Water":
         return [
           { id: 1, label: "Logging" },
           { id: 2, label: "Damage" },
-          { id: 3, label: "Shortage" }
+          { id: 3, label: "Shortage" },
         ];
       default:
         return []; // Default empty options
@@ -126,33 +106,33 @@ const NotesDialog = ({
       case "Phenological phase":
         return [
           { id: 1, label: "Germination" },
-                { id: 2, label: "Vegetative Stage" },
-                { id: 3, label: "Reproductive Stage" },
-                { id: 4, label: "Maturity" },
-                { id: 5, label: "Senescence" },
-                { id: 6, label: "Harvest" }
-        ]; 
+          { id: 2, label: "Vegetative Stage" },
+          { id: 3, label: "Reproductive Stage" },
+          { id: 4, label: "Maturity" },
+          { id: 5, label: "Senescence" },
+          { id: 6, label: "Harvest" },
+        ];
       case "Soil type":
         return [
           { id: 1, label: "Clay" },
-                { id: 2, label: "Sandy" },
-                { id: 3, label: "Silt" },
-                { id: 4, label: "Loamy" },
-                { id: 5, label: "Peaty" },
-                { id: 6, label: "Chalky" }
+          { id: 2, label: "Sandy" },
+          { id: 3, label: "Silt" },
+          { id: 4, label: "Loamy" },
+          { id: 5, label: "Peaty" },
+          { id: 6, label: "Chalky" },
         ];
       case "Deficiency type":
         return [
           { id: 1, label: "Calcium(Ca)" },
-                { id: 2, label: "Nitrogen(N)" },
-                { id: 3, label: "Phosphate(PO)" },
-                { id: 4, label: "Sulphur(S)" },
-                { id: 5, label: "Iron(fe)" },
-                { id: 6, label: "Iron(fe)" },
-                { id: 7, label: "Potassium(K)" },
-                { id: 8, label: "Magnesium(Mg)" },
-                { id: 9, label: "Manganese(Mn)" },
-                { id: 10, label: "Zinc(Zn)" }
+          { id: 2, label: "Nitrogen(N)" },
+          { id: 3, label: "Phosphate(PO)" },
+          { id: 4, label: "Sulphur(S)" },
+          { id: 5, label: "Iron(fe)" },
+          { id: 6, label: "Iron(fe)" },
+          { id: 7, label: "Potassium(K)" },
+          { id: 8, label: "Magnesium(Mg)" },
+          { id: 9, label: "Manganese(Mn)" },
+          { id: 10, label: "Zinc(Zn)" },
         ];
       default:
         return []; // Default empty options
@@ -171,10 +151,17 @@ const NotesDialog = ({
         //...defaultValues,
         ...formData,
         noteType: formData.noteType || noteTypes[0]?.name,
-        party: formData.party || (organizations.length > 0 ? organizations[0].name : ''),
-        partyId: formData.partyId || organizations.find(org => org.name === formData.party)?.partyId
+        party:
+          formData.party ||
+          (organizations.length > 0 ? organizations[0].name : ""),
+        partyId:
+          formData.partyId ||
+          organizations.find((org) => org.name === formData.party)?.partyId,
       });
-      setValue('partyId', organizations.find(nt => nt.name === watchParty)?.partyId);
+      setValue(
+        "partyId",
+        organizations.find((nt) => nt.name === watchParty)?.partyId
+      );
     }
     if (!isOpen) {
       reset({
@@ -186,7 +173,7 @@ const NotesDialog = ({
         severityType: "",
         severitySubType: "",
         cropType: "",
-        noteType: noteTypes.length > 0 ? noteTypes[0].name : '', 
+        noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
         yieldEstimateHeads: "",
         yieldEstimateRowWidth: "",
         yieldEstimateGrams: "",
@@ -194,8 +181,17 @@ const NotesDialog = ({
         cropSubType: "",
         severityScale: "",
       });
-     }
-  }, [formData, isOpen, reset, noteTypes, setValue, watchNoteType, watchParty, organizations]);
+    }
+  }, [
+    formData,
+    isOpen,
+    reset,
+    noteTypes,
+    setValue,
+    watchNoteType,
+    watchParty,
+    organizations,
+  ]);
 
   const fieldDefinitions = {
     generalNoteDetails: [
@@ -204,11 +200,15 @@ const NotesDialog = ({
         id: "party",
         label: "Organization",
         type: "select",
-        options: organizations?.map(org => ({
+        options: organizations?.map((org) => ({
           label: org.name,
-          value: org.name, 
+          value: org.name,
         })),
-        onChange: (selectedName) => setValue('partyId', organizations.find(nt => nt.name === selectedName)?.partyId)
+        onChange: (selectedName) =>
+          setValue(
+            "partyId",
+            organizations.find((nt) => nt.name === selectedName)?.partyId
+          ),
       },
     ],
     generalNoteDetails0: [
@@ -222,13 +222,11 @@ const NotesDialog = ({
         options: noteTypes?.map((type) => ({
           label: type.name,
           value: type.name,
-        }))
+        })),
       },
       { id: "date", label: "Note Date", type: "date" },
     ],
-    generalNoteDetails2: [
-      { id: "location", label: "Location", type: "map" },
-    ],
+    generalNoteDetails2: [{ id: "location", label: "Location", type: "map" }],
     generalNoteDetails3: [
       { id: "attachment", label: "Add file", type: "attachment" },
     ],
@@ -247,7 +245,10 @@ const NotesDialog = ({
         id: "severitySubType",
         label: "Sub-Type",
         type: "select",
-        options: options.map((type) => ({ label: type.label, value: type.label })),
+        options: options.map((type) => ({
+          label: type.label,
+          value: type.label,
+        })),
       },
       { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
     ],
@@ -275,7 +276,7 @@ const NotesDialog = ({
       },
       { id: "yieldEstimateHeads", label: "Heads/Plants per 10m", type: "text" },
       { id: "yieldEstimateRowWidth", label: "Row Width", type: "text" },
-      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" }
+      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" },
     ],
     cropAnalysisNote: [
       {
@@ -295,111 +296,107 @@ const NotesDialog = ({
         id: "cropSubType",
         label: "Sub-Type",
         type: "select",
-        options: options2.map((type) => ({ label: type.label, value: type.label })),
+        options: options2.map((type) => ({
+          label: type.label,
+          value: type.label,
+        })),
       },
     ],
   };
 
-  return (
-    <Container>
-      <MuiDialog onClose={onClose} open={isOpen} aria-labelledby="note-dialog-title">
-        <DialogTitle id="note-dialog-title">{formData ? "Update Note" : "Add Note"}</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: 10,
-            top: 10,
-            color: (theme) => theme.palette.grey[500],
-          }}
+  const formContent = (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
+        <Grid container spacing={2} sx={{ padding: 2 }}>
+          <FormSection
+            title=""
+            fields={fieldDefinitions.generalNoteDetails}
+            control={control}
+            errors={errors}
+            columns={2}
+          />
+
+          <FormSection
+            title=""
+            fields={fieldDefinitions.generalNoteDetails0}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+
+          <FormSection
+            title=""
+            fields={fieldDefinitions.generalNoteDetails1}
+            control={control}
+            errors={errors}
+            columns={2}
+          />
+
+          {watchNoteType === "Yield Estimate" && (
+            <FormSection
+              title="Yield Estimate"
+              fields={fieldDefinitions.yieldEstimateNote}
+              control={control}
+              errors={errors}
+              columns={2}
+            />
+          )}
+          {watchNoteType === "Damage" && (
+            <FormSection
+              title="Severity Note"
+              fields={fieldDefinitions.severityNote}
+              control={control}
+              errors={errors}
+              columns={2}
+            />
+          )}
+          {watchNoteType === "Crop/Soil Analysis" && (
+            <FormSection
+              title="Crop Analysis"
+              fields={fieldDefinitions.cropAnalysisNote}
+              control={control}
+              errors={errors}
+              columns={2}
+            />
+          )}
+          <FormSection
+            title=""
+            fields={fieldDefinitions.generalNoteDetails2}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+          <FormSection
+            title=""
+            fields={fieldDefinitions.generalNoteDetails3}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+        </Grid>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          startIcon={<SaveIcon />}
         >
-          <CloseIcon />
-        </IconButton>
-        <form onSubmit={handleSubmit((onSubmit))}>
-          <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
-            <Grid container spacing={2} sx={{ padding: 2 }}>
-                <FormSection
-                  title=""
-                  fields={fieldDefinitions.generalNoteDetails}
-                  control={control}
-                  errors={errors}
-                  columns={2}
-                />
+          {formData ? "Update" : "Save"}
+        </Button>
+      </DialogActions>
+    </form>
+  );
 
-                <FormSection
-                  title=""
-                  fields={fieldDefinitions.generalNoteDetails0}
-                  control={control}
-                  errors={errors}
-                  columns={1}
-                />
-
-                <FormSection
-                  title=""
-                  fields={fieldDefinitions.generalNoteDetails1}
-                  control={control}
-                  errors={errors}
-                  columns={2}
-                />
-
-                {watchNoteType === "Yield Estimate" && (
-                  <FormSection
-                    title="Yield Estimate"
-                    fields={fieldDefinitions.yieldEstimateNote}
-                    control={control}
-                    errors={errors}
-                    columns={2}
-                  />
-                )}
-                {watchNoteType === "Damage" && (
-                  <FormSection
-                    title="Severity Note"
-                    fields={fieldDefinitions.severityNote}
-                    control={control}
-                    errors={errors}
-                    columns={2}
-                  />
-                )}
-                {watchNoteType === "Crop/Soil Analysis" && (
-                  <FormSection
-                    title="Crop Analysis"
-                    fields={fieldDefinitions.cropAnalysisNote}
-                    control={control}
-                    errors={errors}
-                    columns={2}
-                  />
-                )}
-                <FormSection
-                  title=""
-                  fields={fieldDefinitions.generalNoteDetails2}
-                  control={control}
-                  errors={errors}
-                  columns={1}
-                />
-                <FormSection
-                  title=""
-                  fields={fieldDefinitions.generalNoteDetails3}
-                  control={control}
-                  errors={errors}
-                  columns={1}
-                />
-            </Grid>
-          </DialogContent>
-
-          <DialogActions>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              startIcon={<SaveIcon />}
-            >
-              {formData ? "Update" : "Save"}
-            </Button>
-          </DialogActions>
-        </form>
-      </MuiDialog>
-    </Container>
+  return (
+    <DynamicFormDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={handleSubmit(onSubmit)}
+      title={formData ? "Update Note" : "Add Note"}
+      formContent={formContent}
+    />
   );
 };
 
