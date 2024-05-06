@@ -7,15 +7,16 @@ import { Organization } from "./models/organization.interface";
 import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
 import { CreateOrganization } from "./models/createOrganization.interface";
-import { AnyCnameRecord } from "dns";
 
 const api = axios.create({
-  baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
+  baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": "7E80B3AB-A941-4C36-BA76-6ECA579F3CCB",
+    "x-api-key": process.env.REACT_APP_API_KEY,
   },
 });
+
+let azureUserId = '';
 
 export const setAzureUserId = (userId) => {
   api.interceptors.request.use(config => {
@@ -24,16 +25,18 @@ export const setAzureUserId = (userId) => {
   }, error => {
     return Promise.reject(error);
   });
+
+  azureUserId = userId;
 }
 
 //User Profile CRUD APIs
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
     const response = await api.get<ApiResponse<UserProfile>>("UserDetails");
+    
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
-
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -46,10 +49,8 @@ export const getUserProfile = async (): Promise<UserProfile> => {
 
 export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ApiResponse<string>> => {
   try {
-    
-    console.log("Req", userProfile);
+    userProfile.azureUserId = azureUserId ? azureUserId : '';
     const response = await api.put<ApiResponse<string>>("/UpdateUserProfile", userProfile);
-    console.log("Response", response);
 
     return response.data;
   } catch (error: any) {
@@ -64,7 +65,11 @@ export const updateUserProfile = async (userProfile: Partial<UserProfile>): Prom
 //Organisation CRUD APIs
 export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
   try {
+    organization.azureUserId = azureUserId ? azureUserId : '';
+
+    console.log(organization);
     const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
+    console.log(response);
     
     return response.data.details;
   } catch (error: any) {
@@ -95,12 +100,10 @@ export const getOrganizations = async (): Promise<Organization[]> => {
 
 export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
   try {
-    
-    console.log("Req", organization);
-
+    organization.azureUserId = azureUserId ? azureUserId : '';
     const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);
-    console.log("Response", response);
-
+    console.log(organization);
+    console.log(response);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -116,7 +119,7 @@ export const deleteOrganization = async (partyId: number): Promise<void> => {
     const response = await api.delete(`RemoveOrganization`, {
       data: {
         PartyId: partyId,
-        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+        AzureUserId: azureUserId,
       },
     });
 
@@ -247,7 +250,7 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
   formData.append('PartyId', note.partyId ?? '');
-  formData.append('AzureUserId', note.azureUserId);
+  formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
 
   try {
@@ -328,7 +331,7 @@ export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
   formData.append('PartyId', note.partyId ?? '');
-  formData.append('AzureUserId', note.azureUserId);
+  formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
   
   try {
@@ -364,7 +367,7 @@ export const deleteNote = async (noteId: number): Promise<void> => {
     const response = await api.delete(`RemoveNote`, {
       data: {
         NoteId: noteId,
-        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+        AzureUserId: azureUserId,
       },
     });
 

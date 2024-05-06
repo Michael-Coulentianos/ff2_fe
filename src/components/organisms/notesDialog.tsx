@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   Container,
   IconButton,
@@ -15,7 +15,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
-import { NoteType } from "../../models/noteType.interface";
 import FormSection from "../molecules/DynamicFormSection";
 
 const MuiDialog = styled(Dialog)(({ theme }) => ({

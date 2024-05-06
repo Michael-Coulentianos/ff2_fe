@@ -54,10 +54,10 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             {Array.isArray(data) &&
               data
                 .slice((page - 1) * rowsPerPage, page * rowsPerPage)
-                .map((item) => (
+                .map((item, rowIndex) => (
                   <TableRow key={item.id}>
-                    {columns.map((column) => (
-                      <TableCell key={column.label}>
+                    {columns.map((column, colIndex) => (
+                      <TableCell key={`${item.id}-${column.dataKey}-${colIndex}`}>
                         {column.renderCell(item)}
                       </TableCell>
                     ))}

@@ -7,13 +7,11 @@ import {
   deleteNote,
   createNote,
   updateNote,
-  getNoteById,
   getOrganizations,
   getNoteTypes
 } from "../../apiService";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { useMsal } from "@azure/msal-react";
 
 interface DataItem {
   id: string;
@@ -34,10 +32,6 @@ const Notes: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [organizations, setOrganizations] = useState<any[]>([]);
-
-
-  const { instance } = useMsal();
-  const activeAccount = instance.getActiveAccount();
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -98,8 +92,8 @@ const Notes: React.FC = () => {
     const currentDate = new Date();
 
 // Extract individual components of the date
-const year = currentDate.getFullYear(); // e.g., 2024
-const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month starts from 0
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
 const day = String(currentDate.getDate()).padStart(2, '0');
 const hours = String(currentDate.getHours()).padStart(2, '0');
 const minutes = String(currentDate.getMinutes()).padStart(2, '0');
@@ -125,9 +119,6 @@ const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${
 
     if (selectedNote) {
       try {
-        formData.azureUserId = activeAccount
-          ? activeAccount.localAccountId
-          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
         formData.property = JSON.stringify(properties);
         await updateNote(formData);
         const updatedNotes = notes.filter(note => note.noteId !== formData.noteId);
@@ -137,9 +128,6 @@ const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${
       }
     } else {
       try {
-        formData.azureUserId = activeAccount
-          ? activeAccount.localAccountId
-          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
         formData.property = JSON.stringify(properties);
         await createNote(formData);
         setNotes([...notes, formData]);

@@ -15,7 +15,6 @@ import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
-import { useMsal } from "@azure/msal-react";
 
 interface DataItem {
   id: string;
@@ -35,9 +34,6 @@ const OrganizationSettings: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any | null>(null);
-
-  const { instance } = useMsal();
-  const activeAccount = instance.getActiveAccount();
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -102,9 +98,6 @@ const OrganizationSettings: React.FC = () => {
           formData.contactPerson[0].contactNumber;
         formData.contactPerson[1].contactDetail =
           formData.contactPerson[0].emailAddress;
-        formData.azureUserId = activeAccount
-          ? activeAccount.localAccountId
-          : "";
         await updateOrganization(formData);
         setOrganizations(
           organizations.map((org) =>
@@ -127,7 +120,7 @@ const OrganizationSettings: React.FC = () => {
           partyId: 0,
           organizationId: 0,
           partyIdentifier: "",
-          azureUserId: activeAccount ? activeAccount.localAccountId : "",
+          azureUserId:  "",
           createdDate: "",
           sameAddress: formData.sameAddress,
         };
@@ -138,7 +131,7 @@ const OrganizationSettings: React.FC = () => {
     } catch (error) {
       console.error("Error submitting organization:", error);
     }
-    
+
     handleCloseForm();
   };
 
@@ -206,7 +199,8 @@ const OrganizationSettings: React.FC = () => {
       {isLoading && <Loading />}
       {!isLoading && (
         <>
-          <Grid xs={12} sx={{ mb: 1 }}>
+        <Grid container>
+        <Grid item xs={12} sx={{ mb: 1 }}>
             <Button
               variant="contained"
               onClick={() => handleOpenForm()}
@@ -222,7 +216,7 @@ const OrganizationSettings: React.FC = () => {
               legalEntities={legalEntities}
             />
           </Grid>
-          <Grid xs={12}>
+          <Grid item  xs={12}>
             <DynamicTable
               data={organizations}
               columns={myColumns}
@@ -236,6 +230,7 @@ const OrganizationSettings: React.FC = () => {
               content="Are you sure you want to delete this organization?"
             />
           </Grid>
+        </Grid>
         </>
       )}
     </>
