@@ -498,7 +498,7 @@ export const getActivityStatuses = async (): Promise<any[]> => {
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
       }
-
+      
       return response.data.details || [];
   } catch (error: any) {
       if (error.response && error.response.data) {

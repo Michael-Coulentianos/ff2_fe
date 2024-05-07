@@ -8,7 +8,7 @@ import {
   deleteOrganization,
   createOrganization,
   updateOrganization,
-  getLegalEntities,
+  getLegalEntities
 } from "../../apiService";
 import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";

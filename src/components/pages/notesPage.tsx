@@ -12,6 +12,8 @@ import {
 } from "../../apiService";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import moment from 'moment';
+import DynamicChip from "../atom/dynamicChip";
 
 interface DataItem {
   id: string;
@@ -24,6 +26,11 @@ interface ColumnConfig {
   renderCell: (item: DataItem) => React.ReactNode;
 }
 
+interface LocationState {
+  latitude: number | null;
+  longitude: number | null;
+}
+
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [noteTypes, setNoteTypes] = useState<any[]>([]);
@@ -32,6 +39,8 @@ const Notes: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [organizations, setOrganizations] = useState<any[]>([]);
+  const [location, setLocation] = useState<LocationState>({ latitude: null, longitude: null });
+  const [error, setError] = useState('');
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -57,6 +66,29 @@ const Notes: React.FC = () => {
   useFetchData(getNotes, setNotes, setIsLoading);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
   useFetchData(getOrganizations, setOrganizations, setIsLoading);
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+      },
+      () => {
+        setError('Unable to retrieve your location');
+      }
+    );
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -91,18 +123,17 @@ const Notes: React.FC = () => {
 
     const currentDate = new Date();
 
-// Extract individual components of the date
-const year = currentDate.getFullYear();
-const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-const day = String(currentDate.getDate()).padStart(2, '0');
-const hours = String(currentDate.getHours()).padStart(2, '0');
-const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
+    // Extract individual components of the date
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const hours = String(currentDate.getHours()).padStart(2, '0');
+    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
 
-// Construct the formatted date string
-const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-
+    // Construct the formatted date string
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 
     formData.createdDate = formattedDate;
 
@@ -177,9 +208,17 @@ const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${
       renderCell: (item) => <span>{item.description}</span>,
     },
     {
-      label: "Date Created ",
+      label: "Type",
+      dataKey: "noteType",
+      renderCell: (item) => <DynamicChip name={item.noteType} noteTypes={noteTypes} />,
+    },
+    {
+      label: "Date",
       dataKey: "date",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      renderCell: (item) => <span>
+        <p>Date: {moment(item.createdDate).format('DD MMMM YYYY')}</p>
+        <p>Time: {moment(item.createdDate).format('HH:mm')}</p>
+        </span>,
     },
     {
       label: "Action Buttons",
