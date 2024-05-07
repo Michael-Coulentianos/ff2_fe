@@ -53,6 +53,7 @@ const NotesDialog = ({
       severityType: "",
       severitySubType: "",
       cropType: "",
+      party: organizations.length > 0 ? organizations[0].party : "",
       noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
       yieldEstimateHeads: "",
       yieldEstimateRowWidth: "",
@@ -141,6 +142,7 @@ const NotesDialog = ({
 
   useEffect(() => {
     if (isOpen && formData) {
+      console.log(formData);
       const noteProperty = JSON.parse(formData.noteProperty);
       for (const key in noteProperty) {
         if (noteProperty.hasOwnProperty(key)) {
@@ -151,12 +153,8 @@ const NotesDialog = ({
         //...defaultValues,
         ...formData,
         noteType: formData.noteType || noteTypes[0]?.name,
-        party:
-          formData.party ||
-          (organizations.length > 0 ? organizations[0].name : ""),
-        partyId:
-          formData.partyId ||
-          organizations.find((org) => org.name === formData.party)?.partyId,
+        party: formData.party || (organizations.length > 0 ? organizations[0].name : ""),
+        partyId: formData.partyId || organizations.find((org) => org.name === formData.party)?.partyId
       });
       setValue(
         "partyId",
@@ -173,6 +171,7 @@ const NotesDialog = ({
         severityType: "",
         severitySubType: "",
         cropType: "",
+        party: organizations.length > 0 ? organizations[0].party : "",
         noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
         yieldEstimateHeads: "",
         yieldEstimateRowWidth: "",
