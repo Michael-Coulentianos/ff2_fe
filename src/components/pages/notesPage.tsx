@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Divider } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import {
@@ -235,6 +235,10 @@ const Notes: React.FC = () => {
   return (
     <>
       <Grid container spacing={2}>
+        <Grid item xs={12} >
+          <h1 className="title">Notes</h1>
+          <Divider />
+        </Grid>
         <Grid item xs={12}>
           <Button variant="contained" onClick={handleOpenForm} color="primary">
             Add Note
@@ -249,7 +253,7 @@ const Notes: React.FC = () => {
           />
         </Grid>
         <Grid item xs={12}>
-          <DynamicTable data={notes} columns={myColumns} rowsPerPage={5}/>
+          <DynamicTable data={notes} columns={myColumns} rowsPerPage={5} />
           <GenericConfirmDialog
             open={confirmOpen}
             onCancel={() => setConfirmOpen(false)}

@@ -8,30 +8,26 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
-  title: yup.string().optional(), //required("This field is required"),
-  activityType: yup.string().optional(), //required("This field is required"),
-  party: yup.string().optional(),
-  partyId: yup.number().optional(),
+  name: yup.string().optional(),
   description: yup.string().optional(), //required("This field is required"),
-  date: yup.string().optional(), //required("This field is required"),
-  attachment: yup.string().optional(),
-  location: yup.string().optional(), //.required("This field is required"),
-  severityType: yup.string().optional(), //.required("This field is required"),
-  severitySubType: yup.string().optional(), //.required("This field is required"),
-  cropType: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateHeads: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateRowWidth: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateGrams: yup.string().optional(), //.required("This field is required"),
-  cropAnalysisType: yup.string().optional(), //required("This field is required"),
-  cropSubType: yup.string().optional(), //.required("This field is required"),
-  severityScale: yup.string().optional(), //.required("This field is required"),
+  activityCategory: yup.string().optional(), //.required("This field is required"),
+  activityStatus: yup.string().optional(), //.required("This field is required"),
+  seasonStages: yup.string().optional(), //.required("This field is required"),
+  dateRange: yup.string().optional(),
+  fields: yup.string().optional(),
+  notes: yup.string().optional(),
+  contractWorkCost: yup.string().optional(),
+  cost: yup.string().optional(),
+  assignee: yup.string().optional(),
 });
 
 const ActivityDialog = ({
   isOpen,
   onClose,
   onSubmit,
-  activityTypes,
+  activityCategory,
+  activityStatus,
+  seasonStages,
   organizations,
   formData,
 }) => {
@@ -45,99 +41,22 @@ const ActivityDialog = ({
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      title: "",
+      name: "",
       description: "",
-      date: "",
-      attachment: "",
-      location: "",
-      severityType: "",
-      severitySubType: "",
-      cropType: "",
-      activityType: activityTypes.length > 0 ? activityTypes[0].name : "",
-      yieldEstimateHeads: "",
-      yieldEstimateRowWidth: "",
-      yieldEstimateGrams: "",
-      cropAnalysisType: "",
-      cropSubType: "",
-      severityScale: "",
+      dateRange: "",
+      activityCategory:
+        activityCategory.length > 0 ? activityCategory[0].name : "",
+      activityStatus: activityStatus.length > 0 ? activityStatus[0].name : "",
+      seasonStages: seasonStages.length > 0 ? seasonStages[0].name : "",
+      fields: "",
+      notes: "",
+      contractWorkCost: "",
+      cost: "",
+      assignee: "",
     },
   });
 
-  const watchActivityType = watch("activityType");
-  const watchParty = watch("party");
-  const watchseverityType = watch("severityType");
-  const watchcropAnalysisType = watch("cropAnalysisType");
-
-  const options = getSubTypeOptions(watchseverityType);
-
-  function getSubTypeOptions(watchseverityType) {
-    switch (watchseverityType) {
-      case "Damage":
-        return [
-          { id: 1, label: "UV" },
-          { id: 2, label: "Hail" },
-          { id: 3, label: "Wind" },
-          { id: 4, label: "Animal" },
-        ];
-      case "Infection":
-        return [
-          { id: 1, label: "Insects" },
-          { id: 2, label: "Nematodes" },
-          { id: 3, label: "Fungus" },
-          { id: 4, label: "Pest" },
-          { id: 5, label: "Bacteria" },
-          { id: 6, label: "Virus" },
-        ];
-      case "Water":
-        return [
-          { id: 1, label: "Logging" },
-          { id: 2, label: "Damage" },
-          { id: 3, label: "Shortage" },
-        ];
-      default:
-        return []; // Default empty options
-    }
-  }
-
-  const options2 = getSubTypeOptions2(watchcropAnalysisType);
-
-  function getSubTypeOptions2(watchcropAnalysisType) {
-    switch (watchcropAnalysisType) {
-      case "Phenological phase":
-        return [
-          { id: 1, label: "Germination" },
-          { id: 2, label: "Vegetative Stage" },
-          { id: 3, label: "Reproductive Stage" },
-          { id: 4, label: "Maturity" },
-          { id: 5, label: "Senescence" },
-          { id: 6, label: "Harvest" },
-        ];
-      case "Soil type":
-        return [
-          { id: 1, label: "Clay" },
-          { id: 2, label: "Sandy" },
-          { id: 3, label: "Silt" },
-          { id: 4, label: "Loamy" },
-          { id: 5, label: "Peaty" },
-          { id: 6, label: "Chalky" },
-        ];
-      case "Deficiency type":
-        return [
-          { id: 1, label: "Calcium(Ca)" },
-          { id: 2, label: "Nitrogen(N)" },
-          { id: 3, label: "Phosphate(PO)" },
-          { id: 4, label: "Sulphur(S)" },
-          { id: 5, label: "Iron(fe)" },
-          { id: 6, label: "Iron(fe)" },
-          { id: 7, label: "Potassium(K)" },
-          { id: 8, label: "Magnesium(Mg)" },
-          { id: 9, label: "Manganese(Mn)" },
-          { id: 10, label: "Zinc(Zn)" },
-        ];
-      default:
-        return []; // Default empty options
-    }
-  }
+  const watchactivityCategory = watch("activityCategory");
 
   useEffect(() => {
     if (isOpen && formData) {
@@ -148,159 +67,80 @@ const ActivityDialog = ({
         }
       }
       reset({
-        //...defaultValues,
         ...formData,
-        activityType: formData.activityType || activityTypes[0]?.name,
-        party:
-          formData.party ||
-          (organizations.length > 0 ? organizations[0].name : ""),
-        partyId:
-          formData.partyId ||
-          organizations.find((org) => org.name === formData.party)?.partyId,
+        activityCategory:
+          formData.activityCategory || activityCategory[0]?.name,
+        activityStatus: formData.activityStatus || activityStatus[0]?.name,
+        seasonStages: formData.seasonStages || seasonStages[0]?.name,
       });
-      setValue(
-        "partyId",
-        organizations.find((nt) => nt.name === watchParty)?.partyId
-      );
     }
     if (!isOpen) {
       reset({
-        title: "",
+        name: "",
         description: "",
-        date: "",
-        attachment: "",
-        location: "",
-        severityType: "",
-        severitySubType: "",
-        cropType: "",
-        activityType: activityTypes.length > 0 ? activityTypes[0].name : "",
-        yieldEstimateHeads: "",
-        yieldEstimateRowWidth: "",
-        yieldEstimateGrams: "",
-        cropAnalysisType: "",
-        cropSubType: "",
-        severityScale: "",
+        dateRange: "",
+        activityCategory:
+          activityCategory.length > 0 ? activityCategory[0].name : "",
+        activityStatus: activityStatus.length > 0 ? activityStatus[0].name : "",
+        seasonStages: seasonStages.length > 0 ? seasonStages[0].name : "",
+        fields: "",
+        notes: "",
+        contractWorkCost: "",
+        cost: "",
+        assignee: "",
       });
     }
   }, [
     formData,
     isOpen,
     reset,
-    activityTypes,
+    activityCategory,
     setValue,
-    watchActivityType,
-    watchParty,
+    watchactivityCategory,
     organizations,
   ]);
 
   const fieldDefinitions = {
     generalActivityDetails: [
-      { id: "title", label: "Activity Title", type: "text" },
+      { id: "name", label: "Activity Name", type: "text" },
       {
-        id: "party",
-        label: "Organization",
+        id: "activityCategory",
+        label: "Activity Category",
         type: "select",
-        options: organizations?.map((org) => ({
-          label: org.name,
-          value: org.name,
-        })),
-        onChange: (selectedName) =>
-          setValue(
-            "partyId",
-            organizations.find((nt) => nt.name === selectedName)?.partyId
-          ),
-      },
-    ],
-    generalActivityDetails0: [
-      { id: "description", label: "Description", type: "multiText" },
-    ],
-    generalActivityDetails1: [
-      {
-        id: "activityType",
-        label: "Activity Type",
-        type: "select",
-        options: activityTypes?.map((type) => ({
+        options: activityCategory?.map((type) => ({
           label: type.name,
           value: type.name,
         })),
       },
-      { id: "date", label: "Activity Date", type: "date" },
-    ],
-    generalActivityDetails2: [{ id: "location", label: "Location", type: "map" }],
-    generalActivityDetails3: [
-      { id: "attachment", label: "Add file", type: "attachment" },
-    ],
-    severityActivity: [
       {
-        id: "severityType",
-        label: "Severity Type",
+        id: "activityStatus",
+        label: "Activity Status",
         type: "select",
-        options: [
-          { id: 1, label: "Damage" },
-          { id: 2, label: "Infection" },
-          { id: 3, label: "Water" },
-        ].map((type) => ({ label: type.label, value: type.label })),
-      },
-      {
-        id: "severitySubType",
-        label: "Sub-Type",
-        type: "select",
-        options: options.map((type) => ({
-          label: type.label,
-          value: type.label,
-        })),
-      },
-      { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
-    ],
-    yieldEstimateActivity: [
-      {
-        id: "cropType",
-        label: "Crop Type",
-        type: "select",
-        options: [
-          { id: 1, value: "Yellow Maize" },
-          { id: 2, value: "White Maize" },
-          { id: 3, value: "Soybeans" },
-          { id: 4, value: "Dry beans" },
-          { id: 5, value: "Sugarcane" },
-          { id: 6, value: "Wheat" },
-          { id: 7, value: "Barley" },
-          { id: 8, value: "Tabaco" },
-          { id: 9, value: "Potatoes" },
-          { id: 9, value: "Cotton" },
-          { id: 10, value: "Sunflower" },
-        ].map((type) => ({
+        options: activityStatus?.map((type) => ({
           label: type.value,
-          value: type.id,
+          value: type.value,
         })),
       },
-      { id: "yieldEstimateHeads", label: "Heads/Plants per 10m", type: "text" },
-      { id: "yieldEstimateRowWidth", label: "Row Width", type: "text" },
-      { id: "yieldEstimateGrams", label: "Grams per head/plant", type: "text" },
+      {
+        id: "seasonStages",
+        label: "Season Stages",
+        type: "select",
+        options: seasonStages?.map((type) => ({
+          label: type.value,
+          value: type.value,
+        })),
+      },
     ],
-    cropAnalysisActivity: [
-      {
-        id: "cropAnalysisType",
-        label: "Crop Analysis Type",
-        type: "select",
-        options: [
-          { id: 1, label: "Phenological phase" },
-          { id: 2, label: "Soil type" },
-          { id: 3, label: "Deficiency type" },
-        ].map((type) => ({
-          label: type.label,
-          value: type.label,
-        })),
-      },
-      {
-        id: "cropSubType",
-        label: "Sub-Type",
-        type: "select",
-        options: options2.map((type) => ({
-          label: type.label,
-          value: type.label,
-        })),
-      },
+    generalActivityDetails0: [
+      { id: "description", label: "Description", type: "multiText" },
+      { id: "dateRange", label: "Activity Date Range", type: "dateRange" },
+    ],
+    generalActivityDetails1: [
+      { id: "fields", label: "Fields", type: "text" },
+      { id: "notes", label: "Notes", type: "text" },
+      { id: "contractWorkCost", label: "Contract Work Cost", type: "text" },
+      { id: "cost", label: "Cost", type: "text" },
+      { id: "assignee", label: "Assignee", type: "text" },
     ],
   };
 
@@ -323,55 +163,12 @@ const ActivityDialog = ({
             errors={errors}
             columns={1}
           />
-
           <FormSection
             title=""
             fields={fieldDefinitions.generalActivityDetails1}
             control={control}
             errors={errors}
             columns={2}
-          />
-
-          {watchActivityType === "Yield Estimate" && (
-            <FormSection
-              title="Yield Estimate"
-              fields={fieldDefinitions.yieldEstimateActivity}
-              control={control}
-              errors={errors}
-              columns={2}
-            />
-          )}
-          {watchActivityType === "Damage" && (
-            <FormSection
-              title="Severity Activity"
-              fields={fieldDefinitions.severityActivity}
-              control={control}
-              errors={errors}
-              columns={2}
-            />
-          )}
-          {watchActivityType === "Crop/Soil Analysis" && (
-            <FormSection
-              title="Crop Analysis"
-              fields={fieldDefinitions.cropAnalysisActivity}
-              control={control}
-              errors={errors}
-              columns={2}
-            />
-          )}
-          <FormSection
-            title=""
-            fields={fieldDefinitions.generalActivityDetails2}
-            control={control}
-            errors={errors}
-            columns={1}
-          />
-          <FormSection
-            title=""
-            fields={fieldDefinitions.generalActivityDetails3}
-            control={control}
-            errors={errors}
-            columns={1}
           />
         </Grid>
       </DialogContent>

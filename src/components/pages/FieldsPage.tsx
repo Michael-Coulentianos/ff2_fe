@@ -1,9 +1,13 @@
-import { Grid, Paper } from "@mui/material";
+import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 
 const FieldManagement = () => {
   return (
     <Grid container>
+      <Grid item xs={12}>
+        <h1 className="title">Field Management</h1>
+        <Divider />
+      </Grid>
       <Grid item xs={10}>
         <FieldMapComponent height={"500px"}></FieldMapComponent>
       </Grid>

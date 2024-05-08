@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Divider } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-// import {
-//   getActivities,
-//   deleteActivity,
-//   createActivity,
-//   updateActivity,
-//   getOrganizations,
-//   getActivityTypes,
-// } from "../../apiService";
-
+import {
+  getActivityCategories,
+  getSeasonStages,
+  getActivityStatuses,
+  deleteActivity,
+  createActivity,
+  updateActivity,
+} from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import ActivitysDialog from "../organisms/activityDialog";
+import ActivitiesDialog from "../organisms/activityDialog";
 
 interface DataItem {
   id: string;
@@ -28,6 +27,9 @@ interface ColumnConfig {
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
   const [activityTypes, setActivityTypes] = useState<any[]>([]);
+  const [activityCategories, setActivityCategories] = useState<any[]>([]);
+  const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
+  const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
@@ -55,10 +57,12 @@ const Activities: React.FC = () => {
     }, [fetchFunction, setData, setIsLoading]);
   }
 
-  // useFetchData(getActivities, setActivities, setIsLoading);
-  // useFetchData(getActivityTypes, setActivityTypes, setIsLoading);
-  // useFetchData(getOrganizations, setOrganizations, setIsLoading);
-
+  useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
+  useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
+  useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
+  console.log("activityCategories", activityCategories);
+  console.log("activityStatuses", activityStatuses);
+  console.log("seasonStages", seasonStages);
   const handleOpenForm = () => {
     setFormOpen(true);
     setSelectedActivity(null);
@@ -89,7 +93,7 @@ const Activities: React.FC = () => {
     formData.partyId = organizations.find(
       (org) => org.name === formData.party
     )?.partyId;
-    formData.activityTypeId = activityTypes.find(
+    formData.activityTypeId = activityCategories.find(
       (nt) => nt.name === formData.activityType
     )?.activityTypeId;
 
@@ -184,19 +188,24 @@ const Activities: React.FC = () => {
 
   const myColumns: ColumnConfig[] = [
     {
-      label: "Owner",
-      dataKey: "owner",
+      label: "Category",
+      dataKey: "category",
       renderCell: (item) => <span>{item.party}</span>,
     },
     {
-      label: "Title",
-      dataKey: "title",
+      label: "Date range",
+      dataKey: "date range",
       renderCell: (item) => <span>{item.title}</span>,
     },
     {
-      label: "Location",
-      dataKey: "location",
-      renderCell: (item) => <span>{item.location}</span>,
+      label: "Fields",
+      dataKey: "fields",
+      renderCell: (item) => <span>{item.description}</span>,
+    },
+    {
+      label: "Name",
+      dataKey: "name",
+      renderCell: (item) => <span>{item.createdDate}</span>,
     },
     {
       label: "Description",
@@ -204,8 +213,18 @@ const Activities: React.FC = () => {
       renderCell: (item) => <span>{item.description}</span>,
     },
     {
-      label: "Date Created ",
-      dataKey: "date",
+      label: "Notes",
+      dataKey: "notes",
+      renderCell: (item) => <span>{item.createdDate}</span>,
+    },
+    {
+      label: "Contract work cost",
+      dataKey: "contract work cost",
+      renderCell: (item) => <span>{item.createdDate}</span>,
+    },
+    {
+      label: "Assignee",
+      dataKey: "assignee",
       renderCell: (item) => <span>{item.createdDate}</span>,
     },
     {
@@ -224,15 +243,21 @@ const Activities: React.FC = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
+          <h1 className="title">Activity Management</h1>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
           <Button variant="contained" onClick={handleOpenForm} color="primary">
             Add Activity
           </Button>
-          <ActivitysDialog
+          <ActivitiesDialog
             isOpen={formOpen}
             onClose={handleCloseForm}
             onSubmit={handleSubmit}
             formData={selectedActivity}
-            activityTypes={activityTypes}
+            activityCategory={activityCategories}
+            activityStatus={activityStatuses}
+            seasonStages={seasonStages}
             organizations={organizations}
           />
         </Grid>

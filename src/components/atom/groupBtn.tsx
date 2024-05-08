@@ -132,8 +132,10 @@ export default function GroupButton() {
         onClose={undefined}
         onSubmit={undefined}
         formData={undefined}
+        activityCategory={undefined}
+        activityStatus={undefined}
+        seasonStages={undefined}
         organizations={undefined}
-        activityTypes={undefined}
       />
     </>
   );
