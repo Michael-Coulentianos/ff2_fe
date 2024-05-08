@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import React, { useState } from "react";
 
 const DateSelector: React.FC = () => {
@@ -7,33 +8,20 @@ const DateSelector: React.FC = () => {
     setSelectedDate(event.target.value);
   };
 
-  // const handleSubmit = () => {
-  //   if (selectedDate) {
-  //     // Here you can perform further actions with the selected date
-  //     console.log("Selected date:", selectedDate);
-  //   }
-  // };
-
-  const customDatepickerStyle: React.CSSProperties = {
-    padding: "8px",
-    fontSize: "16px",
-    borderRadius: "4px",
-    border: "1px solid #bdbdbd",
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    width: "100%",
-    boxSizing: "border-box",
-    backgroundColor: "#fff",
-    transition: "border-color 0.2s",
-    outline: "none",
-    marginTop: "8px",
-  };
-
   return (
-    <input
-      style={customDatepickerStyle}
+    <TextField
+      variant="outlined"
+      size="small"
+      margin="dense"
+      fullWidth
+      label="Date"
       type="date"
+      name="endDate"
       value={selectedDate}
       onChange={handleDateChange}
+      InputLabelProps={{
+        shrink: true,
+      }}
     />
   );
 };

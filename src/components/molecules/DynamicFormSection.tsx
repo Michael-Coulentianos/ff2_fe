@@ -8,6 +8,7 @@ import TextBox from "../atom/textBox";
 import MapComponent from "../organisms/locationMap";
 import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
 
+import DateRangePicker from "../atom/dateRange";
 
 const DynamicFormSection = ({
   title = "",
@@ -17,7 +18,7 @@ const DynamicFormSection = ({
   columns = 1,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
-  
+
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -48,11 +49,15 @@ const DynamicFormSection = ({
                         helperText={errors[field.id]?.message}
                         inputRef={ref}
                       >
-                        {Array.isArray(field.options) ? field.options.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      )) : <MenuItem disabled>No Options Available</MenuItem>}
+                        {Array.isArray(field.options) ? (
+                          field.options.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>No Options Available</MenuItem>
+                        )}
                       </TextBox>
                     );
                   case "radioGroup":
@@ -94,6 +99,8 @@ const DynamicFormSection = ({
                         }}
                       />
                     );
+                  case "dateRange":
+                    return <DateRangePicker></DateRangePicker>;
                   default:
                     return (
                       <TextBox

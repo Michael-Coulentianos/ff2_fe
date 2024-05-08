@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import {
@@ -8,11 +8,11 @@ import {
   createNote,
   updateNote,
   getOrganizations,
-  getNoteTypes
+  getNoteTypes,
 } from "../../apiService";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import moment from 'moment';
+import moment from "moment";
 import DynamicChip from "../atom/dynamicChip";
 import FileDisplay from "../organisms/fileDisplay";
 
@@ -40,8 +40,11 @@ const Notes: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [organizations, setOrganizations] = useState<any[]>([]);
-  const [location, setLocation] = useState<LocationState>({ latitude: null, longitude: null });
-  const [error, setError] = useState('');
+  const [location, setLocation] = useState<LocationState>({
+    latitude: null,
+    longitude: null,
+  });
+  const [error, setError] = useState("");
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -70,7 +73,7 @@ const Notes: React.FC = () => {
 
   const getLocation = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError("Geolocation is not supported by your browser");
       return;
     }
 
@@ -78,11 +81,11 @@ const Notes: React.FC = () => {
       (position) => {
         setLocation({
           latitude: position.coords.latitude,
-          longitude: position.coords.longitude
+          longitude: position.coords.longitude,
         });
       },
       () => {
-        setError('Unable to retrieve your location');
+        setError("Unable to retrieve your location");
       }
     );
   };
@@ -113,9 +116,9 @@ const Notes: React.FC = () => {
 
   const addPropertyIfNotEmpty = (obj, key, value) => {
     if (value !== null && value !== "" && value !== undefined) {
-        obj[key] = value;
+      obj[key] = value;
     }
-};
+  };
 
   const handleSubmit = async (formData: any) => {
 console.log(formData);
@@ -126,12 +129,12 @@ console.log(formData);
 
     // Extract individual components of the date
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hours = String(currentDate.getHours()).padStart(2, '0');
-    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, "0");
 
     // Construct the formatted date string
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
@@ -139,21 +142,43 @@ console.log(formData);
     formData.createdDate = formattedDate;
 
     const properties = {};
-    addPropertyIfNotEmpty(properties, 'severityType', formData.severityType);
-    addPropertyIfNotEmpty(properties, 'severitySubType', formData.severitySubType);
-    addPropertyIfNotEmpty(properties, 'cropType', formData.cropType);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateHeads', formData.yieldEstimateHeads);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateRowWidth', formData.yieldEstimateRowWidth);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateGrams', formData.yieldEstimateGrams);
-    addPropertyIfNotEmpty(properties, 'cropAnalysisType', formData.cropAnalysisType);
-    addPropertyIfNotEmpty(properties, 'cropSubType', formData.cropSubType);
-    addPropertyIfNotEmpty(properties, 'severityScale', formData.severityScale);
+    addPropertyIfNotEmpty(properties, "severityType", formData.severityType);
+    addPropertyIfNotEmpty(
+      properties,
+      "severitySubType",
+      formData.severitySubType
+    );
+    addPropertyIfNotEmpty(properties, "cropType", formData.cropType);
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateHeads",
+      formData.yieldEstimateHeads
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateRowWidth",
+      formData.yieldEstimateRowWidth
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateGrams",
+      formData.yieldEstimateGrams
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "cropAnalysisType",
+      formData.cropAnalysisType
+    );
+    addPropertyIfNotEmpty(properties, "cropSubType", formData.cropSubType);
+    addPropertyIfNotEmpty(properties, "severityScale", formData.severityScale);
 
     if (selectedNote) {
       try {
         formData.property = JSON.stringify(properties);
         await updateNote(formData);
-        const updatedNotes = notes.filter(note => note.noteId !== formData.noteId);
+        const updatedNotes = notes.filter(
+          (note) => note.noteId !== formData.noteId
+        );
         setNotes([...updatedNotes, formData]);
       } catch (error) {
         console.error("Error updating note:", error);
@@ -176,9 +201,7 @@ console.log(formData);
       setIsLoading(true);
       try {
         await deleteNote(selectedNote.noteId);
-        setNotes(
-          notes.filter((note) => note.noteId !== selectedNote.noteId)
-        );
+        setNotes(notes.filter((note) => note.noteId !== selectedNote.noteId));
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
@@ -221,10 +244,12 @@ console.log(formData);
     {
       label: "Date",
       dataKey: "date",
-      renderCell: (item) => <span>
-        <p>Date: {moment(item.createdDate).format('DD MMMM YYYY')}</p>
-        <p>Time: {moment(item.createdDate).format('HH:mm')}</p>
-        </span>,
+      renderCell: (item) => (
+        <span>
+          <p>Date: {moment(item.createdDate).format("DD MMMM YYYY")}</p>
+          <p>Time: {moment(item.createdDate).format("HH:mm")}</p>
+        </span>
+      ),
     },
     {
       label: "Action Buttons",
@@ -242,28 +267,74 @@ console.log(formData);
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Button variant="contained" onClick={handleOpenForm} color="primary">
-            Add Note
-          </Button>
-          <NotesDialog
-            isOpen={formOpen}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmit}
-            formData={selectedNote}
-            noteTypes={noteTypes}
-            organizations={organizations}
-          />
+          <h1 className="title">Notes</h1>
+          <Divider />
         </Grid>
         <Grid item xs={12}>
-          <DynamicTable data={notes} columns={myColumns} rowsPerPage={5}/>
-          <GenericConfirmDialog
-            open={confirmOpen}
-            onCancel={() => setConfirmOpen(false)}
-            onConfirm={handleConfirm}
-            title="Confirm Deletion"
-            content="Are you sure you want to delete this note?"
-          />
+          {notes.length == 0 && (
+            <Paper
+              sx={{
+                padding: "20px",
+                margin: 2,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Typography sx={{ m: 2 }}>
+                You do not have any notes. Please click the button below to add
+                an organization.
+              </Typography>
+              <Button
+                variant="contained"
+                onClick={handleOpenForm}
+                color="primary"
+              >
+                Add Note
+              </Button>
+              <NotesDialog
+                isOpen={formOpen}
+                onClose={handleCloseForm}
+                onSubmit={handleSubmit}
+                formData={selectedNote}
+                noteTypes={noteTypes}
+                organizations={organizations}
+              />
+            </Paper>
+          )}
         </Grid>
+
+        {notes.length > 0 && (
+          <>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                onClick={handleOpenForm}
+                color="primary"
+              >
+                Add Note
+              </Button>
+              <NotesDialog
+                isOpen={formOpen}
+                onClose={handleCloseForm}
+                onSubmit={handleSubmit}
+                formData={selectedNote}
+                noteTypes={noteTypes}
+                organizations={organizations}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DynamicTable data={notes} columns={myColumns} rowsPerPage={5} />
+              <GenericConfirmDialog
+                open={confirmOpen}
+                onCancel={() => setConfirmOpen(false)}
+                onConfirm={handleConfirm}
+                title="Confirm Deletion"
+                content="Are you sure you want to delete this note?"
+              />
+            </Grid>
+          </>
+        )}
       </Grid>
     </>
   );

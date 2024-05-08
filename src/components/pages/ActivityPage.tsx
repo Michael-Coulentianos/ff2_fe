@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Divider } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
-// import {
-//   getActivities,
-//   deleteActivity,
-//   createActivity,
-//   updateActivity,
-//   getOrganizations,
-//   getActivityTypes,
-// } from "../../apiService";
-
+import {
+  getActivityCategories,
+  getSeasonStages,
+  getActivityStatuses,
+  deleteActivity,
+  createActivity,
+  updateActivity,
+  getNotes,
+} from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import ActivitysDialog from "../organisms/activityDialog";
+import ActivitiesDialog from "../organisms/activityDialog";
 
 interface DataItem {
   id: string;
@@ -27,12 +27,14 @@ interface ColumnConfig {
 
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
-  const [activityTypes, setActivityTypes] = useState<any[]>([]);
+  const [activityCategories, setActivityCategories] = useState<any[]>([]);
+  const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
+  const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -55,9 +57,10 @@ const Activities: React.FC = () => {
     }, [fetchFunction, setData, setIsLoading]);
   }
 
-  // useFetchData(getActivities, setActivities, setIsLoading);
-  // useFetchData(getActivityTypes, setActivityTypes, setIsLoading);
-  // useFetchData(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
+  useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
+  useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -86,64 +89,66 @@ const Activities: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
-    formData.partyId = organizations.find(
-      (org) => org.name === formData.party
-    )?.partyId;
-    formData.activityTypeId = activityTypes.find(
+    formData.noteId = notes.find(
+      (note) => note.title === formData.title
+    )?.noteId;
+    formData.activityTypeId = activityCategories.find(
       (nt) => nt.name === formData.activityType
     )?.activityTypeId;
 
-    const currentDate = new Date();
+    const formatDate = (date: Date) => {
+      const pad = (num: number) => String(num).padStart(2, "0");
+      const year = date.getFullYear();
+      const month = pad(date.getMonth() + 1);
+      const day = pad(date.getDate());
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+      const seconds = pad(date.getSeconds());
+      const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
 
-    // Extract individual components of the date
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hours = String(currentDate.getHours()).padStart(2, "0");
-    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, "0");
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    };
 
-    // Construct the formatted date string
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    const startDate = new Date();
+    const endDate = new Date();
 
-    formData.createdDate = formattedDate;
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
+
+    formData.createdDate = formattedStartDate;
+    formData.endDate = formattedEndDate;
 
     const properties = {};
-    addPropertyIfNotEmpty(properties, "severityType", formData.severityType);
+    addPropertyIfNotEmpty(properties, "name", formData.severityType);
+    addPropertyIfNotEmpty(properties, "description", formData.severitySubType);
+    addPropertyIfNotEmpty(properties, "activityCategory", formData.cropType);
     addPropertyIfNotEmpty(
       properties,
-      "severitySubType",
-      formData.severitySubType
-    );
-    addPropertyIfNotEmpty(properties, "cropType", formData.cropType);
-    addPropertyIfNotEmpty(
-      properties,
-      "yieldEstimateHeads",
+      "activityStatus",
       formData.yieldEstimateHeads
     );
     addPropertyIfNotEmpty(
       properties,
-      "yieldEstimateRowWidth",
+      "seasonStages",
       formData.yieldEstimateRowWidth
     );
+    addPropertyIfNotEmpty(properties, "startDate", formData.yieldEstimateGrams);
+    addPropertyIfNotEmpty(properties, "endDate", formData.cropAnalysisType);
+    addPropertyIfNotEmpty(properties, "fields", formData.cropSubType);
+    addPropertyIfNotEmpty(properties, "notes", formData.severityScale);
+
     addPropertyIfNotEmpty(
       properties,
-      "yieldEstimateGrams",
-      formData.yieldEstimateGrams
+      "contractWorkCost",
+      formData.severityScale
     );
-    addPropertyIfNotEmpty(
-      properties,
-      "cropAnalysisType",
-      formData.cropAnalysisType
-    );
-    addPropertyIfNotEmpty(properties, "cropSubType", formData.cropSubType);
-    addPropertyIfNotEmpty(properties, "severityScale", formData.severityScale);
+    addPropertyIfNotEmpty(properties, "cost", formData.severityScale);
+    addPropertyIfNotEmpty(properties, "assignee", formData.severityScale);
 
     if (selectedActivity) {
       try {
         formData.property = JSON.stringify(properties);
-        // await updateActivity(formData);
+        await updateActivity(formData);
         const updatedActivities = activities.filter(
           (activity) => activity.activityId !== formData.activityId
         );
@@ -154,12 +159,14 @@ const Activities: React.FC = () => {
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        // await createActivity(formData);
+        await createActivity(formData);
         setActivities([...activities, formData]);
       } catch (error) {
         console.error("Error creating activity:", error);
       }
     }
+    console.log("submit clicked");
+    
     setIsLoading(false);
     handleCloseForm();
   };
@@ -168,7 +175,7 @@ const Activities: React.FC = () => {
     if (selectedActivity) {
       setIsLoading(true);
       try {
-        // await deleteActivity(selectedActivity.activityId);
+        await deleteActivity(selectedActivity.activityId);
         setActivities(
           activities.filter(
             (activity) => activity.activityId !== selectedActivity.activityId
@@ -184,19 +191,24 @@ const Activities: React.FC = () => {
 
   const myColumns: ColumnConfig[] = [
     {
-      label: "Owner",
-      dataKey: "owner",
+      label: "Category",
+      dataKey: "category",
       renderCell: (item) => <span>{item.party}</span>,
     },
     {
-      label: "Title",
-      dataKey: "title",
+      label: "Date range",
+      dataKey: "date range",
       renderCell: (item) => <span>{item.title}</span>,
     },
     {
-      label: "Location",
-      dataKey: "location",
-      renderCell: (item) => <span>{item.location}</span>,
+      label: "Fields",
+      dataKey: "fields",
+      renderCell: (item) => <span>{item.description}</span>,
+    },
+    {
+      label: "Name",
+      dataKey: "name",
+      renderCell: (item) => <span>{item.createdDate}</span>,
     },
     {
       label: "Description",
@@ -204,13 +216,23 @@ const Activities: React.FC = () => {
       renderCell: (item) => <span>{item.description}</span>,
     },
     {
-      label: "Date Created ",
-      dataKey: "date",
+      label: "Notes",
+      dataKey: "notes",
+      renderCell: (item) => <span>{item.createdDate}</span>,
+    },
+    {
+      label: "Contract work cost",
+      dataKey: "contract work cost",
+      renderCell: (item) => <span>{item.createdDate}</span>,
+    },
+    {
+      label: "Assignee",
+      dataKey: "assignee",
       renderCell: (item) => <span>{item.createdDate}</span>,
     },
     {
       label: "Action Buttons",
-      dataKey: "actionBtns",
+      dataKey: "actionButtons",
       renderCell: (item) => (
         <ActionButtons
           onEdit={() => handleEdit(item)}
@@ -224,16 +246,22 @@ const Activities: React.FC = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
+          <h1 className="title">Activity Management</h1>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
           <Button variant="contained" onClick={handleOpenForm} color="primary">
             Add Activity
           </Button>
-          <ActivitysDialog
+          <ActivitiesDialog
             isOpen={formOpen}
             onClose={handleCloseForm}
             onSubmit={handleSubmit}
             formData={selectedActivity}
-            activityTypes={activityTypes}
-            organizations={organizations}
+            activityCategory={activityCategories}
+            activityStatus={activityStatuses}
+            seasonStages={seasonStages}
+            noteList={notes}
           />
         </Grid>
         <Grid item xs={12}>

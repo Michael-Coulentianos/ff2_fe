@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
@@ -8,7 +8,7 @@ import {
   deleteOrganization,
   createOrganization,
   updateOrganization,
-  getLegalEntities
+  getLegalEntities,
 } from "../../apiService";
 import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
@@ -60,13 +60,13 @@ const OrganizationSettings: React.FC = () => {
   useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
 
   // Organization Form Handlers
-// --------------------------
-// handleOpenForm: Resets and opens the form for new entries.
-// handleCloseForm: Resets and closes the form, cancelling any ongoing edits.
-// handleEdit: Initializes form with selected organization's data for editing.
-// handleDelete: Prepares and prompts confirmation dialog for deleting an organization.
-// handleSubmit: Submits the form data for creating or updating organizations, handles UI state transitions and updates the organization list.
-// handleConfirm: Executes deletion of an organization after confirmation, updates the organization list, and resets UI state.
+  // --------------------------
+  // handleOpenForm: Resets and opens the form for new entries.
+  // handleCloseForm: Resets and closes the form, cancelling any ongoing edits.
+  // handleEdit: Initializes form with selected organization's data for editing.
+  // handleDelete: Prepares and prompts confirmation dialog for deleting an organization.
+  // handleSubmit: Submits the form data for creating or updating organizations, handles UI state transitions and updates the organization list.
+  // handleConfirm: Executes deletion of an organization after confirmation, updates the organization list, and resets UI state.
 
   const handleOpenForm = () => {
     setSelectedOrg(null);
@@ -92,7 +92,9 @@ const OrganizationSettings: React.FC = () => {
 
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
-    formData.legalEntityTypeId = legalEntities.find(nt => nt.name === formData.legalEntityTypeName)?.legalEntityTypeId;
+    formData.legalEntityTypeId = legalEntities.find(
+      (nt) => nt.name === formData.legalEntityTypeName
+    )?.legalEntityTypeId;
     try {
       if (selectedOrg) {
         formData.contactDetail = formData.contactPerson;
@@ -121,11 +123,11 @@ const OrganizationSettings: React.FC = () => {
           partyId: 0,
           organizationId: 0,
           partyIdentifier: "",
-          azureUserId:  "",
+          azureUserId: "",
           createdDate: "",
           sameAddress: formData.sameAddress,
         };
-        
+
         await createOrganization(org);
         setOrganizations([...organizations, formData]);
       }
@@ -173,10 +175,12 @@ const OrganizationSettings: React.FC = () => {
       dataKey: "contactPerson",
       renderCell: (item) => (
         <>
-        {item.contactPerson[0].contacts.map((contact: Contacts) => (
+          {item.contactPerson[0].contacts.map((contact: Contacts) => (
             <p key={contact.contactId}>
               {item.contactPerson.fullName}
-              <p>{contact.type}: {contact.details}</p>
+              <p>
+                {contact.type}: {contact.details}
+              </p>
             </p>
           ))}
         </>
@@ -199,38 +203,79 @@ const OrganizationSettings: React.FC = () => {
       {isLoading && <Loading />}
       {!isLoading && (
         <>
-        <Grid container>
-        <Grid item xs={12} sx={{ mb: 1 }}>
-            <Button
-              variant="contained"
-              onClick={() => handleOpenForm()}
-              color="primary"
-            >
-              Add Organization
-            </Button>
-            <OrganizationDialog
-              isOpen={formOpen}
-              onClose={() => handleCloseForm()}
-              onSubmit={handleSubmit}
-              formData={selectedOrg}
-              legalEntities={legalEntities}
-            />
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <h1 className="title">Organisation settings</h1>
+              <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              {organizations.length == 0 && (
+                <Paper
+                  sx={{
+                    padding: "20px",
+                    margin: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography sx={{ m: 2 }}>
+                    You do not have any organisations. Please click the button
+                    below to add an organization.
+                  </Typography>
+                  <Button
+                    sx={{ m: 2 }}
+                    variant="contained"
+                    onClick={handleOpenForm}
+                    color="primary"
+                  >
+                    Add Organization
+                  </Button>
+                  <OrganizationDialog
+                    isOpen={formOpen}
+                    onClose={() => handleCloseForm()}
+                    onSubmit={handleSubmit}
+                    formData={selectedOrg}
+                    legalEntities={legalEntities}
+                  />
+                </Paper>
+              )}
+            </Grid>
+            {organizations.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleOpenForm()}
+                    color="primary"
+                  >
+                    Add Organization
+                  </Button>
+                  <OrganizationDialog
+                    isOpen={formOpen}
+                    onClose={() => handleCloseForm()}
+                    onSubmit={handleSubmit}
+                    formData={selectedOrg}
+                    legalEntities={legalEntities}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <DynamicTable
+                    data={organizations}
+                    columns={myColumns}
+                    rowsPerPage={5}
+                  />
+                  <GenericConfirmDialog
+                    open={confirmOpen}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={handleConfirm}
+                    title="Confirm Deletion"
+                    content="Are you sure you want to delete this organization?"
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
-          <Grid item  xs={12}>
-            <DynamicTable
-              data={organizations}
-              columns={myColumns}
-              rowsPerPage={5}
-            />
-            <GenericConfirmDialog
-              open={confirmOpen}
-              onCancel={() => setConfirmOpen(false)}
-              onConfirm={handleConfirm}
-              title="Confirm Deletion"
-              content="Are you sure you want to delete this organization?"
-            />
-          </Grid>
-        </Grid>
         </>
       )}
     </>
