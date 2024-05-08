@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button, Divider } from "@mui/material";
+import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import OrganizationDialog from "../organisms/organisationDialog";
 import DynamicTable from "../organisms/table";
@@ -8,7 +8,7 @@ import {
   deleteOrganization,
   createOrganization,
   updateOrganization,
-  getLegalEntities
+  getLegalEntities,
 } from "../../apiService";
 import Loading from "./loading";
 import { LegalEntity } from "../../models/legalEntity.interface";
@@ -208,36 +208,73 @@ const OrganizationSettings: React.FC = () => {
               <h1 className="title">Organisation settings</h1>
               <Divider />
             </Grid>
-            <Grid item xs={12} >
-              <Button
-                variant="contained"
-                onClick={() => handleOpenForm()}
-                color="primary"
-              >
-                Add Organization
-              </Button>
-              <OrganizationDialog
-                isOpen={formOpen}
-                onClose={() => handleCloseForm()}
-                onSubmit={handleSubmit}
-                formData={selectedOrg}
-                legalEntities={legalEntities}
-              />
-            </Grid>
             <Grid item xs={12}>
-              <DynamicTable
-                data={organizations}
-                columns={myColumns}
-                rowsPerPage={5}
-              />
-              <GenericConfirmDialog
-                open={confirmOpen}
-                onCancel={() => setConfirmOpen(false)}
-                onConfirm={handleConfirm}
-                title="Confirm Deletion"
-                content="Are you sure you want to delete this organization?"
-              />
+              {organizations.length == 0 && (
+                <Paper
+                  sx={{
+                    padding: "20px",
+                    margin: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography sx={{ m: 2 }}>
+                    You do not have any organisations. Please click the button
+                    below to add an organization.
+                  </Typography>
+                  <Button
+                    sx={{ m: 2 }}
+                    variant="contained"
+                    onClick={handleOpenForm}
+                    color="primary"
+                  >
+                    Add Organization
+                  </Button>
+                  <OrganizationDialog
+                    isOpen={formOpen}
+                    onClose={() => handleCloseForm()}
+                    onSubmit={handleSubmit}
+                    formData={selectedOrg}
+                    legalEntities={legalEntities}
+                  />
+                </Paper>
+              )}
             </Grid>
+            {organizations.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    onClick={() => handleOpenForm()}
+                    color="primary"
+                  >
+                    Add Organization
+                  </Button>
+                  <OrganizationDialog
+                    isOpen={formOpen}
+                    onClose={() => handleCloseForm()}
+                    onSubmit={handleSubmit}
+                    formData={selectedOrg}
+                    legalEntities={legalEntities}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <DynamicTable
+                    data={organizations}
+                    columns={myColumns}
+                    rowsPerPage={5}
+                  />
+                  <GenericConfirmDialog
+                    open={confirmOpen}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={handleConfirm}
+                    title="Confirm Deletion"
+                    content="Are you sure you want to delete this organization?"
+                  />
+                </Grid>
+              </>
+            )}
           </Grid>
         </>
       )}
