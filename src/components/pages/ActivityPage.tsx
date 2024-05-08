@@ -9,6 +9,7 @@ import {
   deleteActivity,
   createActivity,
   updateActivity,
+  getNotes,
 } from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
@@ -34,7 +35,7 @@ const Activities: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
 
   function useFetchData(fetchFunction, setData, setIsLoading) {
     useEffect(() => {
@@ -57,12 +58,12 @@ const Activities: React.FC = () => {
     }, [fetchFunction, setData, setIsLoading]);
   }
 
+  useFetchData(getNotes, setNotes, setIsLoading);
   useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
   useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
   useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
-  console.log("activityCategories", activityCategories);
-  console.log("activityStatuses", activityStatuses);
-  console.log("seasonStages", seasonStages);
+console.log(notes,"notaaaaaas");
+
   const handleOpenForm = () => {
     setFormOpen(true);
     setSelectedActivity(null);
@@ -89,10 +90,10 @@ const Activities: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
-    formData.partyId = organizations.find(
-      (org) => org.name === formData.party
-    )?.partyId;
+  const handleSubmit = async (formData: any) => {  
+    formData.noteId = notes.find(
+      (note) => note.title === formData.title
+    )?.noteId;
     formData.activityTypeId = activityCategories.find(
       (nt) => nt.name === formData.activityType
     )?.activityTypeId;
@@ -258,7 +259,7 @@ const Activities: React.FC = () => {
             activityCategory={activityCategories}
             activityStatus={activityStatuses}
             seasonStages={seasonStages}
-            organizations={organizations}
+            noteList={notes}
           />
         </Grid>
         <Grid item xs={12}>

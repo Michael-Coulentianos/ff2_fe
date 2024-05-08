@@ -9,12 +9,13 @@ import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
   name: yup.string().optional(),
-  description: yup.string().optional(), //required("This field is required"),
-  activityCategory: yup.string().optional(), //.required("This field is required"),
-  activityStatus: yup.string().optional(), //.required("This field is required"),
-  seasonStages: yup.string().optional(), //.required("This field is required"),
+  description: yup.string().optional(),
+  activityCategory: yup.string().optional(),
+  activityStatus: yup.string().optional(),
+  seasonStages: yup.string().optional(),
   dateRange: yup.string().optional(),
   fields: yup.string().optional(),
+  noteId: yup.string().optional(),
   notes: yup.string().optional(),
   contractWorkCost: yup.string().optional(),
   cost: yup.string().optional(),
@@ -28,7 +29,7 @@ const ActivityDialog = ({
   activityCategory,
   activityStatus,
   seasonStages,
-  organizations,
+  noteList,
   formData,
 }) => {
   const {
@@ -57,7 +58,8 @@ const ActivityDialog = ({
   });
 
   const watchactivityCategory = watch("activityCategory");
-
+  const watchNotes = watch("notes"); 
+  
   useEffect(() => {
     if (isOpen && formData) {
       const activityProperty = JSON.parse(formData.activityProperty);
@@ -72,7 +74,15 @@ const ActivityDialog = ({
           formData.activityCategory || activityCategory[0]?.name,
         activityStatus: formData.activityStatus || activityStatus[0]?.name,
         seasonStages: formData.seasonStages || seasonStages[0]?.name,
+        notes:
+          formData.notes || (noteList.length > 0 ? noteList[0].title : ""),
+        noteId:
+          formData.noteId ||
+          noteList.find((note) => note.title === formData.notes)?.noteId,
       });
+      setValue("noteId", noteList.find((nt) => nt.title === watchNotes)?.noteId);
+
+      
     }
     if (!isOpen) {
       reset({
@@ -97,7 +107,7 @@ const ActivityDialog = ({
     activityCategory,
     setValue,
     watchactivityCategory,
-    organizations,
+    noteList,
   ]);
 
   const fieldDefinitions = {
@@ -134,10 +144,19 @@ const ActivityDialog = ({
     generalActivityDetails0: [
       { id: "description", label: "Description", type: "multiText" },
       { id: "dateRange", label: "Activity Date Range", type: "dateRange" },
+      {
+        id: "notes",
+        label: "Notes",
+        type: "select",
+        options: noteList?.map((type) => ({
+          label: type.title,
+          name: type.title,
+        })),
+      },
     ],
     generalActivityDetails1: [
       { id: "fields", label: "Fields", type: "text" },
-      { id: "notes", label: "Notes", type: "text" },
+
       { id: "contractWorkCost", label: "Contract Work Cost", type: "text" },
       { id: "cost", label: "Cost", type: "text" },
       { id: "assignee", label: "Assignee", type: "text" },

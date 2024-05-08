@@ -135,7 +135,7 @@ export default function GroupButton() {
         activityCategory={undefined}
         activityStatus={undefined}
         seasonStages={undefined}
-        organizations={undefined}
+        noteList={undefined}
       />
     </>
   );
