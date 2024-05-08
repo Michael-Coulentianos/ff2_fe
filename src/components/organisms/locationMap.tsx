@@ -1,20 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import TextBox from "../atom/textBox";
 
 interface MapComponentProps {
   label: string;
+  id: string;
   error: boolean;
   helperText: any;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({
+const MapComponent: React.FC<MapComponentProps> = memo(({
   label,
+  id,
   error,
   helperText,
 }) => {
   const [position, setPosition] = useState({ lat: -29.0, lng: 24.0 });
   const [address, setAddress] = useState("");
+
+  // Try to fetch current location of the user
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setPosition({ lat: position.coords.latitude, lng: position.coords.longitude });
+      },
+      () => {
+        console.log("Error getting location, using default.");
+      }
+    );
+  }, []);
 
   const handleClick = (e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
@@ -30,13 +44,25 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   };
 
+  const mapContainerStyle = {
+    height: "300px",
+    cursor: "crosshair" // Set cursor to pin-like crosshair
+  };
+
+  const mapOptions = {
+    disableDefaultUI: true, // Disabling all controls
+    zoomControl: true, // Enable zoom control only
+    draggableCursor: 'crosshair' // Cursor appears as pin (crosshair) during dragging
+  };
+
   return (
     <>
       <LoadScript googleMapsApiKey="AIzaSyAyy8BzMlKKQCPsQRgvhMW4MxfjGuIEWUc">
         <GoogleMap
-          mapContainerStyle={{ height: "300px" }}
+          mapContainerStyle={mapContainerStyle}
           center={position}
           zoom={10}
+          options={mapOptions}
           onClick={handleClick}
           mapTypeId="satellite"
         >
@@ -44,6 +70,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
         </GoogleMap>
       </LoadScript>
       <TextBox
+        id={id}
         label={label}
         value={address}
         onChange={() => {}}
@@ -53,6 +80,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
       ></TextBox>
     </>
   );
-};
+});
 
 export default MapComponent;

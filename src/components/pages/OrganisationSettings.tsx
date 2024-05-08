@@ -95,10 +95,7 @@ const OrganizationSettings: React.FC = () => {
     formData.legalEntityTypeId = legalEntities.find(nt => nt.name === formData.legalEntityTypeName)?.legalEntityTypeId;
     try {
       if (selectedOrg) {
-        formData.contactPerson[0].contactDetail =
-          formData.contactPerson[0].contactNumber;
-        formData.contactPerson[1].contactDetail =
-          formData.contactPerson[0].emailAddress;
+        formData.contactDetail = formData.contactPerson;
         await updateOrganization(formData);
         setOrganizations(
           organizations.map((org) =>
@@ -106,13 +103,16 @@ const OrganizationSettings: React.FC = () => {
           )
         );
       } else {
+        formData.contactPerson[0].contacts[0].type = "Email";
+        formData.contactPerson[0].contacts[1].type = "Mobile";
         const org: CreateOrganization = {
           name: formData.name,
           physicalAddress: formData.physicalAddress[0],
           postalAddress: formData.sameAddress
             ? formData.physicalAddress[0]
             : formData.postalAddress[0] || formData.physicalAddress[0],
-          contactPerson: formData.contactPerson[0],
+          contactDetail: formData.contactPerson,
+          contactPerson: formData.contactPerson,
           registrationNumber: formData.registrationNumber,
           vatNumber: formData.vatNumber,
           legalEntityTypeId: formData.legalEntityTypeId,

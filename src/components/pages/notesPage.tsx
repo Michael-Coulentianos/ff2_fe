@@ -14,6 +14,7 @@ import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import moment from 'moment';
 import DynamicChip from "../atom/dynamicChip";
+import FileDisplay from "../organisms/fileDisplay";
 
 interface DataItem {
   id: string;
@@ -117,7 +118,7 @@ const Notes: React.FC = () => {
 };
 
   const handleSubmit = async (formData: any) => {
-
+console.log(formData);
     formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
     formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
 
@@ -211,6 +212,11 @@ const Notes: React.FC = () => {
       label: "Type",
       dataKey: "noteType",
       renderCell: (item) => <DynamicChip name={item.noteType} noteTypes={noteTypes} />,
+    },
+    {
+      label: "Attachment",
+      dataKey: "attachment",
+      renderCell: (item) => item.attachment ? <FileDisplay fileName={item.fileName || "Attachment"} fileType={item.fileType || "unknown"} fileUrl={item.attachment} /> : null,
     },
     {
       label: "Date",

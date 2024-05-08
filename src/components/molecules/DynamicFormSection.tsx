@@ -6,14 +6,15 @@ import DateSelector from "../atom/dateSelect";
 import AddAttachmentButton from "../atom/attachmentButton";
 import TextBox from "../atom/textBox";
 import MapComponent from "../organisms/locationMap";
+import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
 
-const FormSection = ({
+
+const DynamicFormSection = ({
   title = "",
   fields,
   control,
   errors,
   columns = 1,
-  onAttachmentClick = () => {},
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
   
@@ -61,7 +62,8 @@ const FormSection = ({
                   case "map":
                     return (
                       <MapComponent
-                        label="Location"
+                        id={field.id}
+                        label={field.label}
                         error={!!errors.location}
                         helperText={errors.location?.message}
                       />
@@ -84,6 +86,14 @@ const FormSection = ({
                     );
                   case "date":
                     return <DateSelector></DateSelector>;
+                  case "googleMapsSearch":
+                    return (
+                      <GoogleMapsSearchBar
+                        onAddressSelected={(address) => {
+                          onChange(address);
+                        }}
+                      />
+                    );
                   default:
                     return (
                       <TextBox
@@ -108,4 +118,4 @@ const FormSection = ({
   );
 };
 
-export default FormSection;
+export default DynamicFormSection;

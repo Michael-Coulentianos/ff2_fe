@@ -243,7 +243,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 
 //Note CRUD APIs
 export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
-  console.log(note);
+  console.log("API", note);
   
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -266,6 +266,8 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       },
       body: formData
     });
+
+    console.log("Response" , response);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -510,6 +512,44 @@ export const getActivityStatuses = async (): Promise<any[]> => {
   }
 };
 
+export const getActivityById = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ApiResponse<any[]>>("ActivityById");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+      
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const getActivities = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ApiResponse<any[]>>("Activities");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+      
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
 export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
   try {
       const response = await api.post<ApiResponse<any>>("ActivityStatuses", activity);
@@ -573,5 +613,25 @@ export const deleteActivity = async (activityId: number): Promise<void> => {
     } else {
       throw new Error(`Error during the deletion process: ${error.message}`);
     }
+  }
+};
+
+//Field iFrame APIs
+export const getFieldiFrame = async (activityId: string): Promise<any[]> => {
+  try {
+      const response = await api.post<ApiResponse<any>>("ActivityStatuses");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
   }
 };

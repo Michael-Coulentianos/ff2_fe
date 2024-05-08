@@ -8,23 +8,23 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
-  title: yup.string().optional(), //required("This field is required"),
-  noteType: yup.string().optional(), //required("This field is required"),
+  title: yup.string().optional(), 
+  noteType: yup.string().optional(),
   party: yup.string().optional(),
   partyId: yup.number().optional(),
-  description: yup.string().optional(), //required("This field is required"),
-  date: yup.string().optional(), //required("This field is required"),
+  description: yup.string().optional(),
+  date: yup.string().optional(), 
   attachment: yup.string().optional(),
-  location: yup.string().optional(), //.required("This field is required"),
-  severityType: yup.string().optional(), //.required("This field is required"),
-  severitySubType: yup.string().optional(), //.required("This field is required"),
-  cropType: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateHeads: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateRowWidth: yup.string().optional(), //.required("This field is required"),
-  yieldEstimateGrams: yup.string().optional(), //.required("This field is required"),
-  cropAnalysisType: yup.string().optional(), //required("This field is required"),
-  cropSubType: yup.string().optional(), //.required("This field is required"),
-  severityScale: yup.string().optional(), //.required("This field is required"),
+  location: yup.string().optional(), 
+  severityType: yup.string().optional(), 
+  severitySubType: yup.string().optional(), 
+  cropType: yup.string().optional(), 
+  yieldEstimateHeads: yup.string().optional(),
+  yieldEstimateRowWidth: yup.string().optional(),
+  yieldEstimateGrams: yup.string().optional(),
+  cropAnalysisType: yup.string().optional(),
+  cropSubType: yup.string().optional(),
+  severityScale: yup.string().optional(),
 });
 
 const NotesDialog = ({
@@ -35,6 +35,7 @@ const NotesDialog = ({
   organizations,
   formData,
 }) => {
+
   const {
     control,
     handleSubmit,
@@ -44,28 +45,10 @@ const NotesDialog = ({
     watch,
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      date: "",
-      attachment: "",
-      location: "",
-      severityType: "",
-      severitySubType: "",
-      cropType: "",
-      party: organizations.length > 0 ? organizations[0].party : "",
-      noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
-      yieldEstimateHeads: "",
-      yieldEstimateRowWidth: "",
-      yieldEstimateGrams: "",
-      cropAnalysisType: "",
-      cropSubType: "",
-      severityScale: "",
-    },
   });
 
+
   const watchNoteType = watch("noteType");
-  const watchParty = watch("party");
   const watchseverityType = watch("severityType");
   const watchcropAnalysisType = watch("cropAnalysisType");
 
@@ -139,31 +122,26 @@ const NotesDialog = ({
         return [];
     }
   }
-
+  
   useEffect(() => {
     if (isOpen && formData) {
-      console.log(formData);
-      const noteProperty = JSON.parse(formData.noteProperty);
-      for (const key in noteProperty) {
-        if (noteProperty.hasOwnProperty(key)) {
-          formData[key] = noteProperty[key];
-        }
-      }
-      reset({
-        //...defaultValues,
+      const noteProperty = JSON.parse(formData.noteProperty || "{}");
+
+      const initialValues = {
         ...formData,
-        noteType: formData.noteType || noteTypes[0]?.name,
-        party: formData.party || (organizations.length > 0 ? organizations[0].name : ""),
-        partyId: formData.partyId || organizations.find((org) => org.name === formData.party)?.partyId
-      });
-      setValue(
-        "partyId",
-        organizations.find((nt) => nt.name === watchParty)?.partyId
-      );
-    }
-    if (!isOpen) {
-      reset({
-        title: "",
+        severityType: noteProperty.severityType,
+        severitySubType: noteProperty.severitySubType,
+        cropType: noteProperty.cropType,
+        yieldEstimateHeads: noteProperty.yieldEstimateHeads,
+        yieldEstimateRowWidth: noteProperty.yieldEstimateRowWidth,
+        yieldEstimateGrams: noteProperty.yieldEstimateGrams,
+        cropAnalysisType: noteProperty.cropAnalysisType,
+        cropSubType: noteProperty.cropSubType,
+        severityScale: noteProperty.severityScale
+      };
+      reset(initialValues);
+    }else{
+      reset({title: "",
         description: "",
         date: "",
         attachment: "",
@@ -181,16 +159,7 @@ const NotesDialog = ({
         severityScale: "",
       });
     }
-  }, [
-    formData,
-    isOpen,
-    reset,
-    noteTypes,
-    setValue,
-    watchNoteType,
-    watchParty,
-    organizations,
-  ]);
+  }, [formData, isOpen, reset, noteTypes, setValue, organizations]);
 
   const fieldDefinitions = {
     generalNoteDetails: [
@@ -225,7 +194,7 @@ const NotesDialog = ({
       },
       { id: "date", label: "Note Date", type: "date" },
     ],
-    generalNoteDetails2: [{ id: "location", label: "Location", type: "map" }],
+    generalNoteDetails2: [{ id: "location", label: "location", type: "map" }],
     generalNoteDetails3: [
       { id: "attachment", label: "Add file", type: "attachment" },
     ],
@@ -330,7 +299,6 @@ const NotesDialog = ({
             errors={errors}
             columns={2}
           />
-
           {watchNoteType === "Yield Estimate" && (
             <FormSection
               title="Yield Estimate"
@@ -340,7 +308,7 @@ const NotesDialog = ({
               columns={2}
             />
           )}
-          {watchNoteType === "Damage" && (
+          {watchNoteType === "Severity" && (
             <FormSection
               title="Severity Note"
               fields={fieldDefinitions.severityNote}
@@ -358,13 +326,13 @@ const NotesDialog = ({
               columns={2}
             />
           )}
-          {/* <FormSection
+          <FormSection
             title=""
             fields={fieldDefinitions.generalNoteDetails2}
             control={control}
             errors={errors}
             columns={1}
-          /> */}
+          />
           <FormSection
             title=""
             fields={fieldDefinitions.generalNoteDetails3}
