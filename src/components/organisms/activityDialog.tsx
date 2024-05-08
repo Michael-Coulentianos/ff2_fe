@@ -13,7 +13,8 @@ const validationSchema = yup.object({
   activityCategory: yup.string().optional(),
   activityStatus: yup.string().optional(),
   seasonStages: yup.string().optional(),
-  dateRange: yup.string().optional(),
+  startDate: yup.string().optional(),
+  endDate: yup.string().optional(),
   fields: yup.string().optional(),
   noteId: yup.string().optional(),
   notes: yup.string().optional(),
@@ -44,7 +45,8 @@ const ActivityDialog = ({
     defaultValues: {
       name: "",
       description: "",
-      dateRange: "",
+      startDate: "",
+      endDate: "",
       activityCategory:
         activityCategory.length > 0 ? activityCategory[0].name : "",
       activityStatus: activityStatus.length > 0 ? activityStatus[0].name : "",
@@ -88,7 +90,8 @@ const ActivityDialog = ({
       reset({
         name: "",
         description: "",
-        dateRange: "",
+        startDate: "",
+        endDate: "",
         activityCategory:
           activityCategory.length > 0 ? activityCategory[0].name : "",
         activityStatus: activityStatus.length > 0 ? activityStatus[0].name : "",

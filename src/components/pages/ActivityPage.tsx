@@ -27,7 +27,6 @@ interface ColumnConfig {
 
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
-  const [activityTypes, setActivityTypes] = useState<any[]>([]);
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
@@ -62,7 +61,6 @@ const Activities: React.FC = () => {
   useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
   useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
   useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
-console.log(notes,"notaaaaaas");
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -90,7 +88,7 @@ console.log(notes,"notaaaaaas");
     }
   };
 
-  const handleSubmit = async (formData: any) => {  
+  const handleSubmit = async (formData: any) => {
     formData.noteId = notes.find(
       (note) => note.title === formData.title
     )?.noteId;
@@ -98,57 +96,59 @@ console.log(notes,"notaaaaaas");
       (nt) => nt.name === formData.activityType
     )?.activityTypeId;
 
-    const currentDate = new Date();
+    const formatDate = (date: Date) => {
+      const pad = (num: number) => String(num).padStart(2, "0");
+      const year = date.getFullYear();
+      const month = pad(date.getMonth() + 1);
+      const day = pad(date.getDate());
+      const hours = pad(date.getHours());
+      const minutes = pad(date.getMinutes());
+      const seconds = pad(date.getSeconds());
+      const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
 
-    // Extract individual components of the date
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hours = String(currentDate.getHours()).padStart(2, "0");
-    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, "0");
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    };
 
-    // Construct the formatted date string
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
+    const startDate = new Date();
+    const endDate = new Date();
 
-    formData.createdDate = formattedDate;
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
+
+    formData.createdDate = formattedStartDate;
+    formData.endDate = formattedEndDate;
 
     const properties = {};
-    addPropertyIfNotEmpty(properties, "severityType", formData.severityType);
+    addPropertyIfNotEmpty(properties, "name", formData.severityType);
+    addPropertyIfNotEmpty(properties, "description", formData.severitySubType);
+    addPropertyIfNotEmpty(properties, "activityCategory", formData.cropType);
     addPropertyIfNotEmpty(
       properties,
-      "severitySubType",
-      formData.severitySubType
-    );
-    addPropertyIfNotEmpty(properties, "cropType", formData.cropType);
-    addPropertyIfNotEmpty(
-      properties,
-      "yieldEstimateHeads",
+      "activityStatus",
       formData.yieldEstimateHeads
     );
     addPropertyIfNotEmpty(
       properties,
-      "yieldEstimateRowWidth",
+      "seasonStages",
       formData.yieldEstimateRowWidth
     );
+    addPropertyIfNotEmpty(properties, "startDate", formData.yieldEstimateGrams);
+    addPropertyIfNotEmpty(properties, "endDate", formData.cropAnalysisType);
+    addPropertyIfNotEmpty(properties, "fields", formData.cropSubType);
+    addPropertyIfNotEmpty(properties, "notes", formData.severityScale);
+
     addPropertyIfNotEmpty(
       properties,
-      "yieldEstimateGrams",
-      formData.yieldEstimateGrams
+      "contractWorkCost",
+      formData.severityScale
     );
-    addPropertyIfNotEmpty(
-      properties,
-      "cropAnalysisType",
-      formData.cropAnalysisType
-    );
-    addPropertyIfNotEmpty(properties, "cropSubType", formData.cropSubType);
-    addPropertyIfNotEmpty(properties, "severityScale", formData.severityScale);
+    addPropertyIfNotEmpty(properties, "cost", formData.severityScale);
+    addPropertyIfNotEmpty(properties, "assignee", formData.severityScale);
 
     if (selectedActivity) {
       try {
         formData.property = JSON.stringify(properties);
-        // await updateActivity(formData);
+        await updateActivity(formData);
         const updatedActivities = activities.filter(
           (activity) => activity.activityId !== formData.activityId
         );
@@ -159,12 +159,14 @@ console.log(notes,"notaaaaaas");
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        // await createActivity(formData);
+        await createActivity(formData);
         setActivities([...activities, formData]);
       } catch (error) {
         console.error("Error creating activity:", error);
       }
     }
+    console.log("submit clicked");
+    
     setIsLoading(false);
     handleCloseForm();
   };
@@ -173,7 +175,7 @@ console.log(notes,"notaaaaaas");
     if (selectedActivity) {
       setIsLoading(true);
       try {
-        // await deleteActivity(selectedActivity.activityId);
+        await deleteActivity(selectedActivity.activityId);
         setActivities(
           activities.filter(
             (activity) => activity.activityId !== selectedActivity.activityId
@@ -230,7 +232,7 @@ console.log(notes,"notaaaaaas");
     },
     {
       label: "Action Buttons",
-      dataKey: "actionBtns",
+      dataKey: "actionButtons",
       renderCell: (item) => (
         <ActionButtons
           onEdit={() => handleEdit(item)}
