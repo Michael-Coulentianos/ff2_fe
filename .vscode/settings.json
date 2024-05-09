@@ -1,4 +1,4 @@
 {
   "appService.zipIgnorePattern": ["node_modules{,/**}", ".vscode{,/**}"],
-  "cSpell.words": ["watchactivity", "watchcrop", "watchseverity"]
+  "cSpell.words": ["Kanban", "watchactivity", "watchcrop", "watchseverity"]
 }
