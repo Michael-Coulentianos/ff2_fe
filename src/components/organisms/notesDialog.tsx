@@ -47,6 +47,17 @@ const NotesDialog = ({
     resolver: yupResolver(validationSchema),
   });
 
+  const onSubmit2 = data => {
+    console.log("Form Data:", data);
+    if (data.attachment instanceof File) {
+      console.log("File Attached:", data.attachment.name);
+      console.log("File Size:", data.attachment.size);
+    } else {
+      console.log("No file or file data not a File object.");
+    }
+    // Call the external onSubmit prop if necessary
+    onSubmit(data);
+  };
 
   const watchNoteType = watch("noteType");
   const watchseverityType = watch("severityType");
@@ -126,7 +137,7 @@ const NotesDialog = ({
   useEffect(() => {
     if (isOpen && formData) {
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
-
+      
       const initialValues = {
         ...formData,
         location: formData.location,
@@ -160,6 +171,7 @@ const NotesDialog = ({
         severityScale: "",
       });
     }
+    
   }, [formData, isOpen, reset, noteTypes, setValue, organizations]);
 
   const fieldDefinitions = {
@@ -274,7 +286,7 @@ const NotesDialog = ({
   };
 
   const formContent = (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit2)}>
       <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
         <Grid container spacing={2} sx={{ padding: 2 }}>
           <FormSection

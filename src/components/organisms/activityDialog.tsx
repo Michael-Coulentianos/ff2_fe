@@ -103,15 +103,7 @@ const ActivityDialog = ({
         assignee: "",
       });
     }
-  }, [
-    formData,
-    isOpen,
-    reset,
-    activityCategory,
-    setValue,
-    watchactivityCategory,
-    noteList,
-  ]);
+  }, [formData, isOpen, reset, activityCategory, setValue, watchactivityCategory, noteList, activityStatus, seasonStages, watchNotes]);
 
   const fieldDefinitions = {
     generalActivityDetails: [

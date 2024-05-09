@@ -115,33 +115,17 @@ const Activities: React.FC = () => {
     const formattedStartDate = formatDate(startDate);
     const formattedEndDate = formatDate(endDate);
 
+    formData.startDate = formattedStartDate;
     formData.createdDate = formattedStartDate;
     formData.endDate = formattedEndDate;
 
     const properties = {};
-    addPropertyIfNotEmpty(properties, "name", formData.severityType);
-    addPropertyIfNotEmpty(properties, "description", formData.severitySubType);
-    addPropertyIfNotEmpty(properties, "activityCategory", formData.cropType);
     addPropertyIfNotEmpty(
       properties,
       "activityStatus",
       formData.yieldEstimateHeads
     );
-    addPropertyIfNotEmpty(
-      properties,
-      "seasonStages",
-      formData.yieldEstimateRowWidth
-    );
-    addPropertyIfNotEmpty(properties, "startDate", formData.yieldEstimateGrams);
-    addPropertyIfNotEmpty(properties, "endDate", formData.cropAnalysisType);
-    addPropertyIfNotEmpty(properties, "fields", formData.cropSubType);
-    addPropertyIfNotEmpty(properties, "notes", formData.severityScale);
 
-    addPropertyIfNotEmpty(
-      properties,
-      "contractWorkCost",
-      formData.severityScale
-    );
     addPropertyIfNotEmpty(properties, "cost", formData.severityScale);
     addPropertyIfNotEmpty(properties, "assignee", formData.severityScale);
 
@@ -158,6 +142,7 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
+        
         formData.property = JSON.stringify(properties);
         await createActivity(formData);
         setActivities([...activities, formData]);

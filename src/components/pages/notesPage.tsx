@@ -121,9 +121,17 @@ const Notes: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
-console.log(formData);
     formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
     formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
+    console.log('Form data:', formData);
+
+    if (formData.attachment && formData.attachment instanceof File) {
+      console.log("File name:", formData.attachment.name);
+      console.log("File type:", formData.attachment.type);
+      console.log("File size:", formData.attachment.size, 'bytes');
+    } else {
+      console.log("No file attached or file data is not a File object.");
+    }
 
     const currentDate = new Date();
 

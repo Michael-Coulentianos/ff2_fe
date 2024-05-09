@@ -561,7 +561,9 @@ export const getActivities = async (): Promise<any[]> => {
 
 export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
   try {
-      const response = await api.post<ApiResponse<any>>("ActivityStatuses", activity);
+    console.log(activity);
+      const response = await api.post<ApiResponse<any>>("CreateActivity", activity);
+      console.log(response);
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -570,9 +572,9 @@ export const createActivity = async (activity: Partial<Activity>): Promise<any[]
       return response.data.details || [];
   } catch (error: any) {
       if (error.response && error.response.data) {
-          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+          throw new Error(`Failed to create a activity: ${error.response.data.message || error.message}`);
       } else {
-          console.error('Something went wrong while fetching legal entity types', error);
+          console.error('Something went wrong while creating activity', error);
           return []; 
       }
   }

@@ -63,7 +63,18 @@ const DynamicFormSection = ({
                   case "radioGroup":
                     return <ColoredRadio />;
                   case "attachment":
-                    return <AddAttachmentButton />;
+                    return <AddAttachmentButton
+                      id={field.id}
+                      label={field.label}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        const file = event.target.files ? event.target.files[0] : null;
+                        console.log("File attached:", file ? file.name : "No file"); 
+                        onChange(file);
+                      }}
+                      onBlur={onBlur}
+                      error={!!errors[field.id]}
+                      helperText={errors[field.id]?.message}
+                  />
                   case "map":
                     return (
                       <MapComponent

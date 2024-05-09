@@ -1,55 +1,48 @@
-import React, { useState } from "react";
-import { Typography, Button, styled } from "@mui/material";
+import React, { useState } from 'react';
+import { Button, Typography, styled, FormHelperText } from '@mui/material';
 
-const HiddenInput = styled("input")({
-  display: "none",
+const HiddenInput = styled('input')({
+  display: 'none',
 });
 
-const AddAttachmentButton: React.FC = () => {
+interface AddAttachmentButtonProps {
+  id?: string;
+  label: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: () => void;
+  error?: boolean;
+  helperText?: string;
+}
+
+const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
+  id,
+  label,
+  onChange,
+  onBlur,
+  error,
+  helperText,
+}) => {
   const [file, setFile] = useState<File | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files && event.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (file) {
-      setFile(null);
-    }
-  };
-
+  
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <HiddenInput
         accept=".pdf,.doc,.docx"
-        id="file-upload"
+        id={id}
         multiple
         type="file"
-        onChange={handleFileChange}
+        onChange={onChange} 
+        onBlur={onBlur}
       />
-      <label htmlFor="file-upload">
+      <label htmlFor={id}>
         <Button variant="contained" color="primary" component="span">
-          Choose File
+          {label}
         </Button>
       </label>
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        sx={{ marginLeft: 2 }}
-      >
-        Upload
-      </Button>
-      {file && (
-        <Typography variant="overline" gutterBottom sx={{ marginLeft: 1 }}>
-          <b>Selected File:</b> {file.name}
-        </Typography>
+      {helperText && (
+        <FormHelperText error={error}>{helperText}</FormHelperText>
       )}
-    </form>
+    </div>
   );
 };
 

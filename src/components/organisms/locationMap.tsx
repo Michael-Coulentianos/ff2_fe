@@ -76,7 +76,7 @@ const MapComponent: React.FC<MapComponentProps> = memo(({
         onChange={() => {}}
         error={error}
         helperText={helperText}
-        readOnly={true}
+        disabled={true}
       ></TextBox>
     </>
   );
