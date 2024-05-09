@@ -10,6 +10,7 @@ import {
   createActivity,
   updateActivity,
   getNotes,
+  getActivities
 } from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
@@ -57,6 +58,7 @@ const Activities: React.FC = () => {
     }, [fetchFunction, setData, setIsLoading]);
   }
 
+  useFetchData(getActivities, setActivities, setIsLoading);
   useFetchData(getNotes, setNotes, setIsLoading);
   useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
   useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
@@ -126,9 +128,6 @@ const Activities: React.FC = () => {
       formData.yieldEstimateHeads
     );
 
-    addPropertyIfNotEmpty(properties, "cost", formData.severityScale);
-    addPropertyIfNotEmpty(properties, "assignee", formData.severityScale);
-
     if (selectedActivity) {
       try {
         formData.property = JSON.stringify(properties);
@@ -150,8 +149,7 @@ const Activities: React.FC = () => {
         console.error("Error creating activity:", error);
       }
     }
-    console.log("submit clicked");
-
+    
     setIsLoading(false);
     handleCloseForm();
   };
