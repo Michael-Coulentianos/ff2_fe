@@ -6,9 +6,10 @@ interface TextBoxProps {
   label: string;
   placeholder?: string;
   type?: string;
-  value: any;
+  value: string | number | readonly string[];
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: () => void;
+  readOnly?: boolean;
   error?: boolean;
   helperText?: any;
   multiline?: boolean;
@@ -16,8 +17,8 @@ interface TextBoxProps {
   fullWidth?: boolean;
   disabled?: boolean;
   select?: boolean;
-  children?: any;
-  inputRef?: any;
+  children?: React.ReactNode;
+  inputRef?: React.Ref<any>;
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
@@ -35,6 +36,7 @@ const TextBox: React.FC<TextBoxProps> = ({
   fullWidth = true,
   disabled,
   select,
+  readOnly,
   children,
   inputRef,
 }) => (
@@ -50,15 +52,16 @@ const TextBox: React.FC<TextBoxProps> = ({
     margin="dense"
     error={error}
     helperText={helperText}
-    multiline={multiline || !!rows}
+    multiline={multiline || Boolean(rows)}
     rows={rows}
     id={id}
     placeholder={placeholder}
     type={type}
     onBlur={onBlur}
     inputRef={inputRef}
+    //readOnly={readOnly}
   >
-    {children}
+    {select && children}
   </TextField>
 );
 

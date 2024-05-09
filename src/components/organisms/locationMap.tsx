@@ -46,13 +46,13 @@ const MapComponent: React.FC<MapComponentProps> = memo(({
 
   const mapContainerStyle = {
     height: "300px",
-    cursor: "crosshair" // Set cursor to pin-like crosshair
+    cursor: "crosshair"
   };
 
   const mapOptions = {
-    disableDefaultUI: true, // Disabling all controls
-    zoomControl: true, // Enable zoom control only
-    draggableCursor: 'crosshair' // Cursor appears as pin (crosshair) during dragging
+    disableDefaultUI: true,
+    zoomControl: true,
+    draggableCursor: 'crosshair'
   };
 
   return (
@@ -76,7 +76,7 @@ const MapComponent: React.FC<MapComponentProps> = memo(({
         onChange={() => {}}
         error={error}
         helperText={helperText}
-        disabled
+        readOnly={true}
       ></TextBox>
     </>
   );

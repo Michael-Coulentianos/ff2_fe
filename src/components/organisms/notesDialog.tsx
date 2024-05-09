@@ -129,6 +129,7 @@ const NotesDialog = ({
 
       const initialValues = {
         ...formData,
+        location: formData.location,
         severityType: noteProperty.severityType,
         severitySubType: noteProperty.severitySubType,
         cropType: noteProperty.cropType,

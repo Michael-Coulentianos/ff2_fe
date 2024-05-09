@@ -8,6 +8,7 @@ import { UserProfile } from "./models/userProfile.interface";
 import { ApiResponse } from './models/apiResponse.interface';
 import { CreateOrganization } from "./models/createOrganization.interface";
 import { Activity } from "./models/activity.interface";
+import { jsPDF } from 'jspdf';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',
@@ -254,6 +255,14 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
 
+  const doc = new jsPDF();
+  doc.text('This is a dummy PDF file.', 10, 10);
+  const pdfBlob = doc.output('blob');
+  const dummyFile = new File([pdfBlob], "dummy.pdf", { type: "application/pdf" });
+
+  // Append it to FormData
+  formData.append('attachment', dummyFile);
+
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
       method: 'POST',
@@ -262,12 +271,12 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
-        'User-Agent': 'YourAppNameHere'
       },
       body: formData
     });
 
-    console.log("Response" , response);
+    const resultText = await response.text(); // Get response as text to avoid JSON parsing issues
+    console.log("Response Text", resultText);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
