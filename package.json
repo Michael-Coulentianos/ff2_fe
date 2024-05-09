@@ -15,7 +15,7 @@
     "@microsoft/mgt-react": "^4.1.0",
     "@mui/icons-material": "^5.15.13",
     "@mui/lab": "^5.0.0-alpha.170",
-    "@mui/material": "^5.15.15",
+    "@mui/material": "^5.15.17",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@react-google-maps/api": "^2.19.3",
     "@syncfusion/ej2-base": "^25.2.3",

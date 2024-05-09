@@ -14,6 +14,7 @@ import {
 } from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
+import moment from "moment";
 
 interface DataItem {
   id: string;
@@ -128,9 +129,10 @@ const Activities: React.FC = () => {
       formData.yieldEstimateHeads
     );
 
+    formData.property = JSON.stringify(properties);
+
     if (selectedActivity) {
       try {
-        formData.property = JSON.stringify(properties);
         await updateActivity(formData);
         const updatedActivities = activities.filter(
           (activity) => activity.activityId !== formData.activityId
@@ -141,8 +143,6 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
-        
-        formData.property = JSON.stringify(properties);
         await createActivity(formData);
         setActivities([...activities, formData]);
       } catch (error) {
@@ -174,24 +174,19 @@ const Activities: React.FC = () => {
 
   const myColumns: ColumnConfig[] = [
     {
-      label: "Category",
-      dataKey: "category",
-      renderCell: (item) => <span>{item.party}</span>,
-    },
-    {
-      label: "Date range",
-      dataKey: "date range",
-      renderCell: (item) => <span>{item.title}</span>,
-    },
-    {
-      label: "Fields",
-      dataKey: "fields",
-      renderCell: (item) => <span>{item.description}</span>,
-    },
-    {
       label: "Name",
       dataKey: "name",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      renderCell: (item) => <span>{item.name}</span>,
+    },
+    {
+      label: "Category",
+      dataKey: "category",
+      renderCell: (item) => <span>{item.category}</span>,
+    },
+    {
+      label: "Field",
+      dataKey: "field",
+      renderCell: (item) => <span>{item.field}</span>,
     },
     {
       label: "Description",
@@ -199,19 +194,27 @@ const Activities: React.FC = () => {
       renderCell: (item) => <span>{item.description}</span>,
     },
     {
-      label: "Notes",
-      dataKey: "notes",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      label: "Status",
+      dataKey: "status",
+      renderCell: (item) => <span>{item.status}</span>,
     },
     {
-      label: "Contract work cost",
-      dataKey: "contract work cost",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      label: "Date",
+      dataKey: "date",
+      renderCell: (item) => <span>
+      <p>Start Date: {moment(item.startDate).format("DD MMMM YYYY")}</p>
+      <p>End Date: {moment(item.endDate).format("DD MMMM YYYY")}</p>
+    </span>,
+    },
+    {
+      label: "Cost",
+      dataKey: "cost",
+      renderCell: (item) => <span>R{item.cost}</span>,
     },
     {
       label: "Assignee",
       dataKey: "assignee",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      renderCell: (item) => <span>{item.assignedTo}</span>,
     },
     {
       label: "Action Buttons",
