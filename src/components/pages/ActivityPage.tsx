@@ -166,7 +166,7 @@ const Activities: React.FC = () => {
       }
     }
     console.log("submit clicked");
-    
+
     setIsLoading(false);
     handleCloseForm();
   };
