@@ -7,6 +7,7 @@ interface MapComponentProps {
   id: string;
   error: boolean;
   helperText: any;
+  onPositionChange: (position: { lat: number, lng: number }) => void;
 }
 
 const MapComponent: React.FC<MapComponentProps> = memo(({
@@ -14,6 +15,7 @@ const MapComponent: React.FC<MapComponentProps> = memo(({
   id,
   error,
   helperText,
+  onPositionChange,
 }) => {
   const [position, setPosition] = useState({ lat: -29.0, lng: 24.0 });
   const [address, setAddress] = useState("");
@@ -34,7 +36,8 @@ const MapComponent: React.FC<MapComponentProps> = memo(({
     if (e.latLng) {
       const newPosition = e.latLng.toJSON();
       setPosition(newPosition);
-
+      onPositionChange(newPosition);
+      
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode({ location: newPosition }, (results, status) => {
         if (status === "OK" && results && results[0]) {

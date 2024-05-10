@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Grid, Typography, MenuItem } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
@@ -35,7 +35,12 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   onFileChange = () => {}
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
+  const [position, setPosition] = useState({ lat: 0, lng: 0 });
 
+  const handlePositionChange = (newPosition) => {
+    setPosition(newPosition);
+    console.log("New Position:", newPosition);
+  };
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -95,6 +100,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         label={field.label}
                         error={!!errors.location}
                         helperText={errors.location?.message}
+                        onPositionChange={handlePositionChange}
                       />
                     );
                   case "multiText":

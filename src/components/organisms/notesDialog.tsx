@@ -6,14 +6,15 @@ import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
+//import { formatISO, parseISO } from 'date-fns';
 
 const validationSchema = yup.object({
-  title: yup.string().optional(), 
-  noteType: yup.string().optional(),
-  party: yup.string().optional(),
+  title: yup.string().required(), 
+  noteType: yup.string().required(),
+  party: yup.string().required(),
   partyId: yup.number().optional(),
-  description: yup.string().optional(),
-  date: yup.string().optional(), 
+  description: yup.string().required(),
+  createdDate: yup.string().optional(), 
   attachment: yup.string().optional(),
   location: yup.string().optional(), 
   severityType: yup.string().optional(), 
@@ -133,7 +134,10 @@ const NotesDialog = ({
     if (isOpen && formData) {
       console.log(formData);
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
-      console.log(formData);
+      
+      const initialPosition = formData.position || { lat: 0, lng: 0 };
+      setPosition(initialPosition);
+
       const initialValues = {
         ...formData,
         location: formData.location,
@@ -145,13 +149,13 @@ const NotesDialog = ({
         yieldEstimateGrams: noteProperty.yieldEstimateGrams,
         cropAnalysisType: noteProperty.cropAnalysisType,
         cropSubType: noteProperty.cropSubType,
-        severityScale: noteProperty.severityScale
+        severityScale: noteProperty.severityScale,
       };
       reset(initialValues);
     }else{
       reset({title: "",
         description: "",
-        date: "",
+        createdDate: "",
         attachment: "",
         location: "",
         severityType: "",
@@ -201,7 +205,7 @@ const NotesDialog = ({
           value: type.name,
         })),
       },
-      { id: "date", label: "Note Date", type: "date" },
+      { id: "createdDate", label: "Note Date", type: "date" },
     ],
     generalNoteDetails2: [{ id: "location", label: "location", type: "map" }],
     generalNoteDetails3: [
@@ -279,6 +283,13 @@ const NotesDialog = ({
         })),
       },
     ],
+  };
+
+  const [position, setPosition] = useState({ lat: 0, lng: 0 }); 
+
+  const handlePositionChange = (newPosition) => {
+    setPosition(newPosition);
+    console.log("Position updated in NotesDialog:", newPosition);
   };
 
   const formContent = (
