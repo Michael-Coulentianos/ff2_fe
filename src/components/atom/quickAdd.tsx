@@ -63,7 +63,6 @@ export default function QuickAdd() {
   };
 
   const handleMenuItemClick = (index: number) => {
-    
     switch (index) {
       case 0:
         setOpenOrg(true);
@@ -391,71 +390,68 @@ export default function QuickAdd() {
 
   return (
     <>
-      {isLoading && <Loading />}
-      {!isLoading && (
-        <Grid>
-          <NotesDialog
-            isOpen={openNote}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmitNote}
-            formData={selectedNote}
-            noteTypes={noteTypes}
-            organizations={organizations}
-          />
-          <OrganizationDialog
-            isOpen={openOrg}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmitOrg}
-            formData={selectedOrg}
-            legalEntities={legalEntities}
-          />
-          <ActivityDialog
-            isOpen={openAct}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmitAct}
-            formData={selectedActivity}
-            activityCategory={activityCategories}
-            activityStatus={activityStatuses}
-            seasonStages={seasonStages}
-            noteList={notes}
-          />
-          <IconButton
-            aria-label="edit"
-            sx={{
-              color: "white",
-              backgroundColor: theme.palette.secondary.main,
-              width: "30px",
-              height: "30px",
-              "&:hover": {
-                backgroundColor: theme.palette.secondary.light,
-              },
-            }}
-            onClick={handleMenu}
-          >
-            <AddIcon />
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            {options?.map((option, index) => (
-              <MenuItem
-                key={option}
-                selected={index === selectedIndex}
-                onClick={() => handleMenuItemClick(index)}
-              >
-                {option}
-              </MenuItem>
-            ))}
-          </Menu>
-        </Grid>
-      )}
+      <Grid>
+        <NotesDialog
+          isOpen={openNote}
+          onClose={handleCloseForm}
+          onSubmit={handleSubmitNote}
+          formData={selectedNote}
+          noteTypes={noteTypes}
+          organizations={organizations}
+        />
+        <OrganizationDialog
+          isOpen={openOrg}
+          onClose={handleCloseForm}
+          onSubmit={handleSubmitOrg}
+          formData={selectedOrg}
+          legalEntities={legalEntities}
+        />
+        <ActivityDialog
+          isOpen={openAct}
+          onClose={handleCloseForm}
+          onSubmit={handleSubmitAct}
+          formData={selectedActivity}
+          activityCategory={activityCategories}
+          activityStatus={activityStatuses}
+          seasonStages={seasonStages}
+          noteList={notes}
+        />
+        <IconButton
+          aria-label="edit"
+          sx={{
+            color: "white",
+            backgroundColor: theme.palette.secondary.main,
+            width: "30px",
+            height: "30px",
+            "&:hover": {
+              backgroundColor: theme.palette.secondary.light,
+            },
+          }}
+          onClick={handleMenu}
+        >
+          <AddIcon />
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          {options?.map((option, index) => (
+            <MenuItem
+              key={option}
+              selected={index === selectedIndex}
+              onClick={() => handleMenuItemClick(index)}
+            >
+              {option}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Grid>
     </>
   );
 }
