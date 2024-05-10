@@ -1,4 +1,4 @@
-import SearchBar from "../molecules/searchBar";
+import SearchBar from "../molecules/SearchBar";
 import {
   Box,
   Button,
@@ -10,20 +10,20 @@ import {
   useMediaQuery,
   Typography,
 } from "@mui/material";
-import NavigationDrawer from "./navigationDrawer";
+import NavigationDrawer from "./NavigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
-import ApplicationsMenu from "../molecules/appMenu";
-import { loginRequest } from "../../../src/auth-config";
+import ApplicationsMenu from "../molecules/AppMenu";
+import { loginRequest } from "../../auth-config";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
-import { UserProfileForm } from "./profileSettings";
+import { UserProfileForm } from "./ProfileSettings";
 import { setAzureUserId } from "../../apiService";
-import QuickAdd from "../atom/quickAdd";
+import QuickAdd from "../atom/QuickAdd";
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();

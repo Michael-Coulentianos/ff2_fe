@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
-import ActionButtons from "../molecules/actionButtons";
-import DynamicTable from "../organisms/table";
+import ActionButtons from "../molecules/ActionButtons";
+import DynamicTable from "../organisms/Table";
 import {
   getNotes,
   deleteNote,
@@ -10,12 +10,12 @@ import {
   getOrganizations,
   getNoteTypes,
 } from "../../apiService";
-import NotesDialog from "../organisms/notesDialog";
-import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import NotesDialog from "../organisms/NotesDialog";
+import GenericConfirmDialog from "../organisms/GenericConfirmDialog";
 import moment from "moment";
-import DynamicChip from "../atom/dynamicChip";
-import FileDisplay from "../organisms/fileDisplay";
-import Loading from "./loading";
+import DynamicChip from "../atom/DynamicChip";
+import FileDisplay from "../organisms/FileDisplay";
+import Loading from "./Loading";
 
 interface DataItem {
   id: string;

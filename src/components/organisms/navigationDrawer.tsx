@@ -18,8 +18,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { DataUsage, Grass } from "@mui/icons-material";
 import barnIcon from "../../assets/icons/barnIcon.svg";
-import MenuItem from "../molecules/menuItem";
-import DrawerToggleButton from "../atom/drawerToggle";
+import MenuItem from "../molecules/MenuItem";
+import DrawerToggleButton from "../atom/DrawerToggle";
 import theme from "../../theme";
 
 const drawerWidth = 240;

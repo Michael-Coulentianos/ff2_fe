@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Grid, Typography, MenuItem } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
-import DateSelector from "../atom/dateSelect";
-import AddAttachmentButton from "../atom/attachmentButton";
-import TextBox from "../atom/textBox";
-import MapComponent from "../organisms/locationMap";
-import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
-import DateRangePicker from "../atom/dateRange";
+import DateSelector from "../atom/DateSelect";
+import AddAttachmentButton from "../atom/AttachmentButton";
+import TextBox from "../atom/TextBox";
+import MapComponent from "../organisms/LocationMap";
+import GoogleMapsSearchBar from "../atom/GoogleMapsSearchBar";
+import DateRangePicker from "../atom/DateRange";
 
 interface Field {
   id: string;
@@ -63,6 +63,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     return (
                       <TextBox
                         select
+                        id={field.id}
                         label={field.label}
                         value={value}
                         onChange={onChange}
@@ -72,8 +73,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         inputRef={ref}
                       >
                         {Array.isArray(field.options) ? (
-                          field.options.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
+                          field.options.map((option, index) => (
+                            <MenuItem key={`${option.value}-${index}`} value={option.value}>
                               {option.label}
                             </MenuItem>
                           ))

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button, Divider } from "@mui/material";
-import ActionButtons from "../molecules/actionButtons";
-import DynamicTable from "../organisms/table";
+import ActionButtons from "../molecules/ActionButtons";
+import DynamicTable from "../organisms/Table";
 import {
   getActivityCategories,
   getSeasonStages,
@@ -11,11 +11,12 @@ import {
   updateActivity,
   getNotes,
   getActivities,
+  getOrganizations,
 } from "../../apiService";
-import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import ActivitiesDialog from "../organisms/activityDialog";
+import GenericConfirmDialog from "../organisms/GenericConfirmDialog";
+import ActivitiesDialog from "../organisms/ActivityDialog";
 import moment from "moment";
-import Loading from "./loading";
+import Loading from "./Loading";
 
 interface DataItem {
   id: string;
@@ -30,6 +31,7 @@ interface ColumnConfig {
 
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
@@ -39,32 +41,33 @@ const Activities: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
 
-  function useFetchData(fetchFunction, setData, setIsLoading) {
+  async function fetchData(fetchFunction, setData) {
+    setIsLoading(true);
+    try {
+      const data = await fetchFunction();
+      setData(data);
+    } catch (error) {
+      console.error(
+        `Error fetching data from ${fetchFunction.name}:`,
+        error
+      );
+    } finally {
+      setIsLoading(false);
+    };
+  }
+  
+  function useFetchData(fetchFunction, setData) {
     useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
+      fetchData(fetchFunction, setData);
+    }, [fetchFunction, setData]);
   }
 
-  useFetchData(getActivities, setActivities, setIsLoading);
-  useFetchData(getNotes, setNotes, setIsLoading);
-  useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
-  useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
-  useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
+  useFetchData(getActivities, setActivities);
+  useFetchData(getOrganizations, setOrganizations);
+  useFetchData(getNotes, setNotes);
+  useFetchData(getActivityCategories, setActivityCategories);
+  useFetchData(getActivityStatuses, setActivityStatuses);
+  useFetchData(getSeasonStages, setSeasonStages);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -92,76 +95,40 @@ const Activities: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (formData: any) => {
-    formData.noteId = notes.find(
-      (note) => note.title === formData.title
-    )?.noteId;
-    formData.activityTypeId = activityCategories.find(
-      (nt) => nt.name === formData.activityType
-    )?.activityTypeId;
-
-    const formatDate = (date: Date) => {
-      const pad = (num: number) => String(num).padStart(2, "0");
-      const year = date.getFullYear();
-      const month = pad(date.getMonth() + 1);
-      const day = pad(date.getDate());
-      const hours = pad(date.getHours());
-      const minutes = pad(date.getMinutes());
-      const seconds = pad(date.getSeconds());
-      const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
-
-      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-    };
-
-    const startDate = new Date();
-    const endDate = new Date();
-
-    const formattedStartDate = formatDate(startDate);
-    const formattedEndDate = formatDate(endDate);
-
-    formData.startDate = formattedStartDate;
-    formData.createdDate = formattedStartDate;
-    formData.endDate = formattedEndDate;
-
+  const handleSubmit = async (formData: any) => { 
     const properties = {};
-    addPropertyIfNotEmpty(
-      properties,
-      "activityStatus",
-      formData.yieldEstimateHeads
-    );
 
     formData.property = JSON.stringify(properties);
 
     if (selectedActivity) {
       try {
         await updateActivity(formData);
-        const updatedActivities = activities.filter(
-          (activity) => activity.activityId !== formData.activityId
-        );
-        setActivities([...updatedActivities, formData]);
       } catch (error) {
         console.error("Error updating activity:", error);
       }
     } else {
       try {
-        console.log("FORMDATA", formData);
-        console.log(activityCategories);
-        formData.activityCategoryId = 11; //activityCategories.find(
-        //(category) => category.name !== formData.category).activityCategoryId;
-        formData.partyId = 238;
-        formData.seasonStageId = seasonStages.find(
-          (seasonStage) => seasonStage.value !== formData.seasonStage
-        ).key;
-        // formData.ActivityStatusId = activityStatuses.find(
-        //   (status) => status.value !== formData.status).ActivityStatusId;
+        const formData = {
+          Name: "Test Activity",
+          Description: "Activity Description",
+          StartDate: "2024/04/28",
+          EndDate: "2024/04/30",
+          Field: "Ty's Field",
+          Cost: "20.00",
+          ContractWorkCost: 0.00,
+          Properties: {},
+          NoteDetail: "The FieldId will come from Mike APIs",
+          ActivityCategoryId: 11,
+          SeasonStageId: 1,
+          PartyId: 238,
+        };
         await createActivity(formData);
-        setActivities([...activities, formData]);
       } catch (error) {
         console.error("Error creating activity:", error);
       }
     }
 
-    setIsLoading(false);
+    fetchData(getActivities, setActivities);
     handleCloseForm();
   };
 
@@ -267,6 +234,7 @@ const Activities: React.FC = () => {
               activityStatus={activityStatuses}
               seasonStages={seasonStages}
               noteList={notes}
+              organizations={organizations}
             />
           </Grid>
           <Grid item xs={12}>

@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
-import DynamicFormDialog from "../molecules/dialog";
+import DynamicFormDialog from "../molecules/Dialog";
 
 const validationSchema = yup.object({
   name: yup.string().optional(),
@@ -30,6 +30,7 @@ const ActivityDialog = ({
   activityStatus,
   seasonStages,
   noteList,
+  organizations,
   formData,
 }) => {
   const {
@@ -113,8 +114,17 @@ const ActivityDialog = ({
       },
     ],
     generalActivityDetails0: [
-      { id: "description", label: "Description", type: "multiText" },
       { id: "dateRange", label: "Activity Date Range", type: "dateRange" },
+      { id: "description", label: "Description", type: "multiText" },
+      {
+        id: "organization",
+        label: "Organization",
+        type: "select",
+        options: organizations?.map((type) => ({
+          label: type.name,
+          name: type.name,
+        })),
+      },
       {
         id: "noteDetail",
         label: "Notes",
@@ -136,7 +146,8 @@ const ActivityDialog = ({
   const formContent = (
     <form onSubmit={handleSubmit(onSubmit)}>
       <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
-        <Grid container spacing={2} sx={{ padding: 2 }}>
+        <Grid container spacing={1} sx={{ padding: 2 }}>
+
           <FormSection
             title=""
             fields={fieldDefinitions.generalActivityDetails}

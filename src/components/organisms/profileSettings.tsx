@@ -17,7 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FormSection from "../molecules/DynamicFormSection";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { updateUserProfile, getUserProfile } from "../../apiService";
-import { UserProfile } from "../../models/userProfile.interface";
+import { UserProfile } from "../../models/UserProfile.interface";
 
 const validationSchema = yup.object({
   givenName: yup.string().required("Given Name is required"),

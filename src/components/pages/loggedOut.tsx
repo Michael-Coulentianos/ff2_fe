@@ -1,6 +1,6 @@
 import React from "react";
 import { useMsal } from "@azure/msal-react";
-import { loginRequest } from "../../../src/auth-config";
+import { loginRequest } from "../../auth-config";
 import { setAzureUserId } from "../../apiService";
 import { Box, Paper, Typography, Button, Container } from "@mui/material";
 import logo from "../../logo.svg";

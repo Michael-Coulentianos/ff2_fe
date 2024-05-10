@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
-import ActionButtons from "../molecules/actionButtons";
-import OrganizationDialog from "../organisms/organisationDialog";
-import DynamicTable from "../organisms/table";
+import ActionButtons from "../molecules/ActionButtons";
+import OrganizationDialog from "../organisms/OrganisationDialog";
+import DynamicTable from "../organisms/Table";
 import {
   getOrganizations,
   deleteOrganization,
@@ -10,11 +10,11 @@ import {
   updateOrganization,
   getLegalEntities,
 } from "../../apiService";
-import Loading from "./loading";
-import { LegalEntity } from "../../models/legalEntity.interface";
-import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { CreateOrganization } from "../../models/createOrganization.interface";
-import { Contacts } from "../../models/contacts.interface";
+import Loading from "./Loading";
+import { LegalEntity } from "../../models/LegalEntity.interface";
+import GenericConfirmDialog from "../organisms/GenericConfirmDialog";
+import { CreateOrganization } from "../../models/CreateOrganization.interface";
+import { Contacts } from "../../models/Contacts.interface";
 
 interface DataItem {
   id: string;

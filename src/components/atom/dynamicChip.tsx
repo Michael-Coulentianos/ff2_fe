@@ -1,6 +1,6 @@
 import React from "react";
 import { Chip } from "@mui/material";
-import { NoteType } from "../../models/noteType.interface";
+import { NoteType } from "../../models/NoteType.interface";
 
 interface DynamicChipProps {
   name: string;

@@ -1,5 +1,5 @@
-import { ContactPerson } from './contactPerson.interface';
-import { Address } from './address.interface';
+import { ContactPerson } from './ContactPerson.interface';
+import { Address } from './Address.interface';
 
 export interface Organization {
   id: number; 

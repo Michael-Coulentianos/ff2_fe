@@ -1,4 +1,4 @@
-import { Contacts } from "./contacts.interface";
+import { Contacts } from "./Contacts.interface";
 
 export interface ContactPerson {
   contactPersonId: number;

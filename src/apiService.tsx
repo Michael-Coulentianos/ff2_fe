@@ -1,14 +1,13 @@
 import axios from "axios";
-import { Note } from "./models/note.interface";
-import { NoteType } from "./models/noteType.interface";
-import { Farm } from "./models/farm.interface";
-import { LegalEntity } from "./models/legalEntity.interface";
-import { Organization } from "./models/organization.interface";
-import { UserProfile } from "./models/userProfile.interface";
-import { ApiResponse } from './models/apiResponse.interface';
-import { CreateOrganization } from "./models/createOrganization.interface";
-import { Activity } from "./models/activity.interface";
-import { jsPDF } from 'jspdf';
+import { Note } from "./models/Note.interface";
+import { NoteType } from "./models/NoteType.interface";
+import { Farm } from "./models/Farm.interface";
+import { LegalEntity } from "./models/LegalEntity.interface";
+import { Organization } from "./models/Organization.interface";
+import { UserProfile } from "./models/UserProfile.interface";
+import { ResponseApi } from './models/ResponseApi.interface';
+import { CreateOrganization } from "./models/CreateOrganization.interface";
+import { Activity } from "./models/Activity.interface";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',
@@ -34,7 +33,7 @@ export const setAzureUserId = (userId) => {
 //User Profile CRUD APIs
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await api.get<ApiResponse<UserProfile>>("UserDetails");
+    const response = await api.get<ResponseApi<UserProfile>>("UserDetails");
     
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -49,10 +48,10 @@ export const getUserProfile = async (): Promise<UserProfile> => {
   }
 };
 
-export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ApiResponse<string>> => {
+export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ResponseApi<string>> => {
   try {
     userProfile.azureUserId = azureUserId ? azureUserId : '';
-    const response = await api.put<ApiResponse<string>>("/UpdateUserProfile", userProfile);
+    const response = await api.put<ResponseApi<string>>("/UpdateUserProfile", userProfile);
 
     return response.data;
   } catch (error: any) {
@@ -70,7 +69,7 @@ export const createOrganization = async (organization: Partial<CreateOrganizatio
     organization.azureUserId = azureUserId ? azureUserId : '';
 
     console.log(organization);
-    const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
+    const response = await api.post<ResponseApi<any>>("/CreateOrganization", organization);
     console.log(response);
     
     return response.data.details;
@@ -85,7 +84,7 @@ export const createOrganization = async (organization: Partial<CreateOrganizatio
 
 export const getOrganizations = async (): Promise<Organization[]> => {
   try {
-    const response = await api.get<ApiResponse<Organization[]>>("Organizations");
+    const response = await api.get<ResponseApi<Organization[]>>("Organizations");
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -100,10 +99,10 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
+export const updateOrganization = async (organization: Partial<Organization>): Promise<ResponseApi<string>> => {
   try {
     organization.azureUserId = azureUserId ? azureUserId : '';
-    const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);
+    const response = await api.put<ResponseApi<string>>("/UpdateOrganization", organization);
     console.log(organization);
     console.log(response);
     return response.data;
@@ -152,7 +151,7 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
       }
     };
 
-    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById", config);
+    const response = await api.get<ResponseApi<Organization[]>>("OrganizationById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -170,7 +169,7 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
 //Farm CRUD APIs
 export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
-    const response = await api.post<ApiResponse<Farm>>("/CreateOrganization",farm);
+    const response = await api.post<ResponseApi<Farm>>("/CreateOrganization",farm);
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -228,7 +227,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
       }
     };
     
-    const response = await api.get<ApiResponse<Farm>>("OrganizationFarmById", config);
+    const response = await api.get<ResponseApi<Farm>>("OrganizationFarmById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -243,7 +242,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 };
 
 //Note CRUD APIs
-export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+export const createNote = async(note: Partial<any>): Promise<ResponseApi<any>> => {
   
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -273,7 +272,7 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       throw new Error('Network response was not ok');
     }
 
-    const result: ApiResponse<string> = await response.json();
+    const result: ResponseApi<string> = await response.json();
     return result;
   } catch (error: any) {
     console.error('Error during note create:', error);
@@ -283,7 +282,7 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
 
 export const getNotes = async (): Promise<Note[]> => {
   try {
-      const response = await api.get<ApiResponse<Note[]>>("Notes");
+      const response = await api.get<ResponseApi<Note[]>>("Notes");
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -308,7 +307,7 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
       }
     };
 
-      const response = await api.get<ApiResponse<Note>>("NoteById", config);
+      const response = await api.get<ResponseApi<Note>>("NoteById", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -325,7 +324,7 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
   }
 };
 
-export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+export const updateNote = async(note: Partial<any>): Promise<ResponseApi<any>> => {
   console.log(note);
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -354,7 +353,7 @@ export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       throw new Error('Network response was not ok');
     }
 
-    const result: ApiResponse<string> = await response.json();
+    const result: ResponseApi<string> = await response.json();
     result.details = note.noteId ?? '';
 
     console.log('Update successful:', result);
@@ -396,7 +395,7 @@ export const deleteNote = async (noteId: number): Promise<void> => {
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {
   try {
-    const response = await api.get<ApiResponse<NoteType[]>>("NoteTypes");
+    const response = await api.get<ResponseApi<NoteType[]>>("NoteTypes");
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -419,7 +418,7 @@ export const getNoteTypeById = async (noteTypeId: number): Promise<NoteType> => 
       }
     };
 
-    const response = await api.get<ApiResponse<NoteType>>("NoteTypeById", config);
+    const response = await api.get<ResponseApi<NoteType>>("NoteTypeById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -437,7 +436,7 @@ export const getNoteTypeById = async (noteTypeId: number): Promise<NoteType> => 
 //LegalEntities CRUD APIs
 export const getLegalEntities = async (): Promise<LegalEntity[]> => {
   try {
-      const response = await api.get<ApiResponse<LegalEntity[]>>("LegalEntities");
+      const response = await api.get<ResponseApi<LegalEntity[]>>("LegalEntities");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -457,7 +456,7 @@ export const getLegalEntities = async (): Promise<LegalEntity[]> => {
 //Activity CRUD APIs
 export const getActivityCategories = async (): Promise<any[]> => {
   try {
-      const response = await api.get<ApiResponse<any[]>>("ActivityCategories");
+      const response = await api.get<ResponseApi<any[]>>("ActivityCategories");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -476,7 +475,7 @@ export const getActivityCategories = async (): Promise<any[]> => {
 
 export const getSeasonStages = async (): Promise<any[]> => {
   try {
-      const response = await api.get<ApiResponse<any[]>>("SeasonStages");
+      const response = await api.get<ResponseApi<any[]>>("SeasonStages");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -495,7 +494,7 @@ export const getSeasonStages = async (): Promise<any[]> => {
 
 export const getActivityStatuses = async (): Promise<any[]> => {
   try {
-      const response = await api.get<ApiResponse<any[]>>("ActivityStatuses");
+      const response = await api.get<ResponseApi<any[]>>("ActivityStatuses");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -514,7 +513,7 @@ export const getActivityStatuses = async (): Promise<any[]> => {
 
 export const getActivityById = async (): Promise<any[]> => {
   try {
-      const response = await api.get<ApiResponse<any[]>>("ActivityById");
+      const response = await api.get<ResponseApi<any[]>>("ActivityById");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -531,9 +530,9 @@ export const getActivityById = async (): Promise<any[]> => {
   }
 };
 
-export const getActivities = async (): Promise<any[]> => {
+export const getActivities = async (): Promise<Activity[]> => {
   try {
-      const response = await api.get<ApiResponse<any[]>>("Activities");
+      const response = await api.get<ResponseApi<Activity[]>>("Activities");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -542,17 +541,19 @@ export const getActivities = async (): Promise<any[]> => {
       return response.data.details || [];
   } catch (error: any) {
       if (error.response && error.response.data) {
-          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+          throw new Error(`Failed to fetch activities: ${error.response.data.message || error.message}`);
       } else {
-          console.error('Something went wrong while fetching legal entity types', error);
+          console.error('Something went wrong while fetching activities', error);
           return []; 
       }
   }
 };
 
-export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
+export const createActivity = async (activity: Partial<any>): Promise<any[]> => {
   try {
-      const response = await api.post<ApiResponse<any>>("CreateActivity", activity);
+    activity.azureUserId = azureUserId;
+    console.log(activity);
+      const response = await api.post<ResponseApi<any>>("CreateActivity", activity);
       console.log(response);
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
@@ -572,7 +573,7 @@ export const createActivity = async (activity: Partial<Activity>): Promise<any[]
 
 export const updateActivity = async (activity: Partial<Activity>): Promise<any[]> => {
   try {
-      const response = await api.post<ApiResponse<any>>("ActivityStatuses", activity);
+      const response = await api.post<ResponseApi<any>>("ActivityStatuses", activity);
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
@@ -620,7 +621,7 @@ export const deleteActivity = async (activityId: number): Promise<void> => {
 //Field iFrame APIs
 export const getFieldiFrame = async (activityId: string): Promise<any[]> => {
   try {
-      const response = await api.post<ApiResponse<any>>("ActivityStatuses");
+      const response = await api.post<ResponseApi<any>>("ActivityStatuses");
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);

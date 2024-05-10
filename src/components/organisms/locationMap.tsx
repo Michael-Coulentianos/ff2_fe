@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import TextBox from "../atom/textBox";
+import TextBox from "../atom/TextBox";
 
 interface MapComponentProps {
   label: string;

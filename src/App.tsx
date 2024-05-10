@@ -4,10 +4,10 @@ import "./App.css";
 import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
 import theme from "./theme";
-import Footer from "./components/organisms/footer";
-import Header from "./components/organisms/header";
+import Footer from "./components/organisms/Footer";
+import Header from "./components/organisms/Header";
 import Routing from "./routing";
-import LogoutPage from "./components/pages/loggedOut";
+import LogoutPage from "./components/pages/LoggedOut";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
