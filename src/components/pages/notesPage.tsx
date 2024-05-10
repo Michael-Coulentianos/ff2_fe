@@ -176,10 +176,8 @@ const Notes: React.FC = () => {
         formData.property = JSON.stringify(properties);
         const response = await updateNote(formData);
         if (response.details != null) {
-          const updatedNotes = notes.filter(
-            (note) => note.noteId !== formData.noteId
-          );
-          setNotes([...updatedNotes, formData]);
+          const notes = await getNotes();
+          setNotes(notes);
         }
       } catch (error) {
         console.error("Error updating note:", error);
@@ -189,7 +187,8 @@ const Notes: React.FC = () => {
         formData.property = JSON.stringify(properties);
         const response = await createNote(formData);
         formData.noteId = response.details.noteId;
-        setNotes([...notes, formData]);
+        const notes = await getNotes();
+        setNotes(notes);
       } catch (error) {
         console.error("Error creating note:", error);
       }
