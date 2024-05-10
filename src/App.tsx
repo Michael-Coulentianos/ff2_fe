@@ -7,7 +7,6 @@ import theme from "./theme";
 import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Routing from "./routing";
-import NavigationDrawer from "./components/organisms/navigationDrawer";
 import LogoutPage from "./components/pages/loggedOut";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{

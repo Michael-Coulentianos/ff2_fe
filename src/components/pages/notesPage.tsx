@@ -15,6 +15,7 @@ import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import moment from "moment";
 import DynamicChip from "../atom/dynamicChip";
 import FileDisplay from "../organisms/fileDisplay";
+import Loading from "./loading";
 
 interface DataItem {
   id: string;
@@ -92,7 +93,7 @@ const Notes: React.FC = () => {
 
   useEffect(() => {
     getLocation();
-  }, []);
+  }, [location]);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -121,9 +122,13 @@ const Notes: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
-    formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
-    formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
-  
+    formData.partyId = organizations.find(
+      (org) => org.name === formData.party
+    )?.partyId;
+    formData.noteTypeId = noteTypes.find(
+      (nt) => nt.name === formData.noteType
+    )?.noteTypeId;
+
     const currentDate = new Date();
 
     // Extract individual components of the date
@@ -235,12 +240,21 @@ const Notes: React.FC = () => {
     {
       label: "Type",
       dataKey: "noteType",
-      renderCell: (item) => <DynamicChip name={item.noteType} noteTypes={noteTypes} />,
+      renderCell: (item) => (
+        <DynamicChip name={item.noteType} noteTypes={noteTypes} />
+      ),
     },
     {
       label: "Attachment",
       dataKey: "attachment",
-      renderCell: (item) => item.attachment ? <FileDisplay fileName={item.fileName || "Attachment"} fileType={item.fileType || "unknown"} fileUrl={item.attachment} /> : null,
+      renderCell: (item) =>
+        item.attachment ? (
+          <FileDisplay
+            fileName={item.fileName || "Attachment"}
+            fileType={item.fileType || "unknown"}
+            fileUrl={item.attachment}
+          />
+        ) : null,
     },
     {
       label: "Date",
@@ -266,77 +280,84 @@ const Notes: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <h1 className="title">Notes</h1>
-          <Divider />
-        </Grid>
-        <Grid item xs={12}>
-          {notes.length == 0 && (
-            <Paper
-              sx={{
-                padding: "20px",
-                margin: 2,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography sx={{ m: 2 }}>
-                You do not have any notes. Please click the button below to add
-                an organization.
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={handleOpenForm}
-                color="primary"
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <h1 className="title">Notes</h1>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            {notes.length === 0 && (
+              <Paper
+                sx={{
+                  padding: "20px",
+                  margin: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
               >
-                Add Note
-              </Button>
-              <NotesDialog
-                isOpen={formOpen}
-                onClose={handleCloseForm}
-                onSubmit={handleSubmit}
-                formData={selectedNote}
-                noteTypes={noteTypes}
-                organizations={organizations}
-              />
-            </Paper>
+                <Typography sx={{ m: 2 }}>
+                  You do not have any notes. Please click the button below to
+                  add an organization.
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={handleOpenForm}
+                  color="primary"
+                >
+                  Add Note
+                </Button>
+                <NotesDialog
+                  isOpen={formOpen}
+                  onClose={handleCloseForm}
+                  onSubmit={handleSubmit}
+                  formData={selectedNote}
+                  noteTypes={noteTypes}
+                  organizations={organizations}
+                />
+              </Paper>
+            )}
+          </Grid>
+
+          {notes.length > 0 && (
+            <>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  onClick={handleOpenForm}
+                  color="primary"
+                >
+                  Add Note
+                </Button>
+                <NotesDialog
+                  isOpen={formOpen}
+                  onClose={handleCloseForm}
+                  onSubmit={handleSubmit}
+                  formData={selectedNote}
+                  noteTypes={noteTypes}
+                  organizations={organizations}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <DynamicTable
+                  data={notes}
+                  columns={myColumns}
+                  rowsPerPage={5}
+                />
+                <GenericConfirmDialog
+                  open={confirmOpen}
+                  onCancel={() => setConfirmOpen(false)}
+                  onConfirm={handleConfirm}
+                  title="Confirm Deletion"
+                  content="Are you sure you want to delete this note?"
+                />
+              </Grid>
+            </>
           )}
         </Grid>
-
-        {notes.length > 0 && (
-          <>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                onClick={handleOpenForm}
-                color="primary"
-              >
-                Add Note
-              </Button>
-              <NotesDialog
-                isOpen={formOpen}
-                onClose={handleCloseForm}
-                onSubmit={handleSubmit}
-                formData={selectedNote}
-                noteTypes={noteTypes}
-                organizations={organizations}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <DynamicTable data={notes} columns={myColumns} rowsPerPage={5} />
-              <GenericConfirmDialog
-                open={confirmOpen}
-                onCancel={() => setConfirmOpen(false)}
-                onConfirm={handleConfirm}
-                title="Confirm Deletion"
-                content="Are you sure you want to delete this note?"
-              />
-            </Grid>
-          </>
-        )}
-      </Grid>
+      )}
     </>
   );
 };

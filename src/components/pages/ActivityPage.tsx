@@ -10,11 +10,12 @@ import {
   createActivity,
   updateActivity,
   getNotes,
-  getActivities
+  getActivities,
 } from "../../apiService";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
+import Loading from "./loading";
 
 interface DataItem {
   id: string;
@@ -145,22 +146,21 @@ const Activities: React.FC = () => {
       try {
         console.log("FORMDATA", formData);
         console.log(activityCategories);
-        formData.activityCategoryId = 11;//activityCategories.find(
-          //(category) => category.name !== formData.category).activityCategoryId;
-          formData.partyId = 238;
+        formData.activityCategoryId = 11; //activityCategories.find(
+        //(category) => category.name !== formData.category).activityCategoryId;
+        formData.partyId = 238;
         formData.seasonStageId = seasonStages.find(
-          (seasonStage) => seasonStage.value !== formData.seasonStage).key;
+          (seasonStage) => seasonStage.value !== formData.seasonStage
+        ).key;
         // formData.ActivityStatusId = activityStatuses.find(
         //   (status) => status.value !== formData.status).ActivityStatusId;
-          
-        
         await createActivity(formData);
         setActivities([...activities, formData]);
       } catch (error) {
         console.error("Error creating activity:", error);
       }
     }
-    
+
     setIsLoading(false);
     handleCloseForm();
   };
@@ -212,10 +212,12 @@ const Activities: React.FC = () => {
     {
       label: "Date",
       dataKey: "date",
-      renderCell: (item) => <span>
-      <p>Start Date: {moment(item.startDate).format("DD MMMM YYYY")}</p>
-      <p>End Date: {moment(item.endDate).format("DD MMMM YYYY")}</p>
-    </span>,
+      renderCell: (item) => (
+        <span>
+          <p>Start Date: {moment(item.startDate).format("DD MMMM YYYY")}</p>
+          <p>End Date: {moment(item.endDate).format("DD MMMM YYYY")}</p>
+        </span>
+      ),
     },
     {
       label: "Cost",
@@ -241,37 +243,48 @@ const Activities: React.FC = () => {
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <h1 className="title">Activity Management</h1>
-          <Divider />
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <h1 className="title">Activity Management</h1>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              onClick={handleOpenForm}
+              color="primary"
+            >
+              Add Activity
+            </Button>
+            <ActivitiesDialog
+              isOpen={formOpen}
+              onClose={handleCloseForm}
+              onSubmit={handleSubmit}
+              formData={selectedActivity}
+              activityCategory={activityCategories}
+              activityStatus={activityStatuses}
+              seasonStages={seasonStages}
+              noteList={notes}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <DynamicTable
+              data={activities}
+              columns={myColumns}
+              rowsPerPage={5}
+            />
+            <GenericConfirmDialog
+              open={confirmOpen}
+              onCancel={() => setConfirmOpen(false)}
+              onConfirm={handleConfirm}
+              title="Confirm Deletion"
+              content="Are you sure you want to delete this activity?"
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Button variant="contained" onClick={handleOpenForm} color="primary">
-            Add Activity
-          </Button>
-          <ActivitiesDialog
-            isOpen={formOpen}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmit}
-            formData={selectedActivity}
-            activityCategory={activityCategories}
-            activityStatus={activityStatuses}
-            seasonStages={seasonStages}
-            noteList={notes}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <DynamicTable data={activities} columns={myColumns} rowsPerPage={5} />
-          <GenericConfirmDialog
-            open={confirmOpen}
-            onCancel={() => setConfirmOpen(false)}
-            onConfirm={handleConfirm}
-            title="Confirm Deletion"
-            content="Are you sure you want to delete this activity?"
-          />
-        </Grid>
-      </Grid>
+      )}
     </>
   );
 };

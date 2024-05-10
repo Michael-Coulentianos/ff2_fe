@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import EditIcon from "@mui/icons-material/Edit";
 import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
 import ApplicationsMenu from "../molecules/appMenu";
@@ -24,6 +23,7 @@ import {
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../apiService";
+import QuickAdd from "../atom/quickAdd";
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
@@ -78,20 +78,7 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
               Farmers Friend
             </Link>
           )}
-          <IconButton
-            aria-label="edit"
-            sx={{
-              color: "white",
-              backgroundColor: theme.palette.secondary.main,
-              width: "30px",
-              height: "30px",
-              "&:hover": {
-                backgroundColor: theme.palette.secondary.light,
-              },
-            }}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
+          <QuickAdd></QuickAdd>
           <SearchBar></SearchBar>
           <AuthenticatedTemplate>
             <UserProfileForm></UserProfileForm>

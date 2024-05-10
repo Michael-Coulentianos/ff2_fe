@@ -209,7 +209,7 @@ const OrganizationSettings: React.FC = () => {
               <Divider />
             </Grid>
             <Grid item xs={12}>
-              {organizations.length == 0 && (
+              {organizations.length === 0 && (
                 <Paper
                   sx={{
                     padding: "20px",
