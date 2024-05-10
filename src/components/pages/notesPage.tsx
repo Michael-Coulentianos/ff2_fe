@@ -123,16 +123,7 @@ const Notes: React.FC = () => {
   const handleSubmit = async (formData: any) => {
     formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
     formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
-    console.log('Form data:', formData);
-
-    if (formData.attachment && formData.attachment instanceof File) {
-      console.log("File name:", formData.attachment.name);
-      console.log("File type:", formData.attachment.type);
-      console.log("File size:", formData.attachment.size, 'bytes');
-    } else {
-      console.log("No file attached or file data is not a File object.");
-    }
-
+  
     const currentDate = new Date();
 
     // Extract individual components of the date
@@ -183,18 +174,21 @@ const Notes: React.FC = () => {
     if (selectedNote) {
       try {
         formData.property = JSON.stringify(properties);
-        await updateNote(formData);
-        const updatedNotes = notes.filter(
-          (note) => note.noteId !== formData.noteId
-        );
-        setNotes([...updatedNotes, formData]);
+        const response = await updateNote(formData);
+        if (response.details != null) {
+          const updatedNotes = notes.filter(
+            (note) => note.noteId !== formData.noteId
+          );
+          setNotes([...updatedNotes, formData]);
+        }
       } catch (error) {
         console.error("Error updating note:", error);
       }
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        await createNote(formData);
+        const response = await createNote(formData);
+        formData.noteId = response.details.noteId;
         setNotes([...notes, formData]);
       } catch (error) {
         console.error("Error creating note:", error);

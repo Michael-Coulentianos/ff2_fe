@@ -7,15 +7,32 @@ import AddAttachmentButton from "../atom/attachmentButton";
 import TextBox from "../atom/textBox";
 import MapComponent from "../organisms/locationMap";
 import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
-
 import DateRangePicker from "../atom/dateRange";
 
-const DynamicFormSection = ({
+interface Field {
+  id: string;
+  label: string;
+  type: string;
+  options?: Array<{ label: string; value: any }>;
+  placeholder?: string;
+}
+
+interface DynamicFormSectionProps {
+  title?: string;
+  fields: Field[];
+  control: any;
+  errors: any;
+  columns?: number;
+  onFileChange?: (file: File | null) => void;
+}
+
+const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   title = "",
   fields,
   control,
   errors,
   columns = 1,
+  onFileChange = () => {}
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
@@ -66,15 +83,11 @@ const DynamicFormSection = ({
                     return <AddAttachmentButton
                       id={field.id}
                       label={field.label}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        const file = event.target.files ? event.target.files[0] : null;
-                        console.log("File attached:", file ? file.name : "No file"); 
-                        onChange(file);
-                      }}
+                      onChange={onFileChange}
                       onBlur={onBlur}
                       error={!!errors[field.id]}
                       helperText={errors[field.id]?.message}
-                  />
+                    />
                   case "map":
                     return (
                       <MapComponent

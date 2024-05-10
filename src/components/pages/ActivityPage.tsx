@@ -143,6 +143,17 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
+        console.log("FORMDATA", formData);
+        console.log(activityCategories);
+        formData.activityCategoryId = 11;//activityCategories.find(
+          //(category) => category.name !== formData.category).activityCategoryId;
+          formData.partyId = 238;
+        formData.seasonStageId = seasonStages.find(
+          (seasonStage) => seasonStage.value !== formData.seasonStage).key;
+        // formData.ActivityStatusId = activityStatuses.find(
+        //   (status) => status.value !== formData.status).ActivityStatusId;
+          
+        
         await createActivity(formData);
         setActivities([...activities, formData]);
       } catch (error) {

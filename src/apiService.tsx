@@ -244,7 +244,6 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 
 //Note CRUD APIs
 export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
-  console.log("API", note);
   
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -255,14 +254,9 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
 
-  const doc = new jsPDF();
-  doc.text('This is a dummy PDF file.', 10, 10);
-  const pdfBlob = doc.output('blob');
-  const dummyFile = new File([pdfBlob], "dummy.pdf", { type: "application/pdf" });
-
-  // Append it to FormData
-  formData.append('attachment', dummyFile);
-
+  if(note.attachment){
+    formData.append('Attachment', note.attachment);
+  }
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
       method: 'POST',
@@ -274,9 +268,6 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       },
       body: formData
     });
-
-    const resultText = await response.text(); // Get response as text to avoid JSON parsing issues
-    console.log("Response Text", resultText);
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -561,7 +552,6 @@ export const getActivities = async (): Promise<any[]> => {
 
 export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
   try {
-    console.log(activity);
       const response = await api.post<ApiResponse<any>>("CreateActivity", activity);
       console.log(response);
 

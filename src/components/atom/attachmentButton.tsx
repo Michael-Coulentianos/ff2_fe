@@ -8,7 +8,7 @@ const HiddenInput = styled('input')({
 interface AddAttachmentButtonProps {
   id?: string;
   label: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (file: File | null) => void;
   onBlur: () => void;
   error?: boolean;
   helperText?: string;
@@ -22,7 +22,13 @@ const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
   error,
   helperText,
 }) => {
-  const [file, setFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    setSelectedFile(file);
+    onChange(file);  
+  };
   
   return (
     <div>
@@ -31,7 +37,7 @@ const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
         id={id}
         multiple
         type="file"
-        onChange={onChange} 
+        onChange={handleFileChange} 
         onBlur={onBlur}
       />
       <label htmlFor={id}>
@@ -41,6 +47,11 @@ const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
       </label>
       {helperText && (
         <FormHelperText error={error}>{helperText}</FormHelperText>
+      )}
+      {selectedFile && (
+        <Typography variant="caption" display="block" gutterBottom>
+          Selected File: {selectedFile.name}
+        </Typography>
       )}
     </div>
   );

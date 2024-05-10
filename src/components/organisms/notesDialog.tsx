@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Grid, DialogContent, DialogActions, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -46,16 +46,11 @@ const NotesDialog = ({
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
-
+  
+  const [file, setFile] = useState<File | null>(null);
+  
   const onSubmit2 = data => {
-    console.log("Form Data:", data);
-    if (data.attachment instanceof File) {
-      console.log("File Attached:", data.attachment.name);
-      console.log("File Size:", data.attachment.size);
-    } else {
-      console.log("No file or file data not a File object.");
-    }
-    // Call the external onSubmit prop if necessary
+    data.attachment = file;
     onSubmit(data);
   };
 
@@ -136,8 +131,9 @@ const NotesDialog = ({
   
   useEffect(() => {
     if (isOpen && formData) {
+      console.log(formData);
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
-      
+      console.log(formData);
       const initialValues = {
         ...formData,
         location: formData.location,
@@ -209,7 +205,7 @@ const NotesDialog = ({
     ],
     generalNoteDetails2: [{ id: "location", label: "location", type: "map" }],
     generalNoteDetails3: [
-      { id: "attachment", label: "Add file", type: "attachment" },
+      { id: "attachment1", label: "Add file", type: "attachment" },
     ],
     severityNote: [
       {
@@ -352,6 +348,7 @@ const NotesDialog = ({
             control={control}
             errors={errors}
             columns={1}
+            onFileChange={setFile}
           />
         </Grid>
       </DialogContent>
