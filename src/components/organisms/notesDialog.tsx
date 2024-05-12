@@ -220,7 +220,7 @@ const NotesDialog = ({
           { id: 1, label: "Damage" },
           { id: 2, label: "Infection" },
           { id: 3, label: "Water" },
-        ].map((type) => ({ label: type.label, value: type.label })),
+        ].map((type) => ({ label: type.label, value: type.label, id: type.id })),
       },
       {
         id: "severitySubType",
@@ -229,6 +229,7 @@ const NotesDialog = ({
         options: options.map((type) => ({
           label: type.label,
           value: type.label,
+          id: type.id
         })),
       },
       { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
@@ -253,6 +254,7 @@ const NotesDialog = ({
         ].map((type) => ({
           label: type.value,
           value: type.id,
+          id: type.id,
         })),
       },
       { id: "yieldEstimateHeads", label: "Heads/Plants per 10m", type: "text" },
@@ -271,6 +273,7 @@ const NotesDialog = ({
         ].map((type) => ({
           label: type.label,
           value: type.label,
+          id: type.id
         })),
       },
       {
@@ -280,6 +283,7 @@ const NotesDialog = ({
         options: options2.map((type) => ({
           label: type.label,
           value: type.label,
+          id: type.id
         })),
       },
     ],

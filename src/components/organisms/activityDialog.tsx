@@ -10,13 +10,14 @@ import DynamicFormDialog from "../molecules/Dialog";
 const validationSchema = yup.object({
   name: yup.string().optional(),
   description: yup.string().optional(),
-  category: yup.string().optional(),
+  activityCategoryId: yup.number().optional(),
   status: yup.string().optional(),
-  seasonStage: yup.string().optional(),
+  seasonStageId: yup.string().optional(),
   startDate: yup.string().optional(),
   endDate: yup.string().optional(),
   field: yup.string().optional(),
   noteDetail: yup.string().optional(),
+  partyId: yup.number().optional(),
   contractWorkCost: yup.string().optional(),
   cost: yup.string().optional(),
   assignedTo: yup.string().optional(),
@@ -53,7 +54,7 @@ const ActivityDialog = ({
     }
   });
 
-  const watchactivityCategory = watch("category");
+  //const watchactivityCategory = watch("category");
   
   useEffect(() => {
     if (isOpen && formData) {
@@ -67,31 +68,29 @@ const ActivityDialog = ({
         ...formData
       });
     }
-    // if (!isOpen) {
-    //   reset({
-    //     name: "",
-    //     description: "",
-    //     startDate: "",
-    //     endDate: "",
-    //     fields: "",
-    //     notes: "",
-    //     contractWorkCost: "",
-    //     cost: "",
-    //     assignee: "",
-    //   });
-    // }
-  }, [formData, isOpen, reset, activityCategory, watchactivityCategory, noteList, activityStatus, seasonStages]);
+    if (!isOpen) {
+      reset({
+        name: "",
+        description: "",
+        field: "",
+        contractWorkCost: "",
+        cost: "",
+        assignedTo: "",
+      });
+    }
+  }, [formData, isOpen, reset, activityCategory, noteList, activityStatus, seasonStages]);
 
   const fieldDefinitions = {
     generalActivityDetails: [
       { id: "name", label: "Activity Name", type: "text" },
       {
-        id: "category",
+        id: "activityCategoryId",
         label: "Activity Category",
         type: "select",
         options: activityCategory?.map((type) => ({
           label: type.name,
-          value: type.name,
+          value: type.activityCategoryId,
+          id: type.activityCategoryId
         })),
       },
       {
@@ -100,16 +99,18 @@ const ActivityDialog = ({
         type: "select",
         options: activityStatus?.map((type) => ({
           label: type.value,
-          value: type.value,
+          value: type.key,
+          id: type.key
         })),
       },
       {
-        id: "seasonStage",
+        id: "seasonStageId",
         label: "Season Stages",
         type: "select",
         options: seasonStages?.map((type) => ({
           label: type.value,
-          value: type.value,
+          value: type.key,
+          id: type.key
         })),
       },
     ],
@@ -117,12 +118,13 @@ const ActivityDialog = ({
       { id: "dateRange", label: "Activity Date Range", type: "dateRange" },
       { id: "description", label: "Description", type: "multiText" },
       {
-        id: "organization",
+        id: "partyId",
         label: "Organization",
         type: "select",
         options: organizations?.map((type) => ({
           label: type.name,
-          name: type.name,
+          name: type.partyId,
+          value: type.partyId
         })),
       },
       {
@@ -131,7 +133,8 @@ const ActivityDialog = ({
         type: "select",
         options: noteList?.map((type) => ({
           label: type.title,
-          name: type.title,
+          name: type.noteId,
+          value: type.title
         })),
       },
     ],

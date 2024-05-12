@@ -13,7 +13,7 @@ interface Field {
   id: string;
   label: string;
   type: string;
-  options?: Array<{ label: string; value: any }>;
+  options?: Array<{ label: string; value: any; id: any; }>;
   placeholder?: string;
 }
 
@@ -73,8 +73,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         inputRef={ref}
                       >
                         {Array.isArray(field.options) ? (
-                          field.options.map((option, index) => (
-                            <MenuItem key={`${option.value}-${index}`} value={option.value}>
+                          field.options.map((option) => (
+                            <MenuItem key={option.id} value={option.value}>
                               {option.label}
                             </MenuItem>
                           ))

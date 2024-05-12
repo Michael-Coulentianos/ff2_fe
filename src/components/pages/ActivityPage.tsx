@@ -97,9 +97,10 @@ const Activities: React.FC = () => {
 
   const handleSubmit = async (formData: any) => { 
     const properties = {};
-
-    formData.property = JSON.stringify(properties);
-
+    formData.properties = properties;//JSON.stringify(properties);
+    formData.startDate = "2024/04/30";
+    formData.endDate = "2024/04/30";
+    console.log(formData);
     if (selectedActivity) {
       try {
         await updateActivity(formData);
@@ -108,20 +109,6 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
-        const formData = {
-          Name: "Test Activity",
-          Description: "Activity Description",
-          StartDate: "2024/04/28",
-          EndDate: "2024/04/30",
-          Field: "Ty's Field",
-          Cost: "20.00",
-          ContractWorkCost: 0.00,
-          Properties: {},
-          NoteDetail: "The FieldId will come from Mike APIs",
-          ActivityCategoryId: 11,
-          SeasonStageId: 1,
-          PartyId: 238,
-        };
         await createActivity(formData);
       } catch (error) {
         console.error("Error creating activity:", error);
@@ -145,6 +132,7 @@ const Activities: React.FC = () => {
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
+      setIsLoading(false);
       setConfirmOpen(false);
       handleCloseForm();
     }
