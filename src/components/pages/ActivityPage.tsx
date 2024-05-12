@@ -98,8 +98,6 @@ const Activities: React.FC = () => {
   const handleSubmit = async (formData: any) => { 
     const properties = {};
     formData.properties = properties;//JSON.stringify(properties);
-    formData.startDate = "2024/04/30";
-    formData.endDate = "2024/04/30";
     console.log(formData);
     if (selectedActivity) {
       try {

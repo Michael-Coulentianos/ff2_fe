@@ -1,29 +1,44 @@
 import { TextField } from "@mui/material";
-import React, { useState } from "react";
+import React from "react";
 
-const DateSelector: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<string>("");
+interface DateProps {
+  id?: string;
+  label: string;
+  value: string | number | readonly string[];
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: () => void;
+  readOnly?: boolean;
+  error?: boolean;
+  helperText?: any;
+}
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-  };
-
-  return (
-    <TextField
-      variant="outlined"
-      size="small"
-      margin="dense"
-      fullWidth
-      label="Date"
-      type="date"
-      name="endDate"
-      value={selectedDate}
-      onChange={handleDateChange}
-      InputLabelProps={{
-        shrink: true,
-      }}
-    />
-  );
-};
+const DateSelector: React.FC<DateProps> = ({
+  id,
+  label,
+  value,
+  helperText,
+  onChange,
+  onBlur,
+  error,
+}) => (
+  <TextField
+    label={label}
+    value={value}
+    onChange={onChange}
+    fullWidth
+    variant="outlined"
+    size="small"
+    margin="dense"
+    helperText={helperText}
+    error={error}
+    id={id}
+    type="date"
+    onBlur={onBlur}
+    InputLabelProps={{
+      shrink: true,
+    }}
+  >
+  </TextField>
+);
 
 export default DateSelector;

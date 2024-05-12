@@ -11,6 +11,7 @@ const validationSchema = yup.object({
   name: yup.string().optional(),
   description: yup.string().optional(),
   activityCategoryId: yup.number().optional(),
+  activityTypeId: yup.number().optional(),
   status: yup.string().optional(),
   seasonStageId: yup.string().optional(),
   startDate: yup.string().optional(),
@@ -18,9 +19,9 @@ const validationSchema = yup.object({
   field: yup.string().optional(),
   noteDetail: yup.string().optional(),
   partyId: yup.number().optional(),
+  quantity: yup.number().optional(),
   contractWorkCost: yup.string().optional(),
-  cost: yup.string().optional(),
-  assignedTo: yup.string().optional(),
+  cost: yup.string().optional()
 });
 
 const ActivityDialog = ({
@@ -50,11 +51,11 @@ const ActivityDialog = ({
       field: "",
       contractWorkCost: "",
       cost: "",
-      assignedTo: "",
+      quantity: 0,
     }
   });
 
-  //const watchactivityCategory = watch("category");
+  const watchactivityCategoryId = watch("activityCategoryId");
   
   useEffect(() => {
     if (isOpen && formData) {
@@ -74,8 +75,7 @@ const ActivityDialog = ({
         description: "",
         field: "",
         contractWorkCost: "",
-        cost: "",
-        assignedTo: "",
+        cost: ""
       });
     }
   }, [formData, isOpen, reset, activityCategory, noteList, activityStatus, seasonStages]);
@@ -99,7 +99,7 @@ const ActivityDialog = ({
         type: "select",
         options: activityStatus?.map((type) => ({
           label: type.value,
-          value: type.key,
+          value: type.value,
           id: type.key
         })),
       },
@@ -113,9 +113,10 @@ const ActivityDialog = ({
           id: type.key
         })),
       },
+      { id: "startDate", label: "Start Date", type: "date" },
+      { id: "endDange", label: "End Date", type: "date" },
     ],
     generalActivityDetails0: [
-      { id: "dateRange", label: "Activity Date Range", type: "dateRange" },
       { id: "description", label: "Description", type: "multiText" },
       {
         id: "partyId",
@@ -140,9 +141,9 @@ const ActivityDialog = ({
     ],
     generalActivityDetails1: [
       { id: "field", label: "Field", type: "text" },
-      { id: "contractWorkCost", label: "Contract Work Cost", type: "text" },
-      { id: "cost", label: "Cost", type: "text" },
-      { id: "assignedTo", label: "Assignee", type: "text" },
+      { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
+      { id: "cost", label: "Cost", type: "currency" },
+      { id: "quantity", label: "Quantity", type: "number" },
     ],
   };
 
@@ -158,6 +159,16 @@ const ActivityDialog = ({
             errors={errors}
             columns={2}
           />
+
+          {watchactivityCategoryId === 12 && (
+            <FormSection
+              title="Yield Estimate"
+              fields={fieldDefinitions.generalActivityDetails}
+              control={control}
+              errors={errors}
+              columns={2}
+            />
+          )}
 
           <FormSection
             title=""

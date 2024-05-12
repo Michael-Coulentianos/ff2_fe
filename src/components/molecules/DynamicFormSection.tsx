@@ -12,7 +12,7 @@ import DateRangePicker from "../atom/DateRange";
 interface Field {
   id: string;
   label: string;
-  type: string;
+  type?: string;
   options?: Array<{ label: string; value: any; id: any; }>;
   placeholder?: string;
 }
@@ -36,11 +36,14 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState(""); 
 
   const handlePositionChange = (newPosition) => {
     setPosition(newPosition);
     console.log("New Position:", newPosition);
   };
+
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -121,7 +124,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                       />
                     );
                   case "date":
-                    return <DateSelector></DateSelector>;
+                     return <DateSelector id={field.id} value={value}
+                     label={field.label} onChange={onChange}></DateSelector>;
                   case "googleMapsSearch":
                     return (
                       <GoogleMapsSearchBar
