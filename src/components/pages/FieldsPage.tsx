@@ -1,5 +1,6 @@
 import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
+import FieldForm from "../organisms/FieldDetails";
 
 const FieldManagement = () => {
   return (
@@ -8,12 +9,13 @@ const FieldManagement = () => {
         <h1 className="title">Field Management</h1>
         <Divider />
       </Grid>
-      <Grid item xs={10}>
-        <FieldMapComponent height={"500px"}></FieldMapComponent>
+      <Grid item xs={9}>
+        <FieldMapComponent height={"485px"}></FieldMapComponent>
       </Grid>
-      <Grid item xs={2}>
-        <Paper elevation={3} sx={{ height: "505px", marginTop: 1 }} />
+      <Grid item xs={3}>
+          <FieldForm></FieldForm>
       </Grid>
+     
     </Grid>
   );
 };

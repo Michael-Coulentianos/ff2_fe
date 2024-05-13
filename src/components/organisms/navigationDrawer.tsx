@@ -156,7 +156,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
               </StyledListItem>
               {text === "My Farm" && (
                 <CollapsibleSection open={open}>
-                  <MenuItem text="Farm Management" icon={undefined} href={""} />
+                  <MenuItem text="Farm Management" icon={undefined} href={"/farm"} />
                   <MenuItem
                     text="Fields Management"
                     icon={undefined}
