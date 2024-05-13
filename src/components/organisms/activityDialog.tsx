@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Grid, DialogContent, DialogActions, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -24,6 +24,18 @@ const validationSchema = yup.object({
   cost: yup.string().optional()
 });
 
+interface FieldOption {
+  label: string;
+  value: any;
+}
+
+interface DynamicField {
+  id: string;
+  label: string;
+  type: string;
+  options?: FieldOption[];
+}
+
 const ActivityDialog = ({
   isOpen,
   onClose,
@@ -35,6 +47,7 @@ const ActivityDialog = ({
   organizations,
   formData,
 }) => {
+  const [dynamicFields, setDynamicFields] = useState([]);
   const {
     control,
     handleSubmit,
@@ -55,16 +68,51 @@ const ActivityDialog = ({
     }
   });
 
-  const watchactivityCategoryId = watch("activityCategoryId");
+  const activityCategoryId = watch("activityCategoryId");
+
+  useEffect(() => {
+    if (activityCategoryId) {
+        const selectedCategory = activityCategory.find(category => category.activityCategoryId === activityCategoryId);
+        
+        if (selectedCategory && selectedCategory.properties) {
+            // Parse the properties JSON string into an array
+            const properties = JSON.parse(selectedCategory.properties);
+
+            // Dynamically create field definitions from properties
+            const dynamicGeneralActivityDetails = properties
+              .filter(prop => prop.key !== 'Color') // Assuming 'Color' is not needed in form
+              .map(prop => ({
+                id: prop.key.toLowerCase().replace(/\s+/g, ''),
+                label: prop.key,
+                type: prop.type,
+                options: prop.type === 'select' ? prop.value.map(option => ({
+                    label: option.Option + (option.unit ? ` (${option.unit})` : ''),
+                    value: option.id
+                })) : undefined
+              }));
+
+            // Set the dynamic fields into state or a ref if needed
+            setDynamicFields(dynamicGeneralActivityDetails);
+        } else {
+            setDynamicFields([]);
+        }
+    }
+}, [activityCategoryId, activityCategory]);
+
+// Assuming setDynamicFields updates a state that holds the field definitions
+
+
   
   useEffect(() => {
     if (isOpen && formData) {
-      const activityProperty = JSON.parse(formData.property);
-      for (const key in activityProperty) {
-        if (activityProperty.hasOwnProperty(key)) {
-          formData[key] = activityProperty[key];
-        }
-      }
+      // const activityProperty = JSON.parse(activityCategory[3].properties);
+      // for (const key in activityProperty) {
+      //   if (activityProperty.hasOwnProperty(key)) {
+      //     formData[key] = activityProperty[key];
+      //   }
+      // }
+      // const properties = formData.property;
+
       reset({
         ...formData
       });
@@ -80,6 +128,21 @@ const ActivityDialog = ({
     }
   }, [formData, isOpen, reset, activityCategory, noteList, activityStatus, seasonStages]);
 
+  const selectedPartyId = watch("partyId");
+  const [filteredNotes, setFilteredNotes] = useState(noteList);
+
+  useEffect(() => {
+    if (selectedPartyId) {
+      const organization = organizations.find(org => org.partyId === selectedPartyId);
+      
+      if (organization) {
+        const filtered = noteList.filter(note => note.party === organization.name);
+        setFilteredNotes(filtered);
+      }
+    }
+  }, [selectedPartyId, noteList, organizations]);
+  
+  
   const fieldDefinitions = {
     generalActivityDetails: [
       { id: "name", label: "Activity Name", type: "text" },
@@ -114,7 +177,7 @@ const ActivityDialog = ({
         })),
       },
       { id: "startDate", label: "Start Date", type: "date" },
-      { id: "endDange", label: "End Date", type: "date" },
+      { id: "endDate", label: "End Date", type: "date" },
     ],
     generalActivityDetails0: [
       { id: "description", label: "Description", type: "multiText" },
@@ -132,7 +195,7 @@ const ActivityDialog = ({
         id: "noteDetail",
         label: "Notes",
         type: "select",
-        options: noteList?.map((type) => ({
+        options: filteredNotes?.map((type) => ({
           label: type.title,
           name: type.noteId,
           value: type.title
@@ -153,32 +216,26 @@ const ActivityDialog = ({
         <Grid container spacing={1} sx={{ padding: 2 }}>
 
           <FormSection
-            title=""
             fields={fieldDefinitions.generalActivityDetails}
             control={control}
             errors={errors}
             columns={2}
           />
 
-          {watchactivityCategoryId === 12 && (
-            <FormSection
-              title="Yield Estimate"
-              fields={fieldDefinitions.generalActivityDetails}
+          <FormSection
+              fields={dynamicFields}
               control={control}
               errors={errors}
               columns={2}
-            />
-          )}
+          />
 
           <FormSection
-            title=""
             fields={fieldDefinitions.generalActivityDetails0}
             control={control}
             errors={errors}
             columns={1}
           />
           <FormSection
-            title=""
             fields={fieldDefinitions.generalActivityDetails1}
             control={control}
             errors={errors}
