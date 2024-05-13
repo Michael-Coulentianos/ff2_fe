@@ -12,12 +12,12 @@ const validationSchema = yup.object({
   description: yup.string().optional(),
   activityCategoryId: yup.number().optional(),
   activityTypeId: yup.number().optional(),
-  status: yup.string().optional(),
-  seasonStageId: yup.string().optional(),
+  activityStatusId: yup.number().optional(),
+  seasonStageId: yup.number().optional(),
   startDate: yup.string().optional(),
   endDate: yup.string().optional(),
   field: yup.string().optional(),
-  noteDetail: yup.string().optional(),
+  noteId: yup.number().optional(),
   partyId: yup.number().optional(),
   contractWorkCost: yup.string().optional(),
   cost: yup.string().optional()
@@ -26,7 +26,7 @@ const validationSchema = yup.object({
 const ActivityDialog = ({
   isOpen,
   onClose,
-  onSubmit,
+  onSubmit: externalOnSubmit,
   activityCategory,
   activityStatus,
   seasonStages,
@@ -61,12 +61,10 @@ const ActivityDialog = ({
         const selectedCategory = activityCategory.find(category => category.activityCategoryId === activityCategoryId);
         
         if (selectedCategory && selectedCategory.properties) {
-            // Parse the properties JSON string into an array
             const properties = JSON.parse(selectedCategory.properties);
 
-            // Dynamically create field definitions from properties
             const dynamicGeneralActivityDetails = properties
-              .filter(prop => prop.key !== 'Color') // Assuming 'Color' is not needed in form
+              .filter(prop => prop.key !== 'Color') 
               .map(prop => ({
                 id: prop.key.toLowerCase().replace(/\s+/g, ''),
                 label: prop.key,
@@ -77,18 +75,20 @@ const ActivityDialog = ({
                 })) : undefined
               }));
 
-            // Set the dynamic fields into state or a ref if needed
             setDynamicFields(dynamicGeneralActivityDetails);
+            console.log(dynamicGeneralActivityDetails);
         } else {
             setDynamicFields([]);
         }
     }
 }, [activityCategoryId, activityCategory]);
 
-// Assuming setDynamicFields updates a state that holds the field definitions
+const formatDate = (dateStr) => {
+  if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
+  const date = new Date(dateStr);
+  return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+}
 
-
-  
   useEffect(() => {
     if (isOpen && formData) {
       // const activityProperty = JSON.parse(activityCategory[3].properties);
@@ -98,10 +98,12 @@ const ActivityDialog = ({
       //   }
       // }
       // const properties = formData.property;
-
-      reset({
-        ...formData
-      });
+      const initialValues = {
+        ...formData,
+        endDate: formatDate(formData.endDate),
+        startDate: formatDate(formData.startDate),
+      };
+      reset(initialValues);
     }
     if (!isOpen) {
       reset({
@@ -127,8 +129,29 @@ const ActivityDialog = ({
       }
     }
   }, [selectedPartyId, noteList, organizations]);
-  
-  
+
+  interface SubmissionData {
+    [key: string]: any; // Flexible key-value pairs, you can make this more specific
+    properties: {
+      [key: string]: any; // Defines a flexible structure for properties
+    };
+  }
+
+  const onSubmit = (data: any) => { // Use 'any' temporarily, ideally you should define a specific type
+    const updatedData: SubmissionData = {
+      ...data,
+      properties: {
+        ...data.properties, // Safely spread existing properties if any
+        ActivityType: data.activityType,
+        Quantity: data.quantity
+      }
+    };
+    
+    externalOnSubmit(updatedData); // Call the external submit function with the updated data
+  };
+
+
+
   const fieldDefinitions = {
     generalActivityDetails: [
       { id: "name", label: "Activity Name", type: "text" },
@@ -143,12 +166,12 @@ const ActivityDialog = ({
         })),
       },
       {
-        id: "status",
+        id: "activityStatusId",
         label: "Activity Status",
         type: "select",
         options: activityStatus?.map((type) => ({
           label: type.value,
-          value: type.value,
+          value: type.key,
           id: type.key
         })),
       },
@@ -178,13 +201,13 @@ const ActivityDialog = ({
         })),
       },
       {
-        id: "noteDetail",
+        id: "noteId",
         label: "Notes",
         type: "select",
         options: filteredNotes?.map((type) => ({
           label: type.title,
           name: type.noteId,
-          value: type.title
+          value: type.noteId
         })),
       },
     ],

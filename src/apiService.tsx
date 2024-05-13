@@ -571,9 +571,11 @@ export const createActivity = async (activity: Partial<any>): Promise<any[]> => 
   }
 };
 
-export const updateActivity = async (activity: Partial<Activity>): Promise<any[]> => {
+export const updateActivity = async (activity: Partial<any>): Promise<any[]> => {
   try {
-      const response = await api.post<ResponseApi<any>>("ActivityStatuses", activity);
+    activity.statusId = activity.activityStatusId;
+    activity.azureUserId = azureUserId;
+      const response = await api.put<ResponseApi<any>>("UpdateActivity", activity);
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);

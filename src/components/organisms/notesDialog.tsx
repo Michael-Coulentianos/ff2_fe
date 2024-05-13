@@ -6,7 +6,6 @@ import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
-//import { formatISO, parseISO } from 'date-fns';
 
 const validationSchema = yup.object({
   title: yup.string().required(), 
