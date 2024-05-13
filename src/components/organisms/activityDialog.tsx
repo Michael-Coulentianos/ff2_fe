@@ -8,17 +8,17 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
-  name: yup.string().optional(),
+  name: yup.string().required("Name is required"),
   description: yup.string().optional(),
   activityCategoryId: yup.number().optional(),
   activityTypeId: yup.number().optional(),
   activityStatusId: yup.number().optional(),
   seasonStageId: yup.number().optional(),
-  startDate: yup.string().optional(),
-  endDate: yup.string().optional(),
+  startDate: yup.string().required("Start date is required"),
+  endDate: yup.string().required("End date is required"),
   field: yup.string().optional(),
   noteId: yup.number().optional(),
-  partyId: yup.number().optional(),
+  partyId: yup.number().required("Organization is required"),
   contractWorkCost: yup.string().optional(),
   cost: yup.string().optional()
 });
@@ -49,6 +49,7 @@ const ActivityDialog = ({
       startDate: "",
       endDate: "",
       field: "",
+      noteId: 0,
       contractWorkCost: "",
       cost: "",
     }
@@ -118,17 +119,35 @@ const formatDate = (dateStr) => {
 
   const selectedPartyId = watch("partyId");
   const [filteredNotes, setFilteredNotes] = useState(noteList);
-
+  
   useEffect(() => {
     if (selectedPartyId) {
       const organization = organizations.find(org => org.partyId === selectedPartyId);
       
       if (organization) {
         const filtered = noteList.filter(note => note.party === organization.name);
-        setFilteredNotes(filtered);
+        
+        // Add a 'Create New' option at the beginning of the array
+        const createNewOption = {
+          noteId: 0, // You can use a special identifier
+          title: 'Create New', // The text to display in the dropdown
+        };
+        
+        setFilteredNotes([createNewOption, ...filtered]);
+      } else {
+        // Ensure 'Create New' is also available if no organization is found (or adjust as needed)
+        const createNewOption = {
+          noteId: 0, // You can use a special identifier
+          title: 'Create New', // The text to display in the dropdown
+        };
+        setFilteredNotes([createNewOption]);
       }
+    } else {
+      // Optionally handle the case when no party is selected
+      setFilteredNotes(noteList);
     }
   }, [selectedPartyId, noteList, organizations]);
+  
 
   interface SubmissionData {
     [key: string]: any; // Flexible key-value pairs, you can make this more specific

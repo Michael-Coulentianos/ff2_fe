@@ -213,6 +213,7 @@ const Notes: React.FC = () => {
       }
       setConfirmOpen(false);
       handleCloseForm();
+      setIsLoading(false);
     }
   };
 

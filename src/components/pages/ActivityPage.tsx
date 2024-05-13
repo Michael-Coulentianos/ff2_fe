@@ -97,7 +97,9 @@ const Activities: React.FC = () => {
 
   const handleSubmit = async (formData: any) => { 
     const properties = {};
-    formData.properties = properties;//JSON.stringify(properties);
+    //addPropertyIfNotEmpty(properties, "quantity", formData.quantity);
+    //formData.properties  = JSON.stringify(properties);
+    formData.properties = properties;
     console.log(formData);
     if (selectedActivity) {
       try {

@@ -129,6 +129,12 @@ const NotesDialog = ({
     }
   }
   
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+  }
+  
   useEffect(() => {
     if (isOpen && formData) {
       console.log(formData);
@@ -149,6 +155,7 @@ const NotesDialog = ({
         cropAnalysisType: noteProperty.cropAnalysisType,
         cropSubType: noteProperty.cropSubType,
         severityScale: noteProperty.severityScale,
+        createdDate: formatDate(formData.createdDate),
       };
       reset(initialValues);
     }else{
