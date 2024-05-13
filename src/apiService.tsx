@@ -551,9 +551,8 @@ export const getActivities = async (): Promise<Activity[]> => {
 
 export const createActivity = async (activity: Partial<any>): Promise<any[]> => {
   try {
-    activity.azureUserId = azureUserId;
-    activity.statusId = activity.activityStatusId;
-    console.log(activity);
+      activity.azureUserId = azureUserId;
+      console.log(activity);
       const response = await api.post<ResponseApi<any>>("CreateActivity", activity);
       console.log(response);
 

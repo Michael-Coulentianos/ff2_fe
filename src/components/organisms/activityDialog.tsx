@@ -1,29 +1,33 @@
 import { useEffect, useState } from "react";
 import { Grid, DialogContent, DialogActions, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
-const validationSchema = yup.object({
-  name: yup.string().required("Name is required"),
-  description: yup.string().optional(),
-  activityCategoryId: yup.number().optional(),
-  activityTypeId: yup.number().optional(),
-  activityStatusId: yup.number().optional(),
-  seasonStageId: yup.number().optional(),
-  startDate: yup.string().required("Start date is required"),
-  endDate: yup.string().required("End date is required"),
-  field: yup.string().optional(),
-  noteId: yup.number().optional(),
-  partyId: yup.number().required("Organization is required"),
-  status: yup.string().optional(),
-  noteDetail: yup.string().optional(),
-  contractWorkCost: yup.string().optional(),
-  cost: yup.string().optional(),
-});
+interface FormData {
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  field: string;
+  cost: string;
+  contractWorkCost: string;
+  Properties: any;
+  noteDetail: string;
+  activityCategoryId: number;
+  seasonStageId: number;
+  partyId: number;
+}
+
+interface Field {
+  id: string;
+  label: string;
+  type?: string;
+  options?: Array<{ label: string; value: any; id: any; }>;
+  placeholder?: string;
+}
+
 
 const ActivityDialog = ({
   isOpen,
@@ -36,30 +40,26 @@ const ActivityDialog = ({
   organizations,
   formData,
 }) => {
-  const [dynamicFields, setDynamicFields] = useState([]);
+  const [dynamicFields, setDynamicFields] = useState<Field[]>([]);
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
     watch,
-  } = useForm({
-    resolver: yupResolver(validationSchema),
+  } = useForm<FormData>({
     defaultValues: {
-      name: "",
-      description: "",
+      name: "Ty testing",
+      description: "rewytryrdydry",
+      startDate: "2024-05-13",
+      endDate: "2024-05-13",
+      field: "etryeryeryerye",
+      cost: "250",
+      contractWorkCost: "2500",
+      noteDetail: undefined,
+      partyId: 238,
       activityCategoryId: undefined,
-      activityTypeId: undefined,
-      //status: undefined,
-      seasonStageId: undefined,
-      startDate: "",
-      endDate: "",
-      field: "",
-      noteId: 0,
-      //noteDetail: undefined,
-      partyId: undefined,
-      contractWorkCost: "",
-      cost: "",
+      seasonStageId: 1,
     },
   });
 
@@ -72,12 +72,10 @@ const ActivityDialog = ({
       );
 
       if (selectedCategory && selectedCategory.properties) {
-        // Parse the properties JSON string into an array
         const properties = JSON.parse(selectedCategory.properties);
 
-        // Dynamically create field definitions from properties
         const dynamicGeneralActivityDetails = properties
-          .filter((prop) => prop.key !== "Color") // Assuming 'Color' is not needed in form
+          .filter((prop) => prop.key !== "Color")
           .map((prop) => ({
             id: prop.key.toLowerCase().replace(/\s+/g, ""),
             label: prop.key,
@@ -92,7 +90,6 @@ const ActivityDialog = ({
                 : undefined,
           }));
 
-        // Set the dynamic fields into state or a ref if needed
         setDynamicFields(dynamicGeneralActivityDetails);
       } else {
         setDynamicFields([]);
@@ -100,37 +97,48 @@ const ActivityDialog = ({
     }
   }, [activityCategoryId, activityCategory]);
 
-  // Assuming setDynamicFields updates a state that holds the field definitions
+  function addPropertyIfNotEmpty(obj: any, key: string, value: any) {
+    if (value) {
+      obj[key] = value;
+    }
+  }
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
+    const date = new Date(dateStr);
+    return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+  }
+  
 
   useEffect(() => {
     if (isOpen && formData) {
-      // const activityProperty = JSON.parse(activityCategory[3].properties);
-      // for (const key in activityProperty) {
-      //   if (activityProperty.hasOwnProperty(key)) {
-      //     formData[key] = activityProperty[key];
-      //   }
-      // }
-      // const properties = formData.property;
+      const properties = formData.property ? JSON.parse(formData.property) : {};
 
-      reset({
+      const modifiedFormData = {
         ...formData,
-      });
+        startDate: formatDate(formData.startDate),
+        endDate: formatDate(formData.endDate),
+        ...properties,
+        properties: JSON.stringify(properties),
+      };
+      console.log(formData);
+      console.log(modifiedFormData);
+
+      reset(modifiedFormData);
     }
     if (!isOpen) {
       reset({
-        name: "",
-        description: "",
+        name: "Ty testing",
+        description: "rewytryrdydry",
+        startDate: "2024-05-13",
+        endDate: "2024-05-13",
+        field: "etryeryeryerye",
+        cost: "250",
+        contractWorkCost: "2500",
+        noteDetail: undefined,
+        partyId: 238,
         activityCategoryId: undefined,
-        activityTypeId: undefined,
-        //status: undefined,
-        seasonStageId: undefined,
-        startDate: "",
-        endDate: "",
-        field: "",
-        //noteDetail: undefined,
-        partyId: undefined,
-        contractWorkCost: "",
-        cost: "",
+        seasonStageId: 1,
       });
     }
   }, [
@@ -145,7 +153,7 @@ const ActivityDialog = ({
 
   const selectedPartyId = watch("partyId");
   const [filteredNotes, setFilteredNotes] = useState(noteList);
-  
+
   useEffect(() => {
     if (selectedPartyId) {
       const organization = organizations.find(
@@ -154,28 +162,24 @@ const ActivityDialog = ({
 
       if (organization) {
         const filtered = noteList.filter(note => note.party === organization.name);
-        
-        // Add a 'Create New' option at the beginning of the array
+
         const createNewOption = {
-          noteId: 0, // You can use a special identifier
-          title: 'Create New', // The text to display in the dropdown
+          noteId: 0,
+          title: 'Create New',
         };
-        
+
         setFilteredNotes([createNewOption, ...filtered]);
       } else {
-        // Ensure 'Create New' is also available if no organization is found (or adjust as needed)
         const createNewOption = {
-          noteId: 0, // You can use a special identifier
-          title: 'Create New', // The text to display in the dropdown
+          noteId: 0,
+          title: 'Create New',
         };
         setFilteredNotes([createNewOption]);
       }
     } else {
-      // Optionally handle the case when no party is selected
       setFilteredNotes(noteList);
     }
   }, [selectedPartyId, noteList, organizations]);
-  
 
   const fieldDefinitions = {
     generalActivityDetails: [
@@ -243,8 +247,39 @@ const ActivityDialog = ({
     ],
   };
 
+  const handleFormSubmit = (data: FormData) => {
+    console.log("Dynamic Fields:", dynamicFields);
+    
+    const properties: { [key: string]: any } = {};
+
+    dynamicFields.forEach((field) => {
+      const value = data[field.id];
+      console.log(`Adding property ${field.id}:`, value);
+      addPropertyIfNotEmpty(properties, field.id, value);
+    });
+
+    const finalData: FormData = {
+      name: data.name,
+      description: data.description,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      field: data.field,
+      cost: data.cost,
+      contractWorkCost: data.contractWorkCost,
+      Properties: JSON.stringify(properties),
+      noteDetail: data.noteDetail,
+      activityCategoryId: data.activityCategoryId,
+      seasonStageId: data.seasonStageId,
+      partyId: data.partyId,
+    };
+
+    console.log("Final Data:", finalData);
+
+    onSubmit(finalData);
+  };
+
   const formContent = (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(handleFormSubmit)}>
       <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
         <Grid container spacing={1} sx={{ padding: 2 }}>
           <FormSection
@@ -293,7 +328,7 @@ const ActivityDialog = ({
     <DynamicFormDialog
       isOpen={isOpen}
       onClose={onClose}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       title={formData ? "Update Activity" : "Add Activity"}
       formContent={formContent}
     />

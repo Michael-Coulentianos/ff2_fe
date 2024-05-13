@@ -89,18 +89,7 @@ const Activities: React.FC = () => {
     setConfirmOpen(true);
   };
 
-  const addPropertyIfNotEmpty = (obj, key, value) => {
-    if (value !== null && value !== "" && value !== undefined) {
-      obj[key] = value;
-    }
-  };
-
   const handleSubmit = async (formData: any) => { 
-    const properties = {};
-    //addPropertyIfNotEmpty(properties, "quantity", formData.quantity);
-    //formData.properties  = JSON.stringify(properties);
-    formData.properties = properties;
-    console.log(formData);
     if (selectedActivity) {
       try {
         await updateActivity(formData);
