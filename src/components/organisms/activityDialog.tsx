@@ -19,22 +19,9 @@ const validationSchema = yup.object({
   field: yup.string().optional(),
   noteDetail: yup.string().optional(),
   partyId: yup.number().optional(),
-  quantity: yup.number().optional(),
   contractWorkCost: yup.string().optional(),
   cost: yup.string().optional()
 });
-
-interface FieldOption {
-  label: string;
-  value: any;
-}
-
-interface DynamicField {
-  id: string;
-  label: string;
-  type: string;
-  options?: FieldOption[];
-}
 
 const ActivityDialog = ({
   isOpen,
@@ -64,7 +51,6 @@ const ActivityDialog = ({
       field: "",
       contractWorkCost: "",
       cost: "",
-      quantity: 0,
     }
   });
 
@@ -205,8 +191,7 @@ const ActivityDialog = ({
     generalActivityDetails1: [
       { id: "field", label: "Field", type: "text" },
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
-      { id: "cost", label: "Cost", type: "currency" },
-      { id: "quantity", label: "Quantity", type: "number" },
+      { id: "cost", label: "Cost", type: "currency" }
     ],
   };
 
