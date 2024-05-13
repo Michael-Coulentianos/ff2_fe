@@ -1,6 +1,7 @@
 import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
+import FieldForm from "../organisms/FieldDetails";
 
 const FieldManagement = () => {
   return (
@@ -10,15 +11,13 @@ const FieldManagement = () => {
         <Divider />
       </Grid>
       <Grid item xs={10}>
-        <FieldMapComponent height={"400px"}></FieldMapComponent>
+        <FieldMapComponent height={"485px"}></FieldMapComponent>
       </Grid>
       <Grid item xs={2}>
-        <Paper elevation={3} sx={{ height: "405px", marginTop: 1 }} />
+          <FieldForm></FieldForm>
       </Grid>
       <Grid item xs={12}>
-        <Paper elevation={3} sx={{ height: "420px", marginTop: 1 }}>
-          <KanbanBoard></KanbanBoard>
-        </Paper>
+        <KanbanBoard></KanbanBoard>
       </Grid>
     </Grid>
   );
