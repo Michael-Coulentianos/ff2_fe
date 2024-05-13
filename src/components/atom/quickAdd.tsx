@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Grid, IconButton, Menu, MenuItem } from "@mui/material";
-import ActivityDialog from "../organisms/ActivityDialog";
-import NotesDialog from "../organisms/NotesDialog";
-import OrganizationDialog from "../organisms/OrganisationDialog";
+import { Grid, IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
+import ActivityDialog from "../organisms/activityDialog";
+import NotesDialog from "../organisms/notesDialog";
+import OrganizationDialog from "../organisms/organisationDialog";
 import {
   getNotes,
   createNote,
@@ -19,9 +19,8 @@ import {
 } from "../../apiService";
 import theme from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
-import { LegalEntity } from "../../models/LegalEntity.interface";
-import { CreateOrganization } from "../../models/CreateOrganization.interface";
-import Loading from "../pages/Loading";
+import { LegalEntity } from "../../models/legalEntity.interface";
+import { CreateOrganization } from "../../models/createOrganization.interface";
 
 interface LocationState {
   latitude: number | null;
@@ -415,23 +414,25 @@ export default function QuickAdd() {
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
           noteList={notes}
-            organizations={organizations}
+          organizations={organizations}
         />
-        <IconButton
-          aria-label="edit"
-          sx={{
-            color: "white",
-            backgroundColor: theme.palette.secondary.main,
-            width: "30px",
-            height: "30px",
-            "&:hover": {
-              backgroundColor: theme.palette.secondary.light,
-            },
-          }}
-          onClick={handleMenu}
-        >
-          <AddIcon />
-        </IconButton>
+        <Tooltip title="Quick Add">
+          <IconButton
+            aria-label="edit"
+            sx={{
+              color: "white",
+              backgroundColor: theme.palette.secondary.main,
+              width: "30px",
+              height: "30px",
+              "&:hover": {
+                backgroundColor: theme.palette.secondary.light,
+              },
+            }}
+            onClick={handleMenu}
+          >
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
         <Menu
           anchorEl={anchorEl}
           anchorOrigin={{

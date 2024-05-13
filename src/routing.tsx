@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomeDashboardPage from "./components/pages/HomeDashboard";
 import OrganizationSettings from "./components/pages/OrganisationSettings";
-import Notes from "./components/pages/NotesPage";
+import Notes from "./components/pages/notesPage";
 import Activities from "./components/pages/ActivityPage";
 import FieldManagement from "./components/pages/FieldsPage";
 

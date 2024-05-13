@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Tooltip } from '@mui/material';
 
 interface ExpandDetailsProps {
   content: string;
@@ -19,10 +20,20 @@ const ExpandDetails: React.FC<ExpandDetailsProps> = ({ content, summary }) => {
 
   return (
     <>
-      <IconButton aria-label="expand" size="small" onClick={() => setOpen(!open)}>
-        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-      </IconButton>
-      <Typography variant="body2" component="span" onClick={() => setOpen(!open)}>
+      <Tooltip title="Menu">
+        <IconButton
+          aria-label="expand"
+          size="small"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        </IconButton>
+      </Tooltip>
+      <Typography
+        variant="body2"
+        component="span"
+        onClick={() => setOpen(!open)}
+      >
         {renderedSummary}
       </Typography>
       <Collapse in={open} timeout="auto" unmountOnExit>

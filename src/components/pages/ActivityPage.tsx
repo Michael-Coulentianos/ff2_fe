@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button, Divider } from "@mui/material";
-import ActionButtons from "../molecules/ActionButtons";
-import DynamicTable from "../organisms/Table";
+import ActionButtons from "../molecules/actionButtons";
+import DynamicTable from "../organisms/table";
 import {
   getActivityCategories,
   getSeasonStages,
@@ -13,10 +13,10 @@ import {
   getActivities,
   getOrganizations,
 } from "../../apiService";
-import GenericConfirmDialog from "../organisms/GenericConfirmDialog";
-import ActivitiesDialog from "../organisms/ActivityDialog";
+import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
-import Loading from "./Loading";
+import Loading from "./loading";
 
 interface DataItem {
   id: string;

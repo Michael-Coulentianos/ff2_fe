@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Grid, Typography, MenuItem } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
-import DateSelector from "../atom/DateSelect";
-import AddAttachmentButton from "../atom/AttachmentButton";
-import TextBox from "../atom/TextBox";
-import MapComponent from "../organisms/LocationMap";
-import GoogleMapsSearchBar from "../atom/GoogleMapsSearchBar";
-import DateRangePicker from "../atom/DateRange";
+import DateSelector from "../atom/dateSelect";
+import AddAttachmentButton from "../atom/attachmentButton";
+import TextBox from "../atom/textBox";
+import MapComponent from "../organisms/locationMap";
+import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
+import DateRangePicker from "../atom/dateRange";
 
 interface Field {
   id: string;

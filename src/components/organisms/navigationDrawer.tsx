@@ -6,6 +6,7 @@ import {
   IconButton,
   List,
   ListItem,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -18,8 +19,8 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { DataUsage, Grass } from "@mui/icons-material";
 import barnIcon from "../../assets/icons/barnIcon.svg";
-import MenuItem from "../molecules/MenuItem";
-import DrawerToggleButton from "../atom/DrawerToggle";
+import MenuItem from "../molecules/menuItem";
+import DrawerToggleButton from "../atom/drawerToggle";
 import theme from "../../theme";
 
 const drawerWidth = 240;
@@ -107,13 +108,15 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
           <Typography sx={{ marginTop: 0.5, color: "white" }}>
             {activeAccount ? activeAccount?.name : "Farmer"}’s Farm
           </Typography>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon sx={{ color: "white" }} />
-            ) : (
-              <ChevronRightIcon sx={{ color: "white" }} />
-            )}
-          </IconButton>
+          <Tooltip title="Close Menu">
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "ltr" ? (
+                <ChevronLeftIcon sx={{ color: "white" }} />
+              ) : (
+                <ChevronRightIcon sx={{ color: "white" }} />
+              )}
+            </IconButton>
+          </Tooltip>
         </DrawerHeader>
         <Divider />
         <List>

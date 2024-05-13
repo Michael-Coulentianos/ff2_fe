@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogActions,
   Dialog,
+  Tooltip,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,7 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FormSection from "../molecules/DynamicFormSection";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { updateUserProfile, getUserProfile } from "../../apiService";
-import { UserProfile } from "../../models/UserProfile.interface";
+import { UserProfile } from "../../models/userProfile.interface";
 
 const validationSchema = yup.object({
   givenName: yup.string().required("Given Name is required"),
@@ -81,16 +82,18 @@ export const UserProfileForm = () => {
 
   return (
     <>
-      <IconButton
-        sx={{
-          width: "30px",
-          height: "30px",
-        }}
-        onClick={() => setModalOpen(true)}
-        color="primary"
-      >
-        <ManageAccountsIcon fontSize="small" />
-      </IconButton>
+      <Tooltip title="Profile">
+        <IconButton
+          sx={{
+            width: "30px",
+            height: "30px",
+          }}
+          onClick={() => setModalOpen(true)}
+          color="primary"
+        >
+          <ManageAccountsIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
 
       <StyledDialog
         onClose={() => setModalOpen(false)}

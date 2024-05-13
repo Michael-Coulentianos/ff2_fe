@@ -1,13 +1,13 @@
 import axios from "axios";
-import { Note } from "./models/Note.interface";
-import { NoteType } from "./models/NoteType.interface";
-import { Farm } from "./models/Farm.interface";
-import { LegalEntity } from "./models/LegalEntity.interface";
-import { Organization } from "./models/Organization.interface";
-import { UserProfile } from "./models/UserProfile.interface";
-import { ResponseApi } from './models/ResponseApi.interface';
-import { CreateOrganization } from "./models/CreateOrganization.interface";
-import { Activity } from "./models/Activity.interface";
+import { CreateOrganization } from "./models/createOrganization.interface";
+import { LegalEntity } from "./models/legalEntity.interface";
+import { NoteType } from "./models/noteType.interface";
+import { ResponseApi } from "./models/ResponseApi.interface";
+import { UserProfile } from "./models/userProfile.interface";
+import { Activity } from "./models/activity.interface";
+import { Farm } from "./models/farm.interface";
+import { Note } from "./models/note.interface";
+import { Organization } from "./models/organization.interface";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',

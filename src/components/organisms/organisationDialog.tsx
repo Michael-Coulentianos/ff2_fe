@@ -12,7 +12,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormSection from "../molecules/DynamicFormSection";
-import DynamicFormDialog from "../molecules/Dialog";
+import DynamicFormDialog from "../molecules/dialog";
 
 
 const validationSchema = yup.object({

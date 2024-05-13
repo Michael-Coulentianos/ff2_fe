@@ -1,4 +1,4 @@
-import SearchBar from "../molecules/SearchBar";
+import SearchBar from "../molecules/searchBar";
 import {
   Box,
   Button,
@@ -9,21 +9,22 @@ import {
   useTheme,
   useMediaQuery,
   Typography,
+  Tooltip,
 } from "@mui/material";
-import NavigationDrawer from "./NavigationDrawer";
+import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
-import ApplicationsMenu from "../molecules/AppMenu";
+import ApplicationsMenu from "../molecules/appMenu";
 import { loginRequest } from "../../auth-config";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
-import { UserProfileForm } from "./ProfileSettings";
+import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../apiService";
-import QuickAdd from "../atom/QuickAdd";
+import QuickAdd from "../atom/quickAdd";
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
   const theme = useTheme();
@@ -82,17 +83,20 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
           <SearchBar></SearchBar>
           <AuthenticatedTemplate>
             <UserProfileForm></UserProfileForm>
-            <IconButton
-              aria-label="exit"
-              sx={{
-                color: theme.palette.primary.main,
-                width: "30px",
-                height: "30px",
-              }}
-              onClick={handleLogoutRedirect}
-            >
-              <ExitToAppIcon fontSize="small" />
-            </IconButton>
+
+            <Tooltip title="Log Out">
+              <IconButton
+                aria-label="exit"
+                sx={{
+                  color: theme.palette.primary.main,
+                  width: "30px",
+                  height: "30px",
+                }}
+                onClick={handleLogoutRedirect}
+              >
+                <ExitToAppIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <Button
