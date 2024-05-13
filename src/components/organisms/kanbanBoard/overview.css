@@ -6,8 +6,8 @@
     height: 16px;
     width: 16px;
     margin-right: 8px;
-}
-.e-kanban .e-improvement {
+ }
+/* .e-kanban .e-improvement {
     background-image: url(https://syncfusion.atlassian.net/secure/viewavatar?size=medium&avatarId=15507&avatarType=issuetype);
 }
 .e-kanban .e-story {
@@ -62,7 +62,7 @@
 }
 .e-kanban .e-margaret-hamilt {
     background-image: url(https://ej2.syncfusion.com/react/demos/src/kanban/images/Margaret%20hamilt.png);
-}
+}  */
   
 .e-kanban .e-nancy-davloio, .e-kanban .e-andrew-fuller, .e-kanban .e-janet-leverling,
 .e-kanban .e-steven-walker, .e-kanban .e-michael-suyama, .e-kanban .e-robert-king, .e-kanban .e-margaret-hamilt  {

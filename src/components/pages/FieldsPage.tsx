@@ -1,5 +1,6 @@
 import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
+import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
 
 const FieldManagement = () => {
   return (
@@ -9,10 +10,15 @@ const FieldManagement = () => {
         <Divider />
       </Grid>
       <Grid item xs={10}>
-        <FieldMapComponent height={"500px"}></FieldMapComponent>
+        <FieldMapComponent height={"400px"}></FieldMapComponent>
       </Grid>
       <Grid item xs={2}>
-        <Paper elevation={3} sx={{ height: "505px", marginTop: 1 }} />
+        <Paper elevation={3} sx={{ height: "405px", marginTop: 1 }} />
+      </Grid>
+      <Grid item xs={12}>
+        <Paper elevation={3} sx={{ height: "420px", marginTop: 1 }}>
+          <KanbanBoard></KanbanBoard>
+        </Paper>
       </Grid>
     </Grid>
   );

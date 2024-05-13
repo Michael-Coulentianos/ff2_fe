@@ -25,28 +25,28 @@ const KanbanBoard = () => {
   ) as Object[];
   const [tasks, setTasks] = useState(data);
 
-  const addTask = () => {
-    const newTask = {
-      Id: "Task" + (tasks.length + 1),
-      Title: "Task - " + (tasks.length + 1),
-      Status: "Open",
-      Summary:
-        "hellllooooooooo Analyze the new requirements gathered from the customer.",
-      Type: "Story",
-      Priority: "Low",
-      Tags: "Analyze,Customer",
-      Estimate: 3.5,
-      Assignee: "Nancy Davloio",
-      RankId: 1,
-      Color: "#02897B",
-      ClassName: "e-story, e-low, e-nancy-davloio",
-    };
-    console.log("clicked add heyy");
-    setTasks([...tasks, newTask]);
-  };
+  // const addTask = () => {
+  //   const newTask = {
+  //     Id: "Task" + (tasks.length + 1),
+  //     Title: "Task - " + (tasks.length + 1),
+  //     Status: "Open",
+  //     Summary:
+  //       "hellllooooooooo Analyze the new requirements gathered from the customer.",
+  //     Type: "Story",
+  //     Priority: "Low",
+  //     Tags: "Analyze,Customer",
+  //     Estimate: 3.5,
+  //     Assignee: "Nancy Davloio",
+  //     RankId: 1,
+  //     Color: "#02897B",
+  //     ClassName: "e-story, e-low, e-nancy-davloio",
+  //   };
+  //   console.log("clicked add heyy");
+  //   setTasks([...tasks, newTask]);
+  // };
   return (
     <>
-      <Button onClick={addTask}>Add Task</Button>
+      {/* <Button onClick={addTask}>Add Task</Button> */}
       <KanbanComponent dataSource={tasks}></KanbanComponent>
       <div className="kanban-control-section">
         <div className="col-lg-12 control-section">

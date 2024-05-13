@@ -12,21 +12,21 @@ const validationSchema = yup.object({
   description: yup.string().optional(),
   activityCategoryId: yup.number().optional(),
   activityTypeId: yup.number().optional(),
-  activityStatusId: yup.number().optional(),
-  seasonStageId: yup.number().optional(),
+  status: yup.string().optional(),
+  seasonStageId: yup.string().optional(),
   startDate: yup.string().optional(),
   endDate: yup.string().optional(),
   field: yup.string().optional(),
-  noteId: yup.number().optional(),
+  noteDetail: yup.string().optional(),
   partyId: yup.number().optional(),
   contractWorkCost: yup.string().optional(),
-  cost: yup.string().optional()
+  cost: yup.string().optional(),
 });
 
 const ActivityDialog = ({
   isOpen,
   onClose,
-  onSubmit: externalOnSubmit,
+  onSubmit,
   activityCategory,
   activityStatus,
   seasonStages,
@@ -46,48 +46,58 @@ const ActivityDialog = ({
     defaultValues: {
       name: "",
       description: "",
+      activityCategoryId: undefined,
+      activityTypeId: undefined,
+      status: undefined,
+      seasonStageId: undefined,
       startDate: "",
       endDate: "",
       field: "",
+      noteDetail: undefined,
+      partyId: undefined,
       contractWorkCost: "",
       cost: "",
-    }
+    },
   });
 
   const activityCategoryId = watch("activityCategoryId");
 
   useEffect(() => {
     if (activityCategoryId) {
-        const selectedCategory = activityCategory.find(category => category.activityCategoryId === activityCategoryId);
-        
-        if (selectedCategory && selectedCategory.properties) {
-            const properties = JSON.parse(selectedCategory.properties);
+      const selectedCategory = activityCategory.find(
+        (category) => category.activityCategoryId === activityCategoryId
+      );
 
-            const dynamicGeneralActivityDetails = properties
-              .filter(prop => prop.key !== 'Color') 
-              .map(prop => ({
-                id: prop.key.toLowerCase().replace(/\s+/g, ''),
-                label: prop.key,
-                type: prop.type,
-                options: prop.type === 'select' ? prop.value.map(option => ({
-                    label: option.Option + (option.unit ? ` (${option.unit})` : ''),
-                    value: option.id
-                })) : undefined
-              }));
+      if (selectedCategory && selectedCategory.properties) {
+        // Parse the properties JSON string into an array
+        const properties = JSON.parse(selectedCategory.properties);
 
-            setDynamicFields(dynamicGeneralActivityDetails);
-            console.log(dynamicGeneralActivityDetails);
-        } else {
-            setDynamicFields([]);
-        }
+        // Dynamically create field definitions from properties
+        const dynamicGeneralActivityDetails = properties
+          .filter((prop) => prop.key !== "Color") // Assuming 'Color' is not needed in form
+          .map((prop) => ({
+            id: prop.key.toLowerCase().replace(/\s+/g, ""),
+            label: prop.key,
+            type: prop.type,
+            options:
+              prop.type === "select"
+                ? prop.value.map((option) => ({
+                    label:
+                      option.Option + (option.unit ? ` (${option.unit})` : ""),
+                    value: option.id,
+                  }))
+                : undefined,
+          }));
+
+        // Set the dynamic fields into state or a ref if needed
+        setDynamicFields(dynamicGeneralActivityDetails);
+      } else {
+        setDynamicFields([]);
+      }
     }
-}, [activityCategoryId, activityCategory]);
+  }, [activityCategoryId, activityCategory]);
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
-  const date = new Date(dateStr);
-  return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
-}
+  // Assuming setDynamicFields updates a state that holds the field definitions
 
   useEffect(() => {
     if (isOpen && formData) {
@@ -98,59 +108,55 @@ const formatDate = (dateStr) => {
       //   }
       // }
       // const properties = formData.property;
-      const initialValues = {
+
+      reset({
         ...formData,
-        endDate: formatDate(formData.endDate),
-        startDate: formatDate(formData.startDate),
-      };
-      reset(initialValues);
+      });
     }
     if (!isOpen) {
       reset({
         name: "",
         description: "",
+        activityCategoryId: undefined,
+        activityTypeId: undefined,
+        status: undefined,
+        seasonStageId: undefined,
+        startDate: "",
+        endDate: "",
         field: "",
+        noteDetail: undefined,
+        partyId: undefined,
         contractWorkCost: "",
-        cost: ""
+        cost: "",
       });
     }
-  }, [formData, isOpen, reset, activityCategory, noteList, activityStatus, seasonStages]);
+  }, [
+    formData,
+    isOpen,
+    reset,
+    activityCategory,
+    noteList,
+    activityStatus,
+    seasonStages,
+  ]);
 
   const selectedPartyId = watch("partyId");
   const [filteredNotes, setFilteredNotes] = useState(noteList);
 
   useEffect(() => {
     if (selectedPartyId) {
-      const organization = organizations.find(org => org.partyId === selectedPartyId);
-      
+      const organization = organizations.find(
+        (org) => org.partyId === selectedPartyId
+      );
+
       if (organization) {
-        const filtered = noteList.filter(note => note.party === organization.name);
+        const filtered = noteList.filter(
+          (note) => note.party === organization.name
+        );
         setFilteredNotes(filtered);
       }
     }
   }, [selectedPartyId, noteList, organizations]);
-
-  interface SubmissionData {
-    [key: string]: any; // Flexible key-value pairs, you can make this more specific
-    properties: {
-      [key: string]: any; // Defines a flexible structure for properties
-    };
-  }
-
-  const onSubmit = (data: any) => { // Use 'any' temporarily, ideally you should define a specific type
-    const updatedData: SubmissionData = {
-      ...data,
-      properties: {
-        ...data.properties, // Safely spread existing properties if any
-        ActivityType: data.activityType,
-        Quantity: data.quantity
-      }
-    };
-    
-    externalOnSubmit(updatedData); // Call the external submit function with the updated data
-  };
-
-
 
   const fieldDefinitions = {
     generalActivityDetails: [
@@ -162,17 +168,17 @@ const formatDate = (dateStr) => {
         options: activityCategory?.map((type) => ({
           label: type.name,
           value: type.activityCategoryId,
-          id: type.activityCategoryId
+          id: type.activityCategoryId,
         })),
       },
       {
-        id: "activityStatusId",
+        id: "status",
         label: "Activity Status",
         type: "select",
         options: activityStatus?.map((type) => ({
           label: type.value,
-          value: type.key,
-          id: type.key
+          value: type.value,
+          id: type.key,
         })),
       },
       {
@@ -182,7 +188,7 @@ const formatDate = (dateStr) => {
         options: seasonStages?.map((type) => ({
           label: type.value,
           value: type.key,
-          id: type.key
+          id: type.key,
         })),
       },
       { id: "startDate", label: "Start Date", type: "date" },
@@ -197,24 +203,24 @@ const formatDate = (dateStr) => {
         options: organizations?.map((type) => ({
           label: type.name,
           name: type.partyId,
-          value: type.partyId
+          value: type.partyId,
         })),
       },
       {
-        id: "noteId",
+        id: "noteDetail",
         label: "Notes",
         type: "select",
         options: filteredNotes?.map((type) => ({
           label: type.title,
           name: type.noteId,
-          value: type.noteId
+          value: type.title,
         })),
       },
     ],
     generalActivityDetails1: [
       { id: "field", label: "Field", type: "text" },
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
-      { id: "cost", label: "Cost", type: "currency" }
+      { id: "cost", label: "Cost", type: "currency" },
     ],
   };
 
@@ -222,7 +228,6 @@ const formatDate = (dateStr) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
         <Grid container spacing={1} sx={{ padding: 2 }}>
-
           <FormSection
             fields={fieldDefinitions.generalActivityDetails}
             control={control}
@@ -231,10 +236,10 @@ const formatDate = (dateStr) => {
           />
 
           <FormSection
-              fields={dynamicFields}
-              control={control}
-              errors={errors}
-              columns={2}
+            fields={dynamicFields}
+            control={control}
+            errors={errors}
+            columns={2}
           />
 
           <FormSection
