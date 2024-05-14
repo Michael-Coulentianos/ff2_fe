@@ -73,22 +73,6 @@ export const deactivateField = async (cropperRef: string): Promise<any> => {
   }
 };
 
-export const deleteField = async (elcrid: string): Promise<any> => {
-  try {
-      const response = await api.post<any>("DeleteField", null, {
-          params: { elcrid }
-      });
-      return response;
-  } catch (error: any) {
-      if (error.response && error.response.data) {
-          throw new Error(`Failed to delete field: ${error.response.data.message || error.message}`);
-      } else {
-          console.error('Something went wrong while deleting field', error);
-          return null; 
-      }
-  }
-};
-
 //FIELDS APIS
 export const getFields= async (partyId: string): Promise<any> => {
   try {
