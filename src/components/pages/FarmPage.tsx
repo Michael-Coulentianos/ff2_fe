@@ -1,6 +1,7 @@
-import { Divider, Grid, Paper } from "@mui/material";
+import { Divider, Grid } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
+import FarmFieldManagement from "../organisms/farmManageCard";
 
 const FarmManagement = () => {
   return (
@@ -11,8 +12,8 @@ const FarmManagement = () => {
       </Grid>
       <Grid item xs={12}>
         <FieldMapComponent height={"400px"}></FieldMapComponent>
+        <FarmFieldManagement></FarmFieldManagement>
       </Grid>
-
       <Grid item xs={12}>
         <KanbanBoard></KanbanBoard>
       </Grid>

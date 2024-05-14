@@ -53,3 +53,12 @@
   font-size: 10px;
   color: #777;
 }
+
+/* Overlay.css */
+.overlay {
+  position: fixed;
+  top: 125px;
+  margin-left: 20px;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 1;
+}
