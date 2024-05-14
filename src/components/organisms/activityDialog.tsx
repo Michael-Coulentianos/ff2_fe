@@ -27,10 +27,9 @@ interface Field {
   id: string;
   label: string;
   type?: string;
-  options?: Array<{ label: string; value: any; id: any; }>;
+  options?: Array<{ label: string; value: any; id: any }>;
   placeholder?: string;
 }
-
 
 const ActivityDialog = ({
   isOpen,
@@ -67,6 +66,7 @@ const ActivityDialog = ({
   });
 
   const activityCategoryId = watch("activityCategoryId");
+  const watchNoteDetail = watch("noteDetail");
 
   useEffect(() => {
     if (activityCategoryId) {
@@ -109,9 +109,12 @@ const ActivityDialog = ({
   const formatDate = (dateStr) => {
     if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
     const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
-  }
-  
+    return new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  };
 
   useEffect(() => {
     if (isOpen && formData) {
@@ -164,18 +167,20 @@ const ActivityDialog = ({
       );
 
       if (organization) {
-        const filtered = noteList.filter(note => note.party === organization.name);
+        const filtered = noteList.filter(
+          (note) => note.party === organization.name
+        );
 
         const createNewOption = {
           noteId: 0,
-          title: 'Create New',
+          title: "Create New",
         };
 
         setFilteredNotes([createNewOption, ...filtered]);
       } else {
         const createNewOption = {
           noteId: 0,
-          title: 'Create New',
+          title: "Create New",
         };
         setFilteredNotes([createNewOption]);
       }
@@ -232,6 +237,13 @@ const ActivityDialog = ({
           value: type.partyId,
         })),
       },
+    ],
+    generalActivityDetails2: [
+      { id: "field", label: "Field", type: "text" },
+      { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
+      { id: "cost", label: "Cost", type: "currency" },
+    ],
+    activityNotes: [
       {
         id: "noteDetail",
         label: "Notes",
@@ -243,16 +255,23 @@ const ActivityDialog = ({
         })),
       },
     ],
-    generalActivityDetails1: [
-      { id: "field", label: "Field", type: "text" },
-      { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
-      { id: "cost", label: "Cost", type: "currency" },
+    activityNotesAdd: [
+      {
+        id: "noteDetail",
+        label: "Notes",
+        type: "selectAdd",
+        options: filteredNotes?.map((type) => ({
+          label: type.title,
+          name: type.noteId,
+          value: type.title,
+        })),
+      },
     ],
   };
 
   const handleFormSubmit = (data: FormData) => {
     console.log("Dynamic Fields:", dynamicFields);
-    
+
     const properties: { [key: string]: any } = {};
 
     dynamicFields.forEach((field) => {
@@ -276,7 +295,7 @@ const ActivityDialog = ({
       activityCategoryId: data.activityCategoryId,
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
-      activityStatusId: data.activityStatusId
+      activityStatusId: data.activityStatusId,
     };
 
     console.log("Final Data:", finalData);
@@ -294,22 +313,36 @@ const ActivityDialog = ({
             errors={errors}
             columns={2}
           />
-
           <FormSection
             fields={dynamicFields}
             control={control}
             errors={errors}
             columns={2}
           />
-
           <FormSection
             fields={fieldDefinitions.generalActivityDetails0}
             control={control}
             errors={errors}
             columns={1}
           />
+          {watchNoteDetail !== "Create New" && (
+            <FormSection
+              fields={fieldDefinitions.activityNotes}
+              control={control}
+              errors={errors}
+              columns={1}
+            />
+          )}
+          {watchNoteDetail === "Create New" && (
+            <FormSection
+              fields={fieldDefinitions.activityNotesAdd}
+              control={control}
+              errors={errors}
+              columns={1}
+            />
+          )}
           <FormSection
-            fields={fieldDefinitions.generalActivityDetails1}
+            fields={fieldDefinitions.generalActivityDetails2}
             control={control}
             errors={errors}
             columns={2}

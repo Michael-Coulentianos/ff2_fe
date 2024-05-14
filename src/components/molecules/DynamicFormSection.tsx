@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Controller } from "react-hook-form";
-import { Grid, Typography, MenuItem } from "@mui/material";
+import { Grid, Typography, MenuItem, IconButton, Tooltip } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
 import DateSelector from "../atom/dateSelect";
 import AddAttachmentButton from "../atom/attachmentButton";
@@ -8,12 +8,14 @@ import TextBox from "../atom/textBox";
 import MapComponent from "../organisms/locationMap";
 import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
 import DateRangePicker from "../atom/dateRange";
+import AddIcon from "@mui/icons-material/Add";
+import theme from "../../theme";
 
 interface Field {
   id: string;
   label: string;
   type?: string;
-  options?: Array<{ label: string; value: any; id: any; }>;
+  options?: Array<{ label: string; value: any; id: any }>;
   placeholder?: string;
 }
 
@@ -24,6 +26,7 @@ interface DynamicFormSectionProps {
   errors: any;
   columns?: number;
   onFileChange?: (file: File | null) => void;
+  onClick?: () => void;
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -32,12 +35,13 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   control,
   errors,
   columns = 1,
-  onFileChange = () => {}
+  onFileChange = () => {},
+  onClick,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
   const [position, setPosition] = useState({ lat: 0, lng: 0 });
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState(""); 
+  const [endDate, setEndDate] = useState("");
 
   const handlePositionChange = (newPosition) => {
     setPosition(newPosition);
@@ -86,17 +90,69 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         )}
                       </TextBox>
                     );
+                  case "selectAdd":
+                    return (
+                      <Grid container>
+                        <Grid item xs={10.5}>
+                          <TextBox
+                            select
+                            id={field.id}
+                            label={field.label}
+                            value={value}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            error={!!errors[field.id]}
+                            helperText={errors[field.id]?.message}
+                            inputRef={ref}
+                          >
+                            {Array.isArray(field.options) ? (
+                              field.options.map((option) => (
+                                <MenuItem key={option.id} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))
+                            ) : (
+                              <MenuItem disabled>No Options Available</MenuItem>
+                            )}
+                          </TextBox>
+                        </Grid>
+                        <Grid item xs={1.5}>
+                          <Tooltip title="New Note">
+                            <IconButton
+                              aria-label="add"
+                              sx={{
+                                color: "white",
+                                backgroundColor: theme.palette.secondary.main,
+                                width: "30px",
+                                height: "30px",
+                                margin: "10px",
+                                "&:hover": {
+                                  backgroundColor:
+                                    theme.palette.secondary.light,
+                                },
+                              }}
+                              onClick={onClick}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Grid>
+                      </Grid>
+                    );
+
                   case "radioGroup":
                     return <ColoredRadio />;
                   case "attachment":
-                    return <AddAttachmentButton
-                      id={field.id}
-                      label={field.label}
-                      onChange={onFileChange}
-                      onBlur={onBlur}
-                      error={!!errors[field.id]}
-                      helperText={errors[field.id]?.message}
-                    />
+                    return (
+                      <AddAttachmentButton
+                        id={field.id}
+                        label={field.label}
+                        onChange={onFileChange}
+                        onBlur={onBlur}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                      />
+                    );
                   case "map":
                     return (
                       <MapComponent
@@ -124,8 +180,14 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                       />
                     );
                   case "date":
-                     return <DateSelector id={field.id} value={value}
-                     label={field.label} onChange={onChange}></DateSelector>;
+                    return (
+                      <DateSelector
+                        id={field.id}
+                        value={value}
+                        label={field.label}
+                        onChange={onChange}
+                      ></DateSelector>
+                    );
                   case "googleMapsSearch":
                     return (
                       <GoogleMapsSearchBar
