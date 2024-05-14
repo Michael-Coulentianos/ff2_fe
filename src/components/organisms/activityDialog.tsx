@@ -6,6 +6,7 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
 interface FormData {
+  activityId: string;
   name: string;
   description: string;
   startDate: string;
@@ -16,6 +17,8 @@ interface FormData {
   Properties: any;
   noteDetail: string;
   activityCategoryId: number;
+  activityStatusId: number;
+  statusId: number;
   seasonStageId: number;
   partyId: number;
 }
@@ -259,6 +262,8 @@ const ActivityDialog = ({
     });
 
     const finalData: FormData = {
+      activityId: data.activityId,
+      statusId: data.activityStatusId,
       name: data.name,
       description: data.description,
       startDate: data.startDate,
@@ -271,6 +276,7 @@ const ActivityDialog = ({
       activityCategoryId: data.activityCategoryId,
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
+      activityStatusId: data.activityStatusId
     };
 
     console.log("Final Data:", finalData);
