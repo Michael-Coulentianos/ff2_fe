@@ -17,7 +17,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import FormSection from "../molecules/DynamicFormSection";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { updateUserProfile, getUserProfile } from "../../apiService";
+import { updateUserProfile, getUserProfile } from "../../api-ffm-service";
 import { UserProfile } from "../../models/userProfile.interface";
 
 const validationSchema = yup.object({

@@ -9,7 +9,7 @@ import {
   createOrganization,
   updateOrganization,
   getLegalEntities,
-} from "../../apiService";
+} from "../../api-ffm-service";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { CreateOrganization } from "../../models/createOrganization.interface";

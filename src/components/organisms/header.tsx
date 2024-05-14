@@ -23,7 +23,7 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
-import { setAzureUserId } from "../../apiService";
+import { setAzureUserId } from "../../api-ffm-service";
 import QuickAdd from "../atom/quickAdd";
 
 export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {

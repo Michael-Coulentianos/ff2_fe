@@ -9,7 +9,7 @@ import {
   updateNote,
   getOrganizations,
   getNoteTypes,
-} from "../../apiService";
+} from "../../api-ffm-service";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import moment from "moment";

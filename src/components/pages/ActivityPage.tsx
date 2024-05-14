@@ -12,7 +12,7 @@ import {
   getNotes,
   getActivities,
   getOrganizations,
-} from "../../apiService";
+} from "../../api-ffm-service";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";

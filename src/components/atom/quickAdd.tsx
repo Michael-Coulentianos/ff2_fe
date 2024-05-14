@@ -16,7 +16,7 @@ import {
   getActivityStatuses,
   createActivity,
   getActivities,
-} from "../../apiService";
+} from "../../api-ffm-service";
 import theme from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
 import { LegalEntity } from "../../models/legalEntity.interface";
