@@ -11,7 +11,6 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
@@ -26,7 +25,7 @@ import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../api-ffm-service";
 import QuickAdd from "../atom/quickAdd";
 
-export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
+export default function Header() {
   const theme = useTheme();
 
   const { instance } = useMsal();
@@ -58,11 +57,6 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
         position="fixed"
       >
         <Toolbar>
-          <NavigationDrawer
-            open={open}
-            handleDrawerOpen={handleDrawerOpen}
-            handleDrawerClose={handleDrawerClose}
-          ></NavigationDrawer>
           <ApplicationsMenu></ApplicationsMenu>
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
             <img src={FFlogo} alt="FFlogo" height={"30px"} width={"30px"} />
