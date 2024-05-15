@@ -27,7 +27,7 @@ interface Field {
   id: string;
   label: string;
   type?: string;
-  options?: Array<{ label: string; value: any; id: any }>;
+  options?: Array<{ label: string; value: any; id: any; properties?: any }>;
   placeholder?: string;
 }
 
@@ -42,7 +42,6 @@ const ActivityDialog = ({
   organizations,
   formData,
 }) => {
-  const [dynamicFields, setDynamicFields] = useState<Field[]>([]);
   const {
     control,
     handleSubmit,
@@ -67,7 +66,6 @@ const ActivityDialog = ({
 
   const activityCategoryId = watch("activityCategoryId");
   const watchNoteDetail = watch("noteDetail");
-
   useEffect(() => {
     if (activityCategoryId) {
       const selectedCategory = activityCategory.find(
@@ -77,21 +75,7 @@ const ActivityDialog = ({
       if (selectedCategory && selectedCategory.properties) {
         const properties = JSON.parse(selectedCategory.properties);
 
-        const dynamicGeneralActivityDetails = properties
-          .filter((prop) => prop.key !== "Color")
-          .map((prop) => ({
-            id: prop.key.toLowerCase().replace(/\s+/g, ""),
-            label: prop.key,
-            type: prop.type,
-            options:
-              prop.type === "select"
-                ? prop.value.map((option) => ({
-                    label:
-                      option.Option + (option.unit ? ` (${option.unit})` : ""),
-                    value: option.id,
-                  }))
-                : undefined,
-          }));
+        const dynamicGeneralActivityDetails = processProperties(properties);
 
         setDynamicFields(dynamicGeneralActivityDetails);
       } else {
@@ -101,62 +85,84 @@ const ActivityDialog = ({
   }, [activityCategoryId, activityCategory]);
 
   function addPropertyIfNotEmpty(obj: any, key: string, value: any) {
-    if (value) {
+    if (value !== null && value !== undefined) {
       obj[key] = value;
     }
-  }
+  }  
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
-    const date = new Date(dateStr);
-    return new Intl.DateTimeFormat("en-CA", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(date);
+  const processProperties = (properties, parentKey = ''): Field[] => {
+    return properties.flatMap((prop) => {
+      const id = (parentKey ? `${parentKey}_` : '') + prop.key.toLowerCase().replace(/\s+/g, '');
+      const result: Field[] = [{
+        id,
+        label: prop.key,
+        type: prop.type,
+        options: prop.type === 'select'
+          ? prop.value.map((option) => ({
+              label: option.Option + (option.unit ? ` (${option.unit})` : ''),
+              value: option.id,
+              id: option.id,
+              properties: option.properties || [],
+            }))
+          : undefined,
+      }];
+  
+      return result;
+    });
   };
 
+  const [dynamicFields, setDynamicFields] = useState<Field[]>([]);
+  const [selectedValues, setSelectedValues] = useState<{ [key: string]: any }>({});
+
   useEffect(() => {
-    if (isOpen && formData) {
-      const properties = formData.property ? JSON.parse(formData.property) : {};
+    if (activityCategoryId) {
+      const selectedCategory = activityCategory.find(
+        (category) => category.activityCategoryId === activityCategoryId
+      );
 
-      const modifiedFormData = {
-        ...formData,
-        startDate: formatDate(formData.startDate),
-        endDate: formatDate(formData.endDate),
-        ...properties,
-        properties: JSON.stringify(properties),
-      };
-      console.log(formData);
-      console.log(modifiedFormData);
+      if (selectedCategory && selectedCategory.properties) {
+        const properties = JSON.parse(selectedCategory.properties);
+        const dynamicGeneralActivityDetails = processProperties(properties);
 
-      reset(modifiedFormData);
+        setDynamicFields(dynamicGeneralActivityDetails);
+      } else {
+        setDynamicFields([]);
+      }
     }
-    if (!isOpen) {
-      reset({
-        name: "Ty testing",
-        description: "rewytryrdydry",
-        startDate: "2024-05-13",
-        endDate: "2024-05-13",
-        field: "etryeryeryerye",
-        cost: "250",
-        contractWorkCost: "2500",
-        noteDetail: undefined,
-        partyId: 238,
-        activityCategoryId: undefined,
-        seasonStageId: 1,
-      });
-    }
-  }, [
-    formData,
-    isOpen,
-    reset,
-    activityCategory,
-    noteList,
-    activityStatus,
-    seasonStages,
-  ]);
+  }, [activityCategoryId, activityCategory]);
 
+  const handleSelectChange = (id: string, value: any) => {
+    setSelectedValues((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+
+    updateDynamicFields(id, value);
+  };
+
+  const updateDynamicFields = (id: string, value: any) => {
+    const updatedFields = dynamicFields.map((field) => {
+      if (field.id === id) {
+        const selectedOption = field.options?.find((option) => option.value === value);
+        if (selectedOption && selectedOption.properties.length > 0) {
+          return [
+            field,
+            ...processProperties(selectedOption.properties, id),
+          ];
+        }
+        return field;
+      }
+
+      // Filter out subfields that belong to the current field if it's being updated
+      if (field.id.startsWith(id + '_')) {
+        return null;
+      }
+
+      return field;
+    }).filter(Boolean) as Field[]; // Remove null values
+
+    setDynamicFields(updatedFields);
+  };
   const selectedPartyId = watch("partyId");
   const [filteredNotes, setFilteredNotes] = useState(noteList);
 

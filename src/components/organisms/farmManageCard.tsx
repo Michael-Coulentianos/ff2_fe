@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   ListItemButton,
   ListItemText,
-  ListSubheader,
   Collapse,
   IconButton,
   Button,
@@ -20,33 +19,18 @@ import {
   Add as AddIcon,
 } from "@mui/icons-material";
 import TextBox from "../atom/textBox";
-
-const organization = [
-  {
-    orgName: "FF2 Org",
-    farms: [
-      {
-        id: "X",
-        name: "Farm X",
-        fields: [{ id: 1, name: "Field 1" }],
-      },
-    ],
-  },
-  {
-    orgName: "FF2 Dev",
-    farms: [
-      {
-        id: "Y",
-        name: "Farm Y",
-        fields: [{ id: "A", name: "Field A" }],
-      },
-    ],
-  },
-];
+import {
+  getOrganizations,
+} from "../../api-ffm-service";
+import { useFetchData } from '../../hooks/useFethData';
 
 export default function FarmFieldManagement() {
+
   const [openFarms, setOpenFarms] = useState({});
   const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  
+  useFetchData(getOrganizations, setOrganizations);
 
   const toggleFarm = (farmId) => {
     setOpenFarms((prevState) => ({
@@ -90,9 +74,9 @@ export default function FarmFieldManagement() {
           value={selectedOrganization}
           onChange={(e) => setSelectedOrganization(e.target.value)}
         >
-          {organization?.map((org) => (
-            <MenuItem key={org.orgName} value={org.orgName}>
-              {org.orgName}
+          {organizations?.map((org) => (
+            <MenuItem key={org.partyId} value={org.partyId}>
+              {org.name}
             </MenuItem>
           ))}
         </TextBox>
@@ -108,7 +92,7 @@ export default function FarmFieldManagement() {
         </Button>
         {/* CHANGE THE BELOW TO ONLY DISPLAY THE SELECTED ORGANISATION's FARMS & FIELDS */}
         {selectedOrganization &&
-          organization?.map((f) =>
+          organizations?.map((f) =>
             f.farms.map((farm) => (
               <div key={farm.id}>
                 <ListItemButton onClick={() => toggleFarm(farm.id)}>

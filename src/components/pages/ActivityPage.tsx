@@ -17,6 +17,7 @@ import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
 import Loading from "./loading";
+import { useFetchData, fetchData } from '../../hooks/useFethData';
 
 interface DataItem {
   id: string;
@@ -40,27 +41,6 @@ const Activities: React.FC = () => {
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
-
-  async function fetchData(fetchFunction, setData) {
-    setIsLoading(true);
-    try {
-      const data = await fetchFunction();
-      setData(data);
-    } catch (error) {
-      console.error(
-        `Error fetching data from ${fetchFunction.name}:`,
-        error
-      );
-    } finally {
-      setIsLoading(false);
-    };
-  }
-  
-  function useFetchData(fetchFunction, setData) {
-    useEffect(() => {
-      fetchData(fetchFunction, setData);
-    }, [fetchFunction, setData]);
-  }
 
   useFetchData(getActivities, setActivities);
   useFetchData(getOrganizations, setOrganizations);
