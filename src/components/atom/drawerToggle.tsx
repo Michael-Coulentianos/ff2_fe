@@ -21,8 +21,11 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
       aria-label="open drawer"
       onClick={onClick}
       sx={{
-        top: "125px",
-        marginLeft: open ? "220px" : "0px",
+        height: "20px",
+        width: "20px",
+        fontSize: "5px",
+        top: open ? "125px" : "50px",
+        marginLeft: open ? "228px" : "0px",
         backgroundColor: "orange",
         "&:hover": {
           backgroundColor: "#F1A81E",

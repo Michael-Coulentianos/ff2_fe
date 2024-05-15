@@ -47,8 +47,9 @@ const UserOrganizationComponent: React.FC = () => {
         sx={{
           padding: "10px",
           minWidth: "220px",
+          backgroundColor: theme.palette.background.paper,
           "&:hover": {
-            backgroundColor: "rgba(241, 168, 30, 0.90)",
+            backgroundColor: "#C5CBBC",
           },
         }}
         onClick={handleClick}
@@ -85,7 +86,7 @@ const UserOrganizationComponent: React.FC = () => {
             sx={{
               color: theme.palette.primary.main,
               "&:hover": {
-                backgroundColor: "rgba(241, 168, 30, 0.5)",
+                backgroundColor: "#C5CBBC",
                 color: theme.palette.primary.main,
               },
             }}

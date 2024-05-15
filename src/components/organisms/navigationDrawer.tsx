@@ -83,7 +83,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
 
   return (
     <Grid container>
-      <Grid item >
+      <Grid item>
         <Drawer
           sx={{
             flexShrink: 0,
@@ -100,19 +100,6 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
         >
           <DrawerHeader>
             <UserOrganizationComponent></UserOrganizationComponent>
-            {/*
-          <Typography sx={{ marginTop: 0.5, color: "white" }}>
-            {activeAccount ? activeAccount?.name : "Farmer"}’s Farm
-          </Typography>
-          <Tooltip title="Close Menu">
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon sx={{ color: "white" }} />
-              ) : (
-                <ChevronRightIcon sx={{ color: "white" }} />
-              )}
-            </IconButton>
-          </Tooltip> */}
           </DrawerHeader>
           <Divider />
 
@@ -211,6 +198,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
       </Grid>
       <Grid item style={{ zIndex: 1300 }}>
         <DrawerToggleButton
+          
           open={open}
           onClick={open ? handleDrawerClose : handleDrawerOpen}
         />
