@@ -18,45 +18,45 @@
 
 on:
     push:
-      branches: [ "development" ]
+        branches: [ "development" ]
     workflow_dispatch:
   
-  env:
+env:
     AZURE_WEBAPP_NAME: app-FarmersFriend-dev    # set this to your application's name
     AZURE_WEBAPP_PACKAGE_PATH: '.'              # set this to the path to your web app project, defaults to the repository root
     NODE_VERSION: '20.x'                        # set this to the Node.js version to use
   
-  permissions:
+permissions:
     contents: read
-  
-  jobs:
+
+jobs:
     build:
       runs-on: ubuntu-latest
       steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+        - name: Checkout code
+          uses: actions/checkout@v4
   
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+            cache: 'npm'
   
-      - name: Install dependencies and build
-        run: |
-          npm install
-          CI=false npm run build --if-present
-          # CI=false npm run test --if-present  # Commenting out test step
+        - name: Install dependencies and build
+          run: |
+            npm install
+            CI=false npm run build --if-present
+            # CI=false npm run test --if-present  # Commenting out test step
   
-      - name: Create artifact archive
-        run: |
-          tar -czf node-app.tar.gz .
+        - name: Create artifact archive
+          run: |
+            tar -czf node-app.tar.gz .
   
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: node-app
-          path: node-app.tar.gz
+        - name: Upload artifact for deployment job
+          uses: actions/upload-artifact@v3
+          with:
+            name: node-app
+            path: node-app.tar.gz
   
     deploy:
       permissions:
@@ -68,21 +68,21 @@ on:
         url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
   
       steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: node-app
-          path: node-app.tar.gz
+        - name: Download artifact from build job
+          uses: actions/download-artifact@v3
+          with:
+            name: node-app
+            path: node-app.tar.gz
   
-      - name: Extract artifact
-        run: |
-          tar -xzf node-app.tar.gz
+        - name: Extract artifact
+          run: |
+            tar -xzf node-app.tar.gz
   
-      - name: Deploy to Azure WebApp
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        - name: Deploy to Azure WebApp
+          id: deploy-to-webapp
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: ${{ env.AZURE_WEBAPP_NAME }}
+            publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+            package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   
