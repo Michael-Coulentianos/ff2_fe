@@ -18,14 +18,14 @@
 
 on:
     push:
-      branches: [ "development" ]
+        branches: [ "development" ]
     workflow_dispatch:
   
 env:
     AZURE_WEBAPP_NAME: app-FarmersFriend-dev    # set this to your application's name
     AZURE_WEBAPP_PACKAGE_PATH: '.'              # set this to the path to your web app project, defaults to the repository root
     NODE_VERSION: '20.x'                        # set this to the Node.js version to use
-    
+
 permissions:
     contents: read
 
@@ -51,7 +51,7 @@ jobs:
         - name: Prepare build directory
           run: |
             mkdir build_output
-            cp -r * build_output
+            cp -r $(ls | grep -v build_output) build_output
   
         - name: Create artifact archive
           run: |
