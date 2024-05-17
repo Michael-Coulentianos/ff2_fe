@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js version
         uses: actions/setup-node@v3
@@ -29,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Prune dev dependencies
+        run: npm prune --production
+
       - name: Build project
         run: CI=false npm run build --if-present
 
@@ -36,7 +40,6 @@ jobs:
         run: |
           mkdir build_output
           cp -r $(ls | grep -v build_output) build_output/
-          cp -r node_modules build_output/node_modules
           tar -czf node-app.tar.gz -C build_output .
 
       - name: Upload artifact for deployment job
