@@ -28,7 +28,6 @@ env:
   
 permissions:
     contents: read
-    id-token: write  # Needed for OIDC login
   
 jobs:
     build:
@@ -69,13 +68,6 @@ jobs:
         url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
   
       steps:
-        - name: Login to Azure
-          uses: azure/login@v1
-          with:
-            client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_584245B068C241C7836F8338EF2D61DA }}
-            tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_94A5B2260D9743138CD2C0B416296D91 }}
-            subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0374F77CE0784FB38A6F509B9B6A7BE9 }}
-  
         - name: Download artifact from build job
           uses: actions/download-artifact@v3
           with:
