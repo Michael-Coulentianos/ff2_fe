@@ -61,7 +61,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: build
         environment:
-            name: 'Development'
+            name: 'development'
             url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
         permissions:
             id-token: write #This is required for requesting the JWT
@@ -87,6 +87,6 @@ jobs:
                 uses: azure/webapps-deploy@v2
                 with:
                     app-name: 'app-FarmersFriend-dev'
-                    slot-name: 'Development'
+                    slot-name: 'development'
                     package: .
                     
