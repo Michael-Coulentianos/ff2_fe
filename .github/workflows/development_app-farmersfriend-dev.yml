@@ -39,7 +39,8 @@ jobs:
       - name: Create artifact archive
         run: |
           mkdir build_output
-          cp -r build/* build_output/
+          cp -r $(ls | grep -v build_output) build_output/
+          cp -r node_modules build_output/node_modules
           tar -czf node-app.tar.gz -C build_output .
 
       - name: Upload artifact for deployment job
