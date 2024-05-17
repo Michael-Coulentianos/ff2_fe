@@ -75,14 +75,13 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8EECBF44721B45B590A169A1D5104102 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_78C4DF8CEFE04DD198F996B6D8B6FF36 }}
 
-      - name: Deploy to development slot
-        id: deploy-to-development
+      - name: Clean existing files on Azure Web App
+        run: |
+          az webapp config appsettings set --name app-FarmersFriend-dev --resource-group development --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'app-FarmersFriend-dev'
-          slot-name: 'development'
           package: build_output
-
-      - name: Swap slots
-        run: |
-          az webapp deployment slot swap --name app-FarmersFriend-dev --resource-group rg-FarmersFriend-dev --slot development --target-slot production
