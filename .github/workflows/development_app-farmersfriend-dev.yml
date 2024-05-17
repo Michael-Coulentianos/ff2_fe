@@ -23,9 +23,9 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-            npm install
-            CI=false npm run build --if-present
-            # CI=false npm run test --if-present  # Commenting out test step
+          npm install
+          CI=false npm run build --if-present
+          # CI=false npm run test --if-present  # Commenting out test step
 
       - name: Create artifact archive
         run: |
@@ -57,8 +57,9 @@ jobs:
 
       - name: Extract artifact
         run: |
-          tar -xzf node-app.tar.gz
-      
+          mkdir -p build_output
+          tar -xzf node-app.tar.gz -C build_output
+
       - name: Login to Azure
         uses: azure/login@v1
         with:
@@ -71,6 +72,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'app-FarmersFriend-dev'
-          slot-name: 'Production'
-          package: .
-          
+          package: build_output
