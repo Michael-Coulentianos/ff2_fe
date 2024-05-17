@@ -65,7 +65,7 @@ export default function FarmFieldManagement() {
   };
 
   return (
-    <Paper elevation={3} className="overlay" sx={{ padding: 1,maxWidth:"300px" }}>
+    <Paper elevation={3}  sx={{ padding: 1,maxWidth:"230px" }}>
       <List subheader={"Manage Farms"}>
         {/* Organization dropdown */}
         <TextBox
