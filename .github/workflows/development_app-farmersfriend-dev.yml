@@ -77,7 +77,7 @@ jobs:
 
       - name: Clean existing files on Azure Web App
         run: |
-          az webapp config appsettings set --name app-FarmersFriend-dev --resource-group development --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
+          az webapp config appsettings set --name app-FarmersFriend-dev --resource-group rg-FarmersFriend-dev --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
