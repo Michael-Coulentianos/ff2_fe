@@ -30,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build --if-present
+        run: CI=false npm run build --if-present
 
       - name: Create artifact archive
         run: |
@@ -52,7 +52,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
