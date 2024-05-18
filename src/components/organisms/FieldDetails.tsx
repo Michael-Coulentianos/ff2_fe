@@ -5,6 +5,7 @@ import {
   Checkbox,
   Button,
   Paper,
+  Box,
 } from "@mui/material";
 import React, { useState } from "react";
 import TextBox from "../atom/textBox";
@@ -40,55 +41,72 @@ const FieldForm = () => {
     <Paper elevation={3} sx={{ marginTop: 1, padding: 1 }}>
       <Typography variant="h6">Field Details</Typography>
       <form onSubmit={handleSubmit}>
-        <TextBox
-          label="Field Name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        <TextBox label="Size" value={formData.size} onChange={handleChange} />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={formData.irrigated}
-              onChange={handleChange}
-              name="irrigated"
-              color="primary"
-            />
-          }
-          label="Irrigated Field"
-        />
-        <TextBox label="Farm" value={formData.farm} onChange={handleChange} />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={formData.seasonalField}
-              onChange={handleChange}
-              name="seasonalField"
-              color="primary"
-            />
-          }
-          label="Seasonal Field"
-        />
-        <TextBox
-          label="Activities"
-          value={formData.activities}
-          onChange={handleChange}
-          multiline
-          rows={1.5}
-        />
-        <TextBox
-          label="Crop History"
-          value={formData.cropHistory}
-          onChange={handleChange}
-        />
-        <TextBox
-          label="Notes"
-          value={formData.notes}
-          onChange={handleChange}
-          multiline
-          rows={1.5}
-        />
-        <Button type="submit" variant="contained" color="primary" sx={{padding:0}}>
+        <Box sx={{ overflow: "auto" }}>
+         
+          <TextBox
+            label="Field Name"
+            value={formData.name}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+          />
+          <TextBox
+            label="Size"
+            value={formData.size}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.irrigated}
+                onChange={handleChange}
+                name="irrigated"
+                color="primary"
+              />
+            }
+            label="Irrigated Field"
+          />
+          <TextBox
+            label="Farm"
+            value={formData.farm}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.seasonalField}
+                onChange={handleChange}
+                name="seasonalField"
+                color="primary"
+              />
+            }
+            label="Seasonal Field"
+          />
+          <TextBox
+            label="Activities"
+            value={formData.activities}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+            multiline
+            rows={1.5}
+          />
+          <TextBox
+            label="Crop History"
+            value={formData.cropHistory}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+          />
+          <TextBox
+            label="Notes"
+            value={formData.notes}
+            onChange={handleChange}
+            sx={{ marginTop: 0.5 }}
+            multiline
+            rows={1.5}
+          />
+        </Box>
+        <Button type="submit" variant="contained" color="primary">
           Save
         </Button>
       </form>

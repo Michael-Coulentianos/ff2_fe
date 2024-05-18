@@ -85,13 +85,14 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
     <Grid container>
       <Grid item>
         <Drawer
-          sx={{
+          sx={{ 
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
               backgroundColor: "#3C4F1E",
               marginTop: "50px",
+              paddingBottom: "25px",
             },
           }}
           variant="persistent"
@@ -101,9 +102,11 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
           <DrawerHeader>
             <UserOrganizationComponent></UserOrganizationComponent>
           </DrawerHeader>
-          <Divider />
-
-          <List>
+          <List
+            sx={{
+              marginTop: "15px",
+            }}
+          >
             {[
               {
                 text: "My Farm",
@@ -198,7 +201,6 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
       </Grid>
       <Grid item style={{ zIndex: 1300 }}>
         <DrawerToggleButton
-          
           open={open}
           onClick={open ? handleDrawerClose : handleDrawerOpen}
         />

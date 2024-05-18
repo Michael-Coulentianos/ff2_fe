@@ -19,6 +19,7 @@ interface TextBoxProps {
   select?: boolean;
   children?: React.ReactNode;
   inputRef?: React.Ref<any>;
+  sx?: any;
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
@@ -38,6 +39,7 @@ const TextBox: React.FC<TextBoxProps> = ({
   select,
   children,
   inputRef,
+  sx,
 }) => {
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     let { value } = event.target;
@@ -66,7 +68,7 @@ const TextBox: React.FC<TextBoxProps> = ({
     <TextField
       select={select}
       label={label}
-      value={value}
+      value={value} 
       onChange={handleInput}
       onBlur={handleBlur}
       fullWidth={fullWidth}
@@ -74,6 +76,7 @@ const TextBox: React.FC<TextBoxProps> = ({
       variant="outlined"
       size="small"
       margin="dense"
+      sx={sx}
       error={error}
       helperText={helperText}
       multiline={multiline || Boolean(rows)}
@@ -83,12 +86,13 @@ const TextBox: React.FC<TextBoxProps> = ({
       type={type === "decimal" || type === "currency" ? "text" : type}
       inputRef={inputRef}
       InputProps={{
-        startAdornment: type === "currency" ? (
-          <InputAdornment position="start">R</InputAdornment>
-        ) : undefined,
+        startAdornment:
+          type === "currency" ? (
+            <InputAdornment position="start">R</InputAdornment>
+          ) : undefined,
         inputProps: {
-          min: (type === "number" || type === "currency") ? 0 : undefined,
-          step: (type === "decimal" || type === "currency") ? "0.01" : undefined,
+          min: type === "number" || type === "currency" ? 0 : undefined,
+          step: type === "decimal" || type === "currency" ? "0.01" : undefined,
         },
       }}
     >
