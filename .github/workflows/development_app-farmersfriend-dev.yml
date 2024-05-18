@@ -66,5 +66,5 @@ jobs:
         with:
           app-name: 'app-FarmersFriend-dev'
           slot-name: 'Production'
-          package: .
+          package: ./build
           
