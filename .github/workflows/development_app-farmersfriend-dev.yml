@@ -85,4 +85,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'app-FarmersFriend-dev'
-          package: build_output
+          package: build_output/build
