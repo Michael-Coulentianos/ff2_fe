@@ -50,6 +50,10 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
+
+      - name: Clean up wwwroot directory
+        run: |
+          az webapp ssh --resource-group rg-FarmersFriend-dev --name app-FarmersFriend-dev --command "rm -rf /home/site/wwwroot/*"
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
