@@ -1,3 +1,7 @@
+interface note {
+  noteId: number;
+}
+
 export interface Activity {
   activityId: number;
   name: string;
@@ -7,11 +11,17 @@ export interface Activity {
   field: string;
   cost: number;
   contractWorkCost: number;
-  noteDetail: string;
+  notes: note[];
+  category: string;
   activityCategoryId: number;
+  seasonStage: string;
   seasonStageId: number;
+  organisationName: string;
+  organizationId: number;
   partyId: number;
+  activityStatusId: number;
   azureUserId: string;
+  status: string;
+  propery?: any;
   properties?: any;
-  [key: string]: any;
 }

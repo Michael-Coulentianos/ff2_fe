@@ -9,6 +9,7 @@ import { Farm } from "./models/farm.interface";
 import { Note } from "./models/note.interface";
 import { Organization } from "./models/organization.interface";
 
+
 const api = axios.create({
   baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',
   headers: {
@@ -180,10 +181,16 @@ export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   }
 };
 
-export const getFarm = async (farmId: number): Promise<Farm[]> => {
+export const getOrganizationFarms = async (organizationId: number): Promise<Farm[]> => {
   try {
-    const response = await api.get<Farm[]>(`/GetFarm/${farmId}`);
-    return response.data;
+    const config = {
+      headers: {
+        "x-OrganizationId": organizationId
+      }
+    };
+
+    const response = await api.get<ResponseApi<Farm[]>>("OrganizationFarms", config);
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to retrieve farm: ${error.response.data}`);
@@ -530,9 +537,15 @@ export const getActivityById = async (): Promise<any[]> => {
   }
 };
 
-export const getActivities = async (): Promise<Activity[]> => {
+export const getActivities = async (organizationId: number): Promise<Activity[]> => {
   try {
-      const response = await api.get<ResponseApi<Activity[]>>("Activities");
+    const config = {
+      headers: {
+        "x-OrganizationId": organizationId
+      }
+    };
+
+    const response = await api.get<ResponseApi<Activity[]>>("Activities", config);
 
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
