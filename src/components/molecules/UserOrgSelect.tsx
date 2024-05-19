@@ -10,22 +10,20 @@ import {
 } from "@mui/material";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import barnIcon from "../../assets/icons/barnIcon.svg";
-
-interface Organization {
-  id: number;
-  name: string;
-}
-
-const organizations: Organization[] = [
-  { id: 1, name: "DEV DAT Farm" },
-  { id: 2, name: "My Organization" },
-  // Add more organizations as needed
-];
+import { getOrganizations } from "../../api-ffm-service";
+import { useFetchData } from '../../hooks/useFethData';
+import { useGlobalState } from '../../GlobalState';
+import { Organization } from '../../models/organization.interface';
 
 const UserOrganizationComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const theme = useTheme();
+
+  const { setSelectedOrganization } = useGlobalState();
+
+  useFetchData(getOrganizations, setOrganizations);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -37,6 +35,7 @@ const UserOrganizationComponent: React.FC = () => {
 
   const handleOrgClick = (org: Organization) => {
     setSelectedOrg(org);
+    setSelectedOrganization(org);
     handleClose();
   };
 

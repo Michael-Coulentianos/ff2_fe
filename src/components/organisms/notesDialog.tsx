@@ -6,6 +6,7 @@ import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
+import MyMapComponent from "../molecules/googleMaps";
 
 const validationSchema = yup.object({
   title: yup.string().required(), 
@@ -32,7 +33,6 @@ const NotesDialog = ({
   onClose,
   onSubmit,
   noteTypes,
-  organizations,
   formData,
 }) => {
 
@@ -48,7 +48,8 @@ const NotesDialog = ({
   });
   
   const [file, setFile] = useState<File | null>(null);
-  
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
+
   const onSubmit2 = data => {
     data.attachment = file;
     onSubmit(data);
@@ -167,7 +168,6 @@ const NotesDialog = ({
         severityType: "",
         severitySubType: "",
         cropType: "",
-        party: organizations.length > 0 ? organizations[0].party : "",
         noteType: noteTypes.length > 0 ? noteTypes[0].name : "",
         yieldEstimateHeads: "",
         yieldEstimateRowWidth: "",
@@ -178,30 +178,11 @@ const NotesDialog = ({
       });
     }
     
-  }, [formData, isOpen, reset, noteTypes, setValue, organizations]);
+  }, [formData, isOpen, reset, noteTypes, setValue]);
 
   const fieldDefinitions = {
     generalNoteDetails: [
       { id: "title", label: "Note Title", type: "text" },
-      {
-        id: "party",
-        label: "Organization",
-        type: "select",
-        options: organizations?.map((org) => ({
-          label: org.name,
-          value: org.name,
-        })),
-        onChange: (selectedName) =>
-          setValue(
-            "partyId",
-            organizations.find((nt) => nt.name === selectedName)?.partyId
-          ),
-      },
-    ],
-    generalNoteDetails0: [
-      { id: "description", label: "Description", type: "multiText" },
-    ],
-    generalNoteDetails1: [
       {
         id: "noteType",
         label: "Note Type",
@@ -210,10 +191,11 @@ const NotesDialog = ({
           label: type.name,
           value: type.name,
         })),
-      },
-      { id: "createdDate", label: "Note Date", type: "date" },
+      }
     ],
-    generalNoteDetails2: [{ id: "location", label: "location", type: "map" }],
+    generalNoteDetails0: [
+      { id: "description", label: "Description", type: "multiText" },
+    ],
     generalNoteDetails3: [
       { id: "attachment1", label: "Add file", type: "attachment" },
     ],
@@ -295,11 +277,9 @@ const NotesDialog = ({
     ],
   };
 
-  const [position, setPosition] = useState({ lat: 0, lng: 0 }); 
-
-  const handlePositionChange = (newPosition) => {
-    setPosition(newPosition);
-    console.log("Position updated in NotesDialog:", newPosition);
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setPosition(location);
+    setValue("location", JSON.stringify(location));
   };
 
   const formContent = (
@@ -307,28 +287,12 @@ const NotesDialog = ({
       <DialogContent dividers sx={{ pt: 1, pb: 1 }}>
         <Grid container spacing={2} sx={{ padding: 2 }}>
           <FormSection
-            title=""
             fields={fieldDefinitions.generalNoteDetails}
             control={control}
             errors={errors}
             columns={2}
           />
-
-          <FormSection
-            title=""
-            fields={fieldDefinitions.generalNoteDetails0}
-            control={control}
-            errors={errors}
-            columns={1}
-          />
-
-          <FormSection
-            title=""
-            fields={fieldDefinitions.generalNoteDetails1}
-            control={control}
-            errors={errors}
-            columns={2}
-          />
+          
           {watchNoteType === "Yield Estimate" && (
             <FormSection
               title="Yield Estimate"
@@ -340,7 +304,6 @@ const NotesDialog = ({
           )}
           {watchNoteType === "Severity" && (
             <FormSection
-              title="Severity Note"
               fields={fieldDefinitions.severityNote}
               control={control}
               errors={errors}
@@ -349,22 +312,23 @@ const NotesDialog = ({
           )}
           {watchNoteType === "Crop/Soil Analysis" && (
             <FormSection
-              title="Crop Analysis"
               fields={fieldDefinitions.cropAnalysisNote}
               control={control}
               errors={errors}
               columns={2}
             />
           )}
+
           <FormSection
-            title=""
-            fields={fieldDefinitions.generalNoteDetails2}
+            fields={fieldDefinitions.generalNoteDetails0}
             control={control}
             errors={errors}
             columns={1}
           />
+
+          <MyMapComponent onLocationSelect={handleLocationSelect} />
+
           <FormSection
-            title=""
             fields={fieldDefinitions.generalNoteDetails3}
             control={control}
             errors={errors}

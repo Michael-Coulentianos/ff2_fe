@@ -42,12 +42,12 @@ const Activities: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities);
-  useFetchData(getOrganizations, setOrganizations);
-  useFetchData(getNotes, setNotes);
-  useFetchData(getActivityCategories, setActivityCategories);
-  useFetchData(getActivityStatuses, setActivityStatuses);
-  useFetchData(getSeasonStages, setSeasonStages);
+  useFetchData(getActivities, setActivities, setIsLoading);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
+  useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
+  useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -84,7 +84,7 @@ const Activities: React.FC = () => {
       }
     }
 
-    fetchData(getActivities, setActivities);
+    fetchData(getActivities, setActivities, setIsLoading);
     handleCloseForm();
   };
 

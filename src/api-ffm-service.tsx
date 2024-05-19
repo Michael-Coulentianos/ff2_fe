@@ -287,9 +287,15 @@ export const createNote = async(note: Partial<any>): Promise<ResponseApi<any>> =
   }
 };
 
-export const getNotes = async (): Promise<Note[]> => {
+export const getNotes = async (organizationId: number): Promise<Note[]> => {
   try {
-      const response = await api.get<ResponseApi<Note[]>>("Notes");
+      const config = {
+        headers: {
+          "x-OrganizationId": organizationId
+        }
+      };
+
+      const response = await api.get<ResponseApi<Note[]>>("Notes", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {

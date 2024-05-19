@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Grid, IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import ActivityDialog from "../organisms/activityDialog";
+import { useFetchData, fetchData } from '../../hooks/useFethData';
 import NotesDialog from "../organisms/notesDialog";
 import OrganizationDialog from "../organisms/organisationDialog";
 import {
@@ -20,6 +21,7 @@ import {
 import theme from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
 import { LegalEntity } from "../../models/legalEntity.interface";
+import { useGlobalState } from '../../GlobalState';
 import { CreateOrganization } from "../../models/createOrganization.interface";
 
 interface LocationState {
@@ -38,6 +40,7 @@ export default function QuickAdd() {
   const [noteTypes, setNoteTypes] = useState<any[]>([]);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { selectedOrganization } = useGlobalState();
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [location, setLocation] = useState<LocationState>({
     latitude: null,
@@ -86,30 +89,9 @@ export default function QuickAdd() {
   };
 
   //NOTE
-  function useFetchDataNote(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
-
-  useFetchDataNote(getNotes, setNotes, setIsLoading);
-  useFetchDataNote(getNoteTypes, setNoteTypes, setIsLoading);
-  useFetchDataNote(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
 
   const getLocation = () => {
     if (!navigator.geolocation) {
@@ -208,9 +190,7 @@ export default function QuickAdd() {
       try {
         formData.property = JSON.stringify(properties);
         const response = await createNote(formData);
-        formData.noteId = response.details.noteId;
-        const notes = await getNotes();
-        setNotes(notes);
+        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 0]);
       } catch (error) {
         console.error("Error creating note:", error);
       }
@@ -222,30 +202,8 @@ export default function QuickAdd() {
   //NOTE END
 
   //ORG
-
-  function useFetchDataOrg(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
-
-  useFetchDataOrg(getOrganizations, setOrganizations, setIsLoading);
-  useFetchDataOrg(getLegalEntities, setLegalEntities, setIsLoading);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
+  useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
 
   const handleSubmitOrg = async (formData: any) => {
     setIsLoading(true);
@@ -295,28 +253,6 @@ export default function QuickAdd() {
     handleCloseForm();
   };
   //ORG END
-
-  //ACT
-  function useFetchData(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
 
   useFetchData(getActivities, setActivities, setIsLoading);
   useFetchData(getNotes, setNotes, setIsLoading);
@@ -396,7 +332,6 @@ export default function QuickAdd() {
           onSubmit={handleSubmitNote}
           formData={selectedNote}
           noteTypes={noteTypes}
-          organizations={organizations}
         />
         <OrganizationDialog
           isOpen={openOrg}

@@ -7,7 +7,6 @@ import {
   deleteNote,
   createNote,
   updateNote,
-  getOrganizations,
   getNoteTypes,
 } from "../../api-ffm-service";
 import NotesDialog from "../organisms/notesDialog";
@@ -15,7 +14,9 @@ import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import moment from "moment";
 import DynamicChip from "../atom/dynamicChip";
 import FileDisplay from "../organisms/fileDisplay";
+import { useFetchData, fetchData } from '../../hooks/useFethData';
 import Loading from "./loading";
+import { useGlobalState } from '../../GlobalState';
 
 interface DataItem {
   id: string;
@@ -28,11 +29,6 @@ interface ColumnConfig {
   renderCell: (item: DataItem) => React.ReactNode;
 }
 
-interface LocationState {
-  latitude: number | null;
-  longitude: number | null;
-}
-
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [noteTypes, setNoteTypes] = useState<any[]>([]);
@@ -40,60 +36,10 @@ const Notes: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [organizations, setOrganizations] = useState<any[]>([]);
-  const [location, setLocation] = useState<LocationState>({
-    latitude: null,
-    longitude: null,
-  });
-  const [error, setError] = useState("");
+  const { selectedOrganization } = useGlobalState();
 
-  function useFetchData(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
-
-  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
-  useFetchData(getOrganizations, setOrganizations, setIsLoading);
-
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      () => {
-        setError("Unable to retrieve your location");
-      }
-    );
-  };
-
-  useEffect(() => {
-    getLocation();
-  }, [location]);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -122,9 +68,7 @@ const Notes: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
-    formData.partyId = organizations.find(
-      (org) => org.name === formData.party
-    )?.partyId;
+    formData.partyId = selectedOrganization?.partyId;
     formData.noteTypeId = noteTypes.find(
       (nt) => nt.name === formData.noteType
     )?.noteTypeId;
@@ -180,20 +124,16 @@ const Notes: React.FC = () => {
       try {
         formData.property = JSON.stringify(properties);
         const response = await updateNote(formData);
-        if (response.details != null) {
-          const notes = await getNotes();
-          setNotes(notes);
-        }
+        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 0]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        const response = await createNote(formData);
-        formData.noteId = response.details.noteId;
-        const notes = await getNotes();
-        setNotes(notes);
+        await createNote(formData);
+        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 0]);
+
       } catch (error) {
         console.error("Error creating note:", error);
       }
@@ -316,7 +256,6 @@ const Notes: React.FC = () => {
                   onSubmit={handleSubmit}
                   formData={selectedNote}
                   noteTypes={noteTypes}
-                  organizations={organizations}
                 />
               </Paper>
             )}
@@ -338,7 +277,6 @@ const Notes: React.FC = () => {
                   onSubmit={handleSubmit}
                   formData={selectedNote}
                   noteTypes={noteTypes}
-                  organizations={organizations}
                 />
               </Grid>
               <Grid item xs={12}>
