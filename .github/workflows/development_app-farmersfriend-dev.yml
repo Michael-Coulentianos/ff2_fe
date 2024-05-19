@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'app-farmersfriend-dev'
           slot-name: 'Production'
-          package: .
+          package: ./build
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9877C9CCA718426186E302E531EAC50F }}
