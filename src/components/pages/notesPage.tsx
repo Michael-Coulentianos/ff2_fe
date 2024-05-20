@@ -31,7 +31,7 @@ interface ColumnConfig {
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
-  const [noteTypes, setNoteTypes] = useState<any[]>([]);
+  const [noteTypes, setNoteTypes] = useState<any>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);

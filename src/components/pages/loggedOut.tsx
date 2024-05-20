@@ -50,7 +50,7 @@ const LogoutPage = () => {
           component="img"
           src={logo}
           alt="logo"
-          sx={{ height: 200, mb: 4 }}
+          sx={{ height: 150, mb: 4 }}
         />
         <Typography variant="h5" gutterBottom>
           You have been logged out.

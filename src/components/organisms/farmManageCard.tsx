@@ -16,19 +16,20 @@ import {
   Add as AddIcon,
   Visibility as ViewIcon,
 } from "@mui/icons-material";
-import { useGlobalState } from '../../GlobalState';
-import { useFetchData } from '../../hooks/useFethData';
+import { useGlobalState } from "../../GlobalState";
+import { useFetchData } from "../../hooks/useFethData";
 import { getOrganizationFarms } from "../../api-ffm-service";
 import { getUnlinkedFields } from "../../api-gs-service";
-import { Farm } from '../../models/farm.interface';
+import { Farm } from "../../models/farm.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function FarmFieldManagement() {
-
   const [farms, setFarms] = useState<Farm[]>([]);
   const [unlinkedFields, setUnlinkedFields] = useState<any[]>([]);
-  const [expandedFarms, setExpandedFarms] = useState<{ [key: number]: boolean }>({});
+  const [expandedFarms, setExpandedFarms] = useState<{
+    [key: number]: boolean;
+  }>({});
   const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
@@ -51,6 +52,8 @@ export default function FarmFieldManagement() {
 
   const handleNavigation = (id, page) => {
     navigate(page, { state: { id } });
+  const handleNavigation = (id, page) => {
+    navigate(page, { state: { id } });
   };
 
   const toggleUnlinkedFields = () => {
@@ -67,7 +70,9 @@ export default function FarmFieldManagement() {
     if (selectedFarmId !== null) {
       console.log(`Delete Farm ${selectedFarmId}`);
       // Implement your farm deletion logic here
-      setFarms((prevFarms) => prevFarms.filter(farm => farm.farmId !== selectedFarmId));
+      setFarms((prevFarms) =>
+        prevFarms.filter((farm) => farm.farmId !== selectedFarmId)
+      );
       setConfirmOpen(false);
       setSelectedFarmId(null);
     }
@@ -84,7 +89,11 @@ export default function FarmFieldManagement() {
   };
 
   return (
-    <Paper elevation={3} className="overlay" sx={{ padding: 1, maxWidth: "230px" }}>
+    <Paper
+      elevation={3}
+      className="overlay"
+      sx={{ padding: 1, maxWidth: "230px" }}
+    >
       <List subheader={"Manage Farms"}>
         {/* Add Farm button */}
         <Button
@@ -96,7 +105,8 @@ export default function FarmFieldManagement() {
         >
           Add Farm
         </Button>
-        {selectedOrganization && Array.isArray(farms) &&
+        {selectedOrganization &&
+          Array.isArray(farms) &&
           farms.map((farm) => (
             <div key={farm.farmId}>
               <ListItemButton onClick={() => toggleFarm(farm.farmId)}>
@@ -111,7 +121,11 @@ export default function FarmFieldManagement() {
                   <DeleteIcon />
                 </IconButton>
               </ListItemButton>
-              <Collapse in={expandedFarms[farm.farmId]} timeout="auto" unmountOnExit>
+              <Collapse
+                in={expandedFarms[farm.farmId]}
+                timeout="auto"
+                unmountOnExit
+              >
                 <List component="div" disablePadding>
                   <Button
                     variant="outlined"

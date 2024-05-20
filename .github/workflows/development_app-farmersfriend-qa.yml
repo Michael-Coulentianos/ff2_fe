@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - app-FarmersFriend-qa
 
 on:
@@ -16,18 +13,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: npm install, build
-        run: |
-          npm install
-          CI=false npm run build --if-present
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the app
+        run: CI=false npm run build --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x "node_modules/*" "*.test.js" "tests/*" "docs/*"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -51,7 +59,20 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Clean wwwroot using Kudu
+        run: |
+          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
+          KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingUserName' -o tsv)
+          KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingPassword' -o tsv)
+          KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
+          curl -u $KUDU_USER:$KUDU_PASS -X POST -d '{ "command": "rm -rf /home/site/wwwroot/*" }' $KUDU_URL
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -59,3 +80,10 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9100A944703400DA6F41E34DA61CB97 }}
           package: .
+
+      - name: Install Node.js modules on Azure
+        run: |
+          KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingUserName' -o tsv)
+          KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingPassword' -o tsv)
+          KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
+          curl -u $KUDU_USER:$KUDU_PASS -X POST -d '{ "command": "cd /home/site/wwwroot && npm install" }' $KUDU_URL
