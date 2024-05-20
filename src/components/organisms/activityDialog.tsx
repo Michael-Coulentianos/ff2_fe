@@ -18,7 +18,6 @@ interface FormData {
   noteDetail: string;
   activityCategoryId: number;
   activityStatusId: number;
-  statusId: number;
   seasonStageId: number;
   partyId: number;
 }
@@ -65,6 +64,7 @@ const ActivityDialog = ({
 
   const activityCategoryId = watch("activityCategoryId");
   const watchNoteDetail = watch("noteDetail");
+
   useEffect(() => {
     if (activityCategoryId) {
       const selectedCategory = activityCategory.find(
@@ -87,10 +87,11 @@ const ActivityDialog = ({
     if (value !== null && value !== undefined) {
       obj[key] = value;
     }
-  }  
+  }
 
   const processProperties = (properties, parentKey = ''): Field[] => {
     return properties.flatMap((prop) => {
+      if (prop.key.toLowerCase() === 'color') return [];
       const id = (parentKey ? `${parentKey}_` : '') + prop.key.toLowerCase().replace(/\s+/g, '');
       const result: Field[] = [{
         id,
@@ -142,16 +143,20 @@ const ActivityDialog = ({
           id: type.activityCategoryId,
         })),
       },
-      {
-        id: "status",
-        label: "Activity Status",
-        type: "select",
-        options: activityStatus?.map((type) => ({
-          label: type.value,
-          value: type.value,
-          id: type.key,
-        })),
-      },
+      { id: "startDate", label: "Start Date", type: "date" },
+      { id: "endDate", label: "End Date", type: "date" },
+      ...(formData
+        ? [{
+            id: "activityStatusId",
+            label: "Activity Status",
+            type: "select",
+            options: activityStatus?.map((type) => ({
+              label: type.value,
+              value: type.value,
+              id: type.key,
+            })),
+          }]
+        : []),
       {
         id: "seasonStageId",
         label: "Season Stages",
@@ -161,9 +166,7 @@ const ActivityDialog = ({
           value: type.key,
           id: type.key,
         })),
-      },
-      { id: "startDate", label: "Start Date", type: "date" },
-      { id: "endDate", label: "End Date", type: "date" },
+      }
     ],
     generalActivityDetails0: [
       { id: "description", label: "Description", type: "multiText" }
@@ -212,7 +215,6 @@ const ActivityDialog = ({
 
     const finalData: FormData = {
       activityId: data.activityId,
-      statusId: data.activityStatusId,
       name: data.name,
       description: data.description,
       startDate: data.startDate,

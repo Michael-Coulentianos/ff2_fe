@@ -37,8 +37,8 @@ const Notes: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { selectedOrganization } = useGlobalState();
-
-  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
+  
+  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
 
   const handleOpenForm = () => {
@@ -182,7 +182,7 @@ const Notes: React.FC = () => {
       label: "Type",
       dataKey: "noteType",
       renderCell: (item) => (
-        <DynamicChip name={item.noteType} noteTypes={noteTypes} />
+        <DynamicChip name={item.noteType} types={noteTypes} />
       ),
     },
     {

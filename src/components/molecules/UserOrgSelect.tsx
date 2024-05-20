@@ -24,12 +24,16 @@ const UserOrganizationComponent: React.FC = () => {
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
 
   useFetchData(getOrganizations, setOrganizations);
-  console.log(selectedOrganization);
+
   useEffect(() => {
     if (selectedOrganization) {
       setSelectedOrg(selectedOrganization);
+    } else if (organizations.length > 0) {
+      const defaultOrg = organizations[0];
+      setSelectedOrg(defaultOrg);
+      setSelectedOrganization(defaultOrg);
     }
-  }, [selectedOrganization]);
+  }, [selectedOrganization, organizations, setSelectedOrganization]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -88,6 +92,7 @@ const UserOrganizationComponent: React.FC = () => {
       >
         {organizations.map((org) => (
           <MenuItem
+            key={org.id}
             sx={{
               color: theme.palette.primary.main,
               "&:hover": {
@@ -95,7 +100,6 @@ const UserOrganizationComponent: React.FC = () => {
                 color: theme.palette.primary.main,
               },
             }}
-            key={org.id}
             onClick={() => handleOrgClick(org)}
           >
             <Avatar

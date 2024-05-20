@@ -18,6 +18,7 @@ import moment from "moment";
 import Loading from "./loading";
 import { useGlobalState } from '../../GlobalState';
 import { useFetchData, fetchData } from '../../hooks/useFethData';
+import DynamicChip from "../atom/dynamicChip";
 
 interface DataItem {
   id: string;
@@ -42,8 +43,8 @@ const Activities: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.id ?? 81]);
-  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
+  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
   useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
   useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
@@ -115,7 +116,9 @@ const Activities: React.FC = () => {
     {
       label: "Category",
       dataKey: "category",
-      renderCell: (item) => <span>{item.category}</span>,
+      renderCell: (item) => (
+        <DynamicChip name={item.category} types={activityCategories} />
+      ),
     },
     {
       label: "Field",
