@@ -35,7 +35,7 @@ jobs:
         run: CI=false npm run build --if-present
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip ./*
+        run: zip -r release.zip . -x "node_modules/*"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -59,7 +59,20 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Clean wwwroot using Kudu
+        run: |
+          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group my-resource-group --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
+          KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group my-resource-group --query '[0].publishingUserName' -o tsv)
+          KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group my-resource-group --query '[0].publishingPassword' -o tsv)
+          KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
+          curl -u $KUDU_USER:$KUDU_PASS -X POST -d '{ "command": "rm -rf /home/site/wwwroot/*" }' $KUDU_URL
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -67,3 +80,10 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9100A944703400DA6F41E34DA61CB97 }}
           package: .
+
+      - name: Install Node.js modules on Azure
+        run: |
+          KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingUserName' -o tsv)
+          KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingPassword' -o tsv)
+          KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
+          curl -u $KUDU_USER:$KUDU_PASS -X POST -d '{ "command": "cd /home/site/wwwroot && npm install" }' $KUDU_URL
