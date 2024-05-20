@@ -6,12 +6,13 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import OrganizationSettings from "../pages/OrganisationSettings";
-import FarmFieldManagement from "./farmManageCard";
 import WelcomeCard from "../molecules/welcome";
 import { Container, Grid, Paper } from "@mui/material";
 import theme from "../../theme";
 import Loading from "../pages/loading";
-import FieldManagement from "../pages/FieldsPage";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import FarmManagement from "../pages/FarmPage";
 
 const steps = ["Welcome", "Add Organisation", "Add Farm & Field"];
 
@@ -26,7 +27,9 @@ const stepCaption = [
 
 export default function StepperForm() {
   const [activeStep, setActiveStep] = React.useState(0);
-  
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -36,18 +39,23 @@ export default function StepperForm() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const handleFinish = () => {
+    setIsLoading(true);
+    navigate("/");
+  };
+
   const stepContent = [
     <WelcomeCard />,
     <Container sx={{ pt: 9 }}>
       <OrganizationSettings />
     </Container>,
     <Container sx={{ pt: 2, ml: 0 }}>
-      <FieldManagement  />
+      <FarmManagement />
     </Container>,
   ];
 
   return (
-    <Box sx={{ width: "100%", marginTop: 1, p: 2 }}>
+    <Box sx={{ width: "100%" }}>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps: { completed?: boolean } = {};
@@ -59,11 +67,8 @@ export default function StepperForm() {
           );
         })}
       </Stepper>
-      {activeStep === steps.length ? (
-        <>
-          <Loading />
-          {/* navigate to HomeDashboard */}
-        </>
+      {isLoading === true ? (
+        <Loading />
       ) : (
         <>
           <Grid container>
@@ -108,7 +113,11 @@ export default function StepperForm() {
                   Back
                 </Button>
                 <Box sx={{ flex: "1 1 auto" }} />
-                <Button onClick={handleNext}>
+                <Button
+                  onClick={
+                    activeStep === steps.length - 1 ? handleFinish : handleNext
+                  }
+                >
                   {activeStep === steps.length - 1 ? "Finish" : "Next"}
                 </Button>
               </Box>

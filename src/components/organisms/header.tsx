@@ -11,6 +11,11 @@ import {
   useMediaQuery,
   Typography,
   Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MuiAppBar from "@mui/material/AppBar";
@@ -26,11 +31,13 @@ import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../api-ffm-service";
 import { useGlobalState } from "../../GlobalState";
 import QuickAdd from "../atom/quickAdd";
+import { useState } from "react";
 
 export default function Header() {
   const theme = useTheme();
   const { setActiveAccount } = useGlobalState();
   const { instance } = useMsal();
+  const { selectedOrganization } = useGlobalState();
 
   useEffect(() => {
     if (instance) {
@@ -46,10 +53,19 @@ export default function Header() {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));
   };
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   const handleLogoutRedirect = () => {
+    setOpenDialog(true);
+  };
+  const handleLogoutConfirm = () => {
     instance.logoutRedirect();
+    setOpenDialog(false);
   };
 
+  const handleLogoutCancel = () => {
+    setOpenDialog(false);
+  };
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   return (
     <Box>
@@ -78,8 +94,12 @@ export default function Header() {
               Farmers Friend
             </Link>
           )}
-          <QuickAdd />
-          <SearchBar />
+          {selectedOrganization && (
+            <>
+              <QuickAdd />
+              <SearchBar />
+            </>
+          )}
           <AuthenticatedTemplate>
             <UserProfileForm />
             <Tooltip title="Log Out">
@@ -95,6 +115,34 @@ export default function Header() {
                 <ExitToAppIcon fontSize="small" />
               </IconButton>
             </Tooltip>
+            <Dialog
+              open={openDialog}
+              onClose={handleLogoutCancel}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Confirm Logout"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Are you sure you want to log out?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleLogoutCancel} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleLogoutConfirm}
+                  color="primary"
+                  autoFocus
+                >
+                  Logout
+                </Button>
+              </DialogActions>
+            </Dialog>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <Button
