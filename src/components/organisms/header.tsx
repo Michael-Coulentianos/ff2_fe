@@ -23,17 +23,19 @@ import {
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../api-ffm-service";
+import { useGlobalState } from '../../GlobalState';
 import QuickAdd from "../atom/quickAdd";
 
 export default function Header() {
   const theme = useTheme();
-
+  const { setActiveAccount} = useGlobalState();
   const { instance } = useMsal();
 
   if (instance) {
     const activeAccount = instance.getActiveAccount();
     if (activeAccount) {
       setAzureUserId(activeAccount.localAccountId);
+      setActiveAccount(activeAccount);
     }
   }
 

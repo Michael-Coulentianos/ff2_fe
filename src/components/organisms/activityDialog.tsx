@@ -15,7 +15,6 @@ interface FormData {
   cost: string;
   contractWorkCost: string;
   Properties: any;
-  noteDetail: string;
   activityCategoryId: number;
   activityStatusId: number;
   seasonStageId: number;
@@ -43,7 +42,6 @@ const ActivityDialog = ({
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors },
     watch,
   } = useForm<FormData>({
@@ -55,7 +53,6 @@ const ActivityDialog = ({
       field: "etryeryeryerye",
       cost: "250",
       contractWorkCost: "2500",
-      noteDetail: undefined,
       partyId: 238,
       activityCategoryId: undefined,
       seasonStageId: 1,
@@ -63,25 +60,6 @@ const ActivityDialog = ({
   });
 
   const activityCategoryId = watch("activityCategoryId");
-  const watchNoteDetail = watch("noteDetail");
-
-  useEffect(() => {
-    if (activityCategoryId) {
-      const selectedCategory = activityCategory.find(
-        (category) => category.activityCategoryId === activityCategoryId
-      );
-
-      if (selectedCategory && selectedCategory.properties) {
-        const properties = JSON.parse(selectedCategory.properties);
-
-        const dynamicGeneralActivityDetails = processProperties(properties);
-
-        setDynamicFields(dynamicGeneralActivityDetails);
-      } else {
-        setDynamicFields([]);
-      }
-    }
-  }, [activityCategoryId, activityCategory]);
 
   function addPropertyIfNotEmpty(obj: any, key: string, value: any) {
     if (value !== null && value !== undefined) {
@@ -115,6 +93,7 @@ const ActivityDialog = ({
 
   useEffect(() => {
     if (activityCategoryId) {
+      console.log(formData);
       const selectedCategory = activityCategory.find(
         (category) => category.activityCategoryId === activityCategoryId
       );
@@ -223,7 +202,6 @@ const ActivityDialog = ({
       cost: data.cost,
       contractWorkCost: data.contractWorkCost,
       Properties: JSON.stringify(properties),
-      noteDetail: data.noteDetail,
       activityCategoryId: data.activityCategoryId,
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
@@ -257,22 +235,7 @@ const ActivityDialog = ({
             errors={errors}
             columns={1}
           />
-          {watchNoteDetail !== "Create New" && (
-            <FormSection
-              fields={fieldDefinitions.activityNotes}
-              control={control}
-              errors={errors}
-              columns={1}
-            />
-          )}
-          {watchNoteDetail === "Create New" && (
-            <FormSection
-              fields={fieldDefinitions.activityNotesAdd}
-              control={control}
-              errors={errors}
-              columns={1}
-            />
-          )}
+
           <FormSection
             fields={fieldDefinitions.generalActivityDetails2}
             control={control}

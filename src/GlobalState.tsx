@@ -4,24 +4,22 @@ import { Organization } from './models/organization.interface';
 interface GlobalState {
   selectedOrganization: Organization | null;
   setSelectedOrganization: (org: Organization) => void;
-  // Add other global variables here
+  activeAccount: any | null;
+  setActiveAccount: (user: any) => void;
 }
 
 const GlobalStateContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedOrganization, setSelectedOrganization] = useState<Organization | null>(null);
-  
-  // Add other global state handlers here
-  // const [anotherGlobalVar, setAnotherGlobalVar] = useState<AnotherType>(defaultValue);
+  const [activeAccount, setActiveAccount] = useState<any | null>(null);
 
   return (
     <GlobalStateContext.Provider value={{
       selectedOrganization,
       setSelectedOrganization,
-      // Add other global state handlers here
-      // anotherGlobalVar,
-      // setAnotherGlobalVar,
+      activeAccount,
+      setActiveAccount,
     }}>
       {children}
     </GlobalStateContext.Provider>

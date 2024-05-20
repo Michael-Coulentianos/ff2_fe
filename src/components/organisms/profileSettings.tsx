@@ -51,14 +51,14 @@ export const UserProfileForm = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const data = await getUserProfile();
-      setUserProfile(data);
-      reset(data); // Pre-fill the form with fetched data
-    };
-    fetchUserProfile();
-  }, [reset]);
+  // useEffect(() => {
+  //   const fetchUserProfile = async () => {
+  //     const data = await getUserProfile();
+  //     setUserProfile(data);
+  //     reset(data);
+  //   };
+  //   fetchUserProfile();
+  // }, [reset]);
 
   const handleFormSubmit = async (data) => {
     try {

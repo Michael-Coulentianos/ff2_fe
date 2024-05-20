@@ -13,7 +13,6 @@ import {
   ExpandLess,
   ExpandMore,
   Delete as DeleteIcon,
-  Edit as EditIcon,
   Add as AddIcon,
   Visibility as ViewIcon,
 } from "@mui/icons-material";
@@ -33,12 +32,15 @@ export default function FarmFieldManagement() {
   const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, activeAccount } = useGlobalState();
 
   const navigate = useNavigate();
 
   useFetchData(getOrganizationFarms, setFarms);
-  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? 'ce2ad131-7f99-2b3d-a67b-b8513246b710']);
+  console.log(activeAccount);
+
+  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? '']);
+  console.log(unlinkedFields);
 
   const toggleFarm = (farmId: number) => {
     setExpandedFarms((prevState) => ({
@@ -47,8 +49,8 @@ export default function FarmFieldManagement() {
     }));
   };
 
-  const handleNavigation = (fieldId) => {
-    navigate('/fields', { state: { fieldId } });
+  const handleNavigation = (id, page) => {
+    navigate(page, { state: { id } });
   };
 
   const toggleUnlinkedFields = () => {
@@ -79,10 +81,6 @@ export default function FarmFieldManagement() {
   const addFarm = () => {
     console.log("Add a new farm");
     // Implement your add farm logic here
-  };
-
-  const addField = (farmId: number) => {
-    navigate('/FieldsPage', { state: { farmId } });
   };
 
   return (
@@ -119,7 +117,7 @@ export default function FarmFieldManagement() {
                     variant="outlined"
                     size="small"
                     startIcon={<AddIcon />}
-                    onClick={() => addField(farm.farmId)}
+                    onClick={() => handleNavigation(undefined, "/fields")}
                     fullWidth
                   >
                     Add Field
@@ -143,7 +141,7 @@ export default function FarmFieldManagement() {
                     <IconButton
                       edge="end"
                       aria-label="view"
-                      onClick={() => handleNavigation(field.cropperRef)}
+                      onClick={() => handleNavigation(field.cropperRef, "/fields")}
                       color="primary"
                     >
                       <ViewIcon />
