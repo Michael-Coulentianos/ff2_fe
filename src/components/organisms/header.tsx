@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import SearchBar from "../molecules/searchBar";
 import {
   Box,
@@ -23,21 +24,23 @@ import {
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
 import { setAzureUserId } from "../../api-ffm-service";
-import { useGlobalState } from '../../GlobalState';
+import { useGlobalState } from "../../GlobalState";
 import QuickAdd from "../atom/quickAdd";
 
 export default function Header() {
   const theme = useTheme();
-  const { setActiveAccount} = useGlobalState();
+  const { setActiveAccount } = useGlobalState();
   const { instance } = useMsal();
 
-  if (instance) {
-    const activeAccount = instance.getActiveAccount();
-    if (activeAccount) {
-      setAzureUserId(activeAccount.localAccountId);
-      setActiveAccount(activeAccount);
+  useEffect(() => {
+    if (instance) {
+      const activeAccount = instance.getActiveAccount();
+      if (activeAccount) {
+        setAzureUserId(activeAccount.localAccountId);
+        setActiveAccount(activeAccount);
+      }
     }
-  }
+  }, [instance, setActiveAccount]);
 
   const handleLoginRedirect = () => {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));
@@ -59,7 +62,7 @@ export default function Header() {
         position="fixed"
       >
         <Toolbar>
-          <ApplicationsMenu></ApplicationsMenu>
+          <ApplicationsMenu />
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
             <img src={FFlogo} alt="FFlogo" height={"30px"} width={"30px"} />
           </Link>
@@ -75,11 +78,10 @@ export default function Header() {
               Farmers Friend
             </Link>
           )}
-          <QuickAdd></QuickAdd>
-          <SearchBar></SearchBar>
+          <QuickAdd />
+          <SearchBar />
           <AuthenticatedTemplate>
-            <UserProfileForm></UserProfileForm>
-
+            <UserProfileForm />
             <Tooltip title="Log Out">
               <IconButton
                 aria-label="exit"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   List,
   ListItemButton,
@@ -8,6 +8,13 @@ import {
   Button,
   Paper,
   Divider,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Dialog,
+  Grid,
+  Tooltip,
+  TextField,
 } from "@mui/material";
 import {
   ExpandLess,
@@ -15,6 +22,9 @@ import {
   Delete as DeleteIcon,
   Add as AddIcon,
   Visibility as ViewIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
 import { useGlobalState } from "../../GlobalState";
 import { useFetchData } from "../../hooks/useFethData";
@@ -23,6 +33,23 @@ import { getUnlinkedFields } from "../../api-gs-service";
 import { Farm } from "../../models/farm.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { useNavigate } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { styled } from "@mui/material/styles";
+
+const validationSchema = yup.object({
+  farmName: yup.string().required("Farm name is required"),
+});
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
+}));
 
 export default function FarmFieldManagement() {
   const [farms, setFarms] = useState<Farm[]>([]);
@@ -33,15 +60,14 @@ export default function FarmFieldManagement() {
   const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentFarm, setCurrentFarm] = useState<Farm | null>(null);
   const { selectedOrganization, activeAccount } = useGlobalState();
 
   const navigate = useNavigate();
 
   useFetchData(getOrganizationFarms, setFarms);
-  console.log(activeAccount);
-
-  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? '']);
-  console.log(unlinkedFields);
+  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [activeAccount?.localAccountId ?? '']);
 
   const toggleFarm = (farmId: number) => {
     setExpandedFarms((prevState) => ({
@@ -50,8 +76,6 @@ export default function FarmFieldManagement() {
     }));
   };
 
-  const handleNavigation = (id, page) => {
-    navigate(page, { state: { id } });
   const handleNavigation = (id, page) => {
     navigate(page, { state: { id } });
   };
@@ -78,14 +102,42 @@ export default function FarmFieldManagement() {
     }
   };
 
-  const handleFieldEdit = (fieldId) => {
-    console.log(`Edit field ${fieldId}`);
-    // Implement your edit logic here
+  const handleFieldEdit = (farm) => {
+    setCurrentFarm(farm);
+    setDialogOpen(true);
   };
 
-  const addFarm = () => {
-    console.log("Add a new farm");
-    // Implement your add farm logic here
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
+
+  useEffect(() => {
+    if (currentFarm) {
+      reset({ farmName: currentFarm.farm });
+    } else {
+      reset({ farmName: "" });
+    }
+  }, [currentFarm, reset]);
+
+  const handleAddFarm = (data) => {
+    if (currentFarm) {
+      console.log(`Edit farm ${currentFarm.farmId}: `, data.farmName);
+      // Implement your edit farm logic here
+    } else {
+      console.log("Add a new farm: ", data.farmName);
+      // Implement your add farm logic here
+    }
+    setDialogOpen(false);
+    setCurrentFarm(null);
+  };
+
+  const addField = (farmId: number) => {
+    navigate('/FieldsPage', { state: { farmId } });
   };
 
   return (
@@ -95,12 +147,14 @@ export default function FarmFieldManagement() {
       sx={{ padding: 1, maxWidth: "230px" }}
     >
       <List subheader={"Manage Farms"}>
-        {/* Add Farm button */}
         <Button
           variant="contained"
           fullWidth
           startIcon={<AddIcon />}
-          onClick={addFarm}
+          onClick={() => {
+            setCurrentFarm(null);
+            setDialogOpen(true);
+          }}
           sx={{ marginTop: 1 }}
         >
           Add Farm
@@ -112,6 +166,17 @@ export default function FarmFieldManagement() {
               <ListItemButton onClick={() => toggleFarm(farm.farmId)}>
                 <ListItemText primary={farm.farm} />
                 {expandedFarms[farm.farmId] ? <ExpandLess /> : <ExpandMore />}
+                <IconButton
+                  edge="end"
+                  aria-label="edit"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleFieldEdit(farm);
+                  }}
+                  color="primary"
+                >
+                  <EditIcon />
+                </IconButton>
                 <IconButton
                   edge="end"
                   aria-label="delete"
@@ -175,6 +240,62 @@ export default function FarmFieldManagement() {
         title="Confirm Deletion"
         content="Are you sure you want to delete this farm?"
       />
+
+      {/* Add/Edit Farm Dialog */}
+      <StyledDialog
+        onClose={() => setDialogOpen(false)}
+        open={dialogOpen}
+        aria-labelledby="add-edit-farm-dialog"
+      >
+        <DialogTitle id="add-edit-farm-dialog">
+          {currentFarm ? "Edit Farm" : "Add New Farm"}
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={() => setDialogOpen(false)}
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 10,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <form onSubmit={handleSubmit(handleAddFarm)}>
+          <DialogContent dividers>
+            <Grid container spacing={2} sx={{ padding: 2 }}>
+              <Grid item xs={12}>
+                <Controller
+                  name="farmName"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Farm Name"
+                      variant="outlined"
+                      fullWidth
+                      error={!!errors.farmName}
+                      helperText={errors.farmName ? errors.farmName.message : ""}
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              startIcon={<SaveIcon />}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </form>
+      </StyledDialog>
     </Paper>
   );
 }
