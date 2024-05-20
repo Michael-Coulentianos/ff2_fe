@@ -61,7 +61,7 @@ jobs:
 
       - name: Clean wwwroot using Kudu
         run: |
-          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group <your-resource-group> --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
+          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
           KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingUserName' -o tsv)
           KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingPassword' -o tsv)
           KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
