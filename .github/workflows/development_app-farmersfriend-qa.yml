@@ -59,14 +59,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Clean wwwroot using Kudu
-        run: |
-          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
-          KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingUserName' -o tsv)
-          KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group <your-resource-group> --query '[0].publishingPassword' -o tsv)
-          KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
-          curl -u $KUDU_USER:$KUDU_PASS -X POST -d '{ "command": "rm -rf /home/site/wwwroot/*" }' $KUDU_URL
-
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
