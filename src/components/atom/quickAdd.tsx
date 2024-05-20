@@ -348,8 +348,7 @@ export default function QuickAdd() {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          noteList={notes}
-          organizations={organizations}
+          notes={notes}
         />
         <Tooltip title="Quick Add">
           <IconButton

@@ -124,7 +124,7 @@ const Notes: React.FC = () => {
       try {
         formData.property = JSON.stringify(properties);
         const response = await updateNote(formData);
-        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 0]);
+        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
@@ -132,7 +132,7 @@ const Notes: React.FC = () => {
       try {
         formData.property = JSON.stringify(properties);
         await createNote(formData);
-        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 0]);
+        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
 
       } catch (error) {
         console.error("Error creating note:", error);

@@ -1,39 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useLoadScript, Libraries } from '@react-google-maps/api';
 
 interface SearchBarProps {
   onAddressSelected: (address: string) => void;
 }
+
+const libraries: Libraries = ['places'];
 
 const GoogleMapsSearchBar: React.FC<SearchBarProps> = ({ onAddressSelected }) => {
   const [suggestions, setSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-  const apiKey = "AIzaSyAyy8BzMlKKQCPsQRgvhMW4MxfjGuIEWUc";
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyAyy8BzMlKKQCPsQRgvhMW4MxfjGuIEWUc',
+    libraries,
+  });
 
   useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      if (window.google) {
-        console.log("Google Maps already loaded.");
-        initializeAutocompleteService();
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-      script.onload = () => {
-        console.log("Google Maps Script Loaded");
-        initializeAutocompleteService();
-      };
-      document.head.appendChild(script);
-    };
-
-    const initializeAutocompleteService = () => {
+    if (isLoaded && !autocompleteService.current) {
       autocompleteService.current = new google.maps.places.AutocompleteService();
-    };
-
-    loadGoogleMapsScript();
-  }, [apiKey]);
+    }
+  }, [isLoaded]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -59,6 +47,8 @@ const GoogleMapsSearchBar: React.FC<SearchBarProps> = ({ onAddressSelected }) =>
     setSuggestions([]);
     onAddressSelected(suggestion.description);
   };
+
+  if (!isLoaded) return <div>Loading...</div>;
 
   return (
     <div>

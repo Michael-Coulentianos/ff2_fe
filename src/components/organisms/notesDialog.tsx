@@ -9,9 +9,8 @@ import DynamicFormDialog from "../molecules/dialog";
 import MyMapComponent from "../molecules/googleMaps";
 
 const validationSchema = yup.object({
-  title: yup.string().required(), 
-  noteType: yup.string().required(),
-  party: yup.string().required(),
+  title: yup.string().optional(), 
+  noteType: yup.string().optional(),
   partyId: yup.number().optional(),
   description: yup.string().required(),
   createdDate: yup.string().optional(), 
@@ -52,6 +51,7 @@ const NotesDialog = ({
 
   const onSubmit2 = data => {
     data.attachment = file;
+    console.log(data);
     onSubmit(data);
   };
 
@@ -205,9 +205,9 @@ const NotesDialog = ({
         label: "Severity Type",
         type: "select",
         options: [
-          { id: 1, label: "Damage" },
-          { id: 2, label: "Infection" },
-          { id: 3, label: "Water" },
+          { id: "Damage", label: "Damage" },
+          { id: "Infection", label: "Infection" },
+          { id: "Water", label: "Water" },
         ].map((type) => ({ label: type.label, value: type.label, id: type.id })),
       },
       {
@@ -295,7 +295,6 @@ const NotesDialog = ({
           
           {watchNoteType === "Yield Estimate" && (
             <FormSection
-              title="Yield Estimate"
               fields={fieldDefinitions.yieldEstimateNote}
               control={control}
               errors={errors}
@@ -326,7 +325,7 @@ const NotesDialog = ({
             columns={1}
           />
 
-          <MyMapComponent onLocationSelect={handleLocationSelect} />
+          {/* <MyMapComponent onLocationSelect={handleLocationSelect} /> */}
 
           <FormSection
             fields={fieldDefinitions.generalNoteDetails3}

@@ -568,7 +568,7 @@ export const getActivities = async (organizationId: number): Promise<Activity[]>
   }
 };
 
-export const createActivity = async (activity: Partial<any>): Promise<any[]> => {
+export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
   try {
       activity.azureUserId = azureUserId;
       console.log(activity);

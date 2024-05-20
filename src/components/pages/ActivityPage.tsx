@@ -11,12 +11,12 @@ import {
   updateActivity,
   getNotes,
   getActivities,
-  getOrganizations,
 } from "../../api-ffm-service";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
 import Loading from "./loading";
+import { useGlobalState } from '../../GlobalState';
 import { useFetchData, fetchData } from '../../hooks/useFethData';
 
 interface DataItem {
@@ -32,19 +32,18 @@ interface ColumnConfig {
 
 const Activities: React.FC = () => {
   const [activities, setActivities] = useState<any[]>([]);
-  const [organizations, setOrganizations] = useState<any[]>([]);
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
+  const { selectedOrganization } = useGlobalState();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities, setIsLoading);
-  useFetchData(getOrganizations, setOrganizations, setIsLoading);
-  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.id ?? 81]);
+  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
   useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
   useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
   useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
@@ -190,8 +189,7 @@ const Activities: React.FC = () => {
               activityCategory={activityCategories}
               activityStatus={activityStatuses}
               seasonStages={seasonStages}
-              noteList={notes}
-              organizations={organizations}
+              notes={notes}
             />
           </Grid>
           <Grid item xs={12}>
