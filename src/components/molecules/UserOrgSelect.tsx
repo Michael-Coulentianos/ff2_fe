@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Grid,
@@ -21,9 +21,15 @@ const UserOrganizationComponent: React.FC = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const theme = useTheme();
 
-  const { setSelectedOrganization } = useGlobalState();
+  const { selectedOrganization, setSelectedOrganization } = useGlobalState();
 
   useFetchData(getOrganizations, setOrganizations);
+  console.log(selectedOrganization);
+  useEffect(() => {
+    if (selectedOrganization) {
+      setSelectedOrg(selectedOrganization);
+    }
+  }, [selectedOrganization]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

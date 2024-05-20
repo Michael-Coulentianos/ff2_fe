@@ -15,28 +15,44 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Add as AddIcon,
+  Visibility as ViewIcon,
 } from "@mui/icons-material";
 import { useGlobalState } from '../../GlobalState';
 import { useFetchData } from '../../hooks/useFethData';
 import { getOrganizationFarms } from "../../api-ffm-service";
+import { getUnlinkedFields } from "../../api-gs-service";
 import { Farm } from '../../models/farm.interface';
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
+import { useNavigate } from 'react-router-dom';
 
 export default function FarmFieldManagement() {
 
   const [farms, setFarms] = useState<Farm[]>([]);
+  const [unlinkedFields, setUnlinkedFields] = useState<any[]>([]);
   const [expandedFarms, setExpandedFarms] = useState<{ [key: number]: boolean }>({});
+  const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
   const { selectedOrganization } = useGlobalState();
 
+  const navigate = useNavigate();
+
   useFetchData(getOrganizationFarms, setFarms);
+  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? 'ce2ad131-7f99-2b3d-a67b-b8513246b710']);
 
   const toggleFarm = (farmId: number) => {
     setExpandedFarms((prevState) => ({
       ...prevState,
       [farmId]: !prevState[farmId],
     }));
+  };
+
+  const handleNavigation = (fieldId) => {
+    navigate('/fields', { state: { fieldId } });
+  };
+
+  const toggleUnlinkedFields = () => {
+    setExpandedUnlinkedFields((prevState) => !prevState);
   };
 
   const openDeleteConfirm = (farmId, event) => {
@@ -55,14 +71,9 @@ export default function FarmFieldManagement() {
     }
   };
 
-  const handleFieldEdit = (farmId, fieldId) => {
-    console.log(`Edit field ${fieldId} in Farm ${farmId}`);
+  const handleFieldEdit = (fieldId) => {
+    console.log(`Edit field ${fieldId}`);
     // Implement your edit logic here
-  };
-
-  const handleFieldDelete = (farmId, fieldId) => {
-    console.log(`Delete field ${fieldId} in Farm ${farmId}`);
-    // Implement your delete logic here
   };
 
   const addFarm = () => {
@@ -71,8 +82,7 @@ export default function FarmFieldManagement() {
   };
 
   const addField = (farmId: number) => {
-    console.log(`Add a new field in Farm ${farmId}`);
-    // Implement your add field logic here
+    navigate('/FieldsPage', { state: { farmId } });
   };
 
   return (
@@ -119,6 +129,32 @@ export default function FarmFieldManagement() {
               </Collapse>
             </div>
           ))}
+        {unlinkedFields.length > 0 && (
+          <div>
+            <ListItemButton onClick={toggleUnlinkedFields}>
+              <ListItemText primary="Unlinked Fields" />
+              {expandedUnlinkedFields ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={expandedUnlinkedFields} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {unlinkedFields.map((field, index) => (
+                  <ListItemButton key={index}>
+                    <ListItemText primary={field.fieldName} />
+                    <IconButton
+                      edge="end"
+                      aria-label="view"
+                      onClick={() => handleNavigation(field.cropperRef)}
+                      color="primary"
+                    >
+                      <ViewIcon />
+                    </IconButton>
+                  </ListItemButton>
+                ))}
+                <Divider />
+              </List>
+            </Collapse>
+          </div>
+        )}
       </List>
       <GenericConfirmDialog
         open={confirmOpen}

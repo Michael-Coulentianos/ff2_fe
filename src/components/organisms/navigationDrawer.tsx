@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Collapse,
-  Divider,
   Drawer,
   Grid,
   List,
@@ -144,20 +143,20 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                 {text === "My Farm" && (
                   <CollapsibleSection open={open}>
                     <MenuItem
-                      text="Farm Management"
-                      icon={undefined}
-                      href={"/farm"}
-                    />
-                    <MenuItem
-                      text="Fields Management"
-                      icon={undefined}
-                      href={"/fields"}
-                    />
-                    <MenuItem
-                      text="Activity Management"
-                      icon={undefined}
-                      href={"/activity"}
-                    />
+                    text="Farm Management"
+                    icon={undefined}
+                    href="/farm"
+                  />
+                  <MenuItem
+                    text="Fields Management"
+                    icon={undefined}
+                    href={"/fields"}
+                  />
+                  <MenuItem
+                    text="Activity Management"
+                    icon={undefined}
+                    href="/activity"
+                  />
                   </CollapsibleSection>
                 )}
                 {text === "Operations" && (

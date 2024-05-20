@@ -5,5 +5,7 @@ export interface Farm {
   partyIdentifier: string;
   organizationId: number;
   farm: string;
+  name: string;
+  azureUserId: string;
   organization: string;
 }
