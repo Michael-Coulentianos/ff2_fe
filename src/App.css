@@ -57,7 +57,7 @@
 /* Overlay.css */
 .overlay {
   position: absolute;
-  top: 124px;
+  top: 185px;
   margin-left: 20px;
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
   z-index: 1;

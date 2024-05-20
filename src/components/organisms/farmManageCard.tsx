@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   List,
   ListItemButton,
@@ -6,7 +6,9 @@ import {
   Collapse,
   IconButton,
   Button,
+  MenuItem,
   Paper,
+  Container,
   Divider,
 } from "@mui/material";
 import {
@@ -15,65 +17,38 @@ import {
   Delete as DeleteIcon,
   Edit as EditIcon,
   Add as AddIcon,
-  Visibility as ViewIcon,
 } from "@mui/icons-material";
-import { useGlobalState } from '../../GlobalState';
-import { useFetchData } from '../../hooks/useFethData';
-import { getOrganizationFarms } from "../../api-ffm-service";
-import { getUnlinkedFields } from "../../api-gs-service";
-import { Farm } from '../../models/farm.interface';
-import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { useNavigate } from 'react-router-dom';
+import TextBox from "../atom/textBox";
+import { getOrganizations } from "../../api-ffm-service";
+import { useFetchData } from "../../hooks/useFethData";
 
 export default function FarmFieldManagement() {
+  const [openFarms, setOpenFarms] = useState({});
+  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [organizations, setOrganizations] = useState<any[]>([]);
 
-  const [farms, setFarms] = useState<Farm[]>([]);
-  const [unlinkedFields, setUnlinkedFields] = useState<any[]>([]);
-  const [expandedFarms, setExpandedFarms] = useState<{ [key: number]: boolean }>({});
-  const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
-  const { selectedOrganization } = useGlobalState();
+  useFetchData(getOrganizations, setOrganizations);
 
-  const navigate = useNavigate();
-
-  useFetchData(getOrganizationFarms, setFarms);
-  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? 'ce2ad131-7f99-2b3d-a67b-b8513246b710']);
-
-  const toggleFarm = (farmId: number) => {
-    setExpandedFarms((prevState) => ({
+  const toggleFarm = (farmId) => {
+    setOpenFarms((prevState) => ({
       ...prevState,
       [farmId]: !prevState[farmId],
     }));
   };
 
-  const handleNavigation = (fieldId) => {
-    navigate('/fields', { state: { fieldId } });
+  const deleteFarm = (farmId) => {
+    console.log(`Delete Farm ${farmId}`);
+    // Implement your farm deletion logic here
   };
 
-  const toggleUnlinkedFields = () => {
-    setExpandedUnlinkedFields((prevState) => !prevState);
-  };
-
-  const openDeleteConfirm = (farmId, event) => {
-    event.stopPropagation();
-    setSelectedFarmId(farmId);
-    setConfirmOpen(true);
-  };
-
-  const handleConfirm = () => {
-    if (selectedFarmId !== null) {
-      console.log(`Delete Farm ${selectedFarmId}`);
-      // Implement your farm deletion logic here
-      setFarms((prevFarms) => prevFarms.filter(farm => farm.farmId !== selectedFarmId));
-      setConfirmOpen(false);
-      setSelectedFarmId(null);
-    }
-  };
-
-  const handleFieldEdit = (fieldId) => {
-    console.log(`Edit field ${fieldId}`);
+  const handleFieldEdit = (farmId, fieldId) => {
+    console.log(`Edit field ${fieldId} in Farm ${farmId}`);
     // Implement your edit logic here
+  };
+
+  const handleFieldDelete = (farmId, fieldId) => {
+    console.log(`Delete field ${fieldId} in Farm ${farmId}`);
+    // Implement your delete logic here
   };
 
   const addFarm = () => {
@@ -81,13 +56,31 @@ export default function FarmFieldManagement() {
     // Implement your add farm logic here
   };
 
-  const addField = (farmId: number) => {
-    navigate('/FieldsPage', { state: { farmId } });
+  const addField = (farmId) => {
+    console.log(`Add a new field in Farm ${farmId}`);
+    // Implement your add field logic here
   };
 
   return (
-    <Paper elevation={3} className="overlay" sx={{ padding: 1, maxWidth: "230px" }}>
+    <Paper
+      elevation={3}
+      className="overlay"
+      sx={{ padding: 1, maxWidth: "300px" }}
+    >
       <List subheader={"Manage Farms"}>
+        {/* Organization dropdown */}
+        <TextBox
+          label={"Organisation"}
+          select
+          value={selectedOrganization}
+          onChange={(e) => setSelectedOrganization(e.target.value)}
+        >
+          {organizations?.map((org) => (
+            <MenuItem key={org.partyId} value={org.partyId}>
+              {org.name}
+            </MenuItem>
+          ))}
+        </TextBox>
         {/* Add Farm button */}
         <Button
           variant="contained"
@@ -98,71 +91,58 @@ export default function FarmFieldManagement() {
         >
           Add Farm
         </Button>
-        {selectedOrganization && Array.isArray(farms) &&
-          farms.map((farm) => (
-            <div key={farm.farmId}>
-              <ListItemButton onClick={() => toggleFarm(farm.farmId)}>
-                <ListItemText primary={farm.farm} />
-                {expandedFarms[farm.farmId] ? <ExpandLess /> : <ExpandMore />}
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={(event) => openDeleteConfirm(farm.farmId, event)}
-                  color="primary"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemButton>
-              <Collapse in={expandedFarms[farm.farmId]} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<AddIcon />}
-                    onClick={() => addField(farm.farmId)}
-                    fullWidth
+        {/* CHANGE THE BELOW TO ONLY DISPLAY THE SELECTED ORGANISATION's FARMS & FIELDS */}
+        {selectedOrganization &&
+          organizations?.map((f) =>
+            f.farms.map((farm) => (
+              <div key={farm.id}>
+                <ListItemButton onClick={() => toggleFarm(farm.id)}>
+                  <ListItemText primary={farm.name} />
+                  {openFarms[farm.id] ? <ExpandLess /> : <ExpandMore />}
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => deleteFarm(farm.id)}
+                    color="primary"
                   >
-                    Add Field
-                  </Button>
-                  <Divider />
-                </List>
-              </Collapse>
-            </div>
-          ))}
-        {unlinkedFields.length > 0 && (
-          <div>
-            <ListItemButton onClick={toggleUnlinkedFields}>
-              <ListItemText primary="Unlinked Fields" />
-              {expandedUnlinkedFields ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            <Collapse in={expandedUnlinkedFields} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                {unlinkedFields.map((field, index) => (
-                  <ListItemButton key={index}>
-                    <ListItemText primary={field.fieldName} />
-                    <IconButton
-                      edge="end"
-                      aria-label="view"
-                      onClick={() => handleNavigation(field.cropperRef)}
-                      color="primary"
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemButton>
+                <Collapse in={openFarms[farm.id]} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<AddIcon />}
+                      onClick={() => addField(farm.id)}
+                      fullWidth
                     >
-                      <ViewIcon />
-                    </IconButton>
-                  </ListItemButton>
-                ))}
-                <Divider />
-              </List>
-            </Collapse>
-          </div>
-        )}
+                      Add Field
+                    </Button>
+                    {farm.fields.map((field) => (
+                      <ListItemButton key={field.id} sx={{ pl: 4 }}>
+                        <ListItemText primary={field.name} />
+                        <EditIcon
+                          sx={{ margin: 1 }}
+                          fontSize="small"
+                          onClick={() => handleFieldEdit(farm.id, field.id)}
+                          color="primary"
+                        />
+                        <DeleteIcon
+                          sx={{ margin: 1 }}
+                          fontSize="small"
+                          onClick={() => handleFieldDelete(farm.id, field.id)}
+                          color="primary"
+                        />
+                      </ListItemButton>
+                    ))}
+                    <Divider />
+                  </List>
+                </Collapse>
+              </div>
+            ))
+          )}
       </List>
-      <GenericConfirmDialog
-        open={confirmOpen}
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={handleConfirm}
-        title="Confirm Deletion"
-        content="Are you sure you want to delete this farm?"
-      />
     </Paper>
   );
 }
