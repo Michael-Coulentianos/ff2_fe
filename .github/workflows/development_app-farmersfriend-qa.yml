@@ -59,11 +59,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Azure CLI Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Clean wwwroot using Kudu
         run: |
           az webapp config appsettings set --name app-FarmersFriend-qa --resource-group <your-resource-group> --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
