@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - app-FarmersFriend-dev
+name: Build and deploy React app to Azure Web App - app-FarmersFriend-dev
 
 on:
   push:
@@ -36,7 +36,15 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: node-app-build
-          path: .
+          path: build/
+
+      - name: Upload package.json and package-lock.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-app-package
+          path: |
+            package.json
+            package-lock.json
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,7 +58,16 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: node-app-build
+          path: ./build
+
+      - name: Download package.json and package-lock.json
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app-package
           path: .
+
+      - name: Install dependencies in deployment environment
+        run: npm ci
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -58,5 +75,5 @@ jobs:
         with:
           app-name: app-FarmersFriend-dev
           slot-name: 'Production'
-          package: .
+          package: ./build
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E3D3A708C7DF4C0F8AE33E4FEB7129AD }}
