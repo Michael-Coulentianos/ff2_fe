@@ -44,10 +44,10 @@ const Activities: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
 
   useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
-  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
-  useFetchData(getActivityCategories, setActivityCategories, setIsLoading);
-  useFetchData(getActivityStatuses, setActivityStatuses, setIsLoading);
-  useFetchData(getSeasonStages, setSeasonStages, setIsLoading);
+  useFetchData(getNotes, setNotes, undefined, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getActivityCategories, setActivityCategories);
+  useFetchData(getActivityStatuses, setActivityStatuses);
+  useFetchData(getSeasonStages, setSeasonStages);
 
   const handleOpenForm = () => {
     setFormOpen(true);

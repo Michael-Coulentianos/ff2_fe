@@ -28,26 +28,14 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
-import { setAzureUserId } from "../../api-ffm-service";
 import { useGlobalState } from "../../GlobalState";
 import QuickAdd from "../atom/quickAdd";
 import { useState } from "react";
 
 export default function Header() {
   const theme = useTheme();
-  const { setActiveAccount } = useGlobalState();
   const { instance } = useMsal();
   const { selectedOrganization } = useGlobalState();
-
-  useEffect(() => {
-    if (instance) {
-      const activeAccount = instance.getActiveAccount();
-      setAzureUserId(activeAccount?.localAccountId);
-      if (activeAccount) {
-        setActiveAccount(activeAccount);
-      }
-    }
-  }, [instance, setActiveAccount]);
 
   const handleLoginRedirect = () => {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));

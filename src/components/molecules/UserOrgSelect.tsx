@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Grid,
@@ -17,23 +17,12 @@ import { Organization } from '../../models/organization.interface';
 
 const UserOrganizationComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const theme = useTheme();
 
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
 
   useFetchData(getOrganizations, setOrganizations);
-
-  useEffect(() => {
-    if (selectedOrganization) {
-      setSelectedOrg(selectedOrganization);
-    } else if (organizations.length > 0) {
-      const defaultOrg = organizations[0];
-      setSelectedOrg(defaultOrg);
-      setSelectedOrganization(defaultOrg);
-    }
-  }, [selectedOrganization, organizations, setSelectedOrganization]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -44,7 +33,6 @@ const UserOrganizationComponent: React.FC = () => {
   };
 
   const handleOrgClick = (org: Organization) => {
-    setSelectedOrg(org);
     setSelectedOrganization(org);
     handleClose();
   };
@@ -69,7 +57,7 @@ const UserOrganizationComponent: React.FC = () => {
           </Grid>
           <Grid item xs={9} sx={{ paddingLeft: 2 }}>
             <Typography variant="body1">
-              {selectedOrg ? selectedOrg.name : "Name"}
+              {selectedOrganization ? selectedOrganization.name : "Name"}
             </Typography>
             <Typography variant="caption">Organization</Typography>
           </Grid>

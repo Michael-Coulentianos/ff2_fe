@@ -8,7 +8,6 @@ import { Activity } from "./models/activity.interface";
 import { Farm } from "./models/farm.interface";
 import { Note } from "./models/note.interface";
 import { Organization } from "./models/organization.interface";
-import { Status } from "./models/status.interface";
 
 
 const api = axios.create({
@@ -36,7 +35,7 @@ export const setAzureUserId = (userId) => {
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
     const response = await api.get<ResponseApi<UserProfile>>("UserDetails");
-    console.log(response);
+
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -171,7 +170,9 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
 //Farm CRUD APIs
 export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
-    const response = await api.post<ResponseApi<Farm>>("/CreateOrganization",farm);
+    farm.azureUserId = azureUserId;
+    const response = await api.post<ResponseApi<Farm>>("/CreateFarm",farm);
+
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -201,10 +202,14 @@ export const getOrganizationFarms = async (organizationId: number): Promise<Farm
   }
 };
 
+
 export const updateFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
-    const response = await api.put<Farm>(`/UpdateFarm/${farm.farmId}`, farm);
-    return response.data;
+    farm.azureUserId = azureUserId;
+    const response = await api.put<ResponseApi<Farm>>("/UpdateFarm",farm);
+    console.log(response);
+
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to update farm: ${error.response.data}`);

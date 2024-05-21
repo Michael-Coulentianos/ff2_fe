@@ -13,7 +13,6 @@ import {
   DialogActions,
   Dialog,
   Grid,
-  Tooltip,
   TextField,
 } from "@mui/material";
 import {
@@ -21,13 +20,13 @@ import {
   ExpandMore,
   Delete as DeleteIcon,
   Add as AddIcon,
-  Visibility as ViewIcon,
   Edit as EditIcon,
   Save as SaveIcon,
   Close as CloseIcon,
+  Visibility as ViewIcon,
 } from "@mui/icons-material";
 import { useGlobalState } from "../../GlobalState";
-import { useFetchData } from "../../hooks/useFethData";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
 import { getOrganizationFarms, deleteFarm, updateFarm, createFarm } from "../../api-ffm-service";
 import { getUnlinkedFields } from "../../api-gs-service";
 import { Farm } from "../../models/farm.interface";
@@ -66,7 +65,7 @@ export default function FarmFieldManagement() {
 
   const navigate = useNavigate();
 
-  useFetchData(getOrganizationFarms, setFarms);
+  useFetchData(getOrganizationFarms, setFarms, undefined, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [activeAccount?.localAccountId ?? '']);
 
   const toggleFarm = (farmId: number) => {
@@ -131,24 +130,23 @@ export default function FarmFieldManagement() {
     try {
       if (currentFarm) {
         const updateData = {
-          farmsarmId: currentFarm.farmId,
+          farmId: currentFarm.farmId,
           name: formData.farmName,
           partyId: selectedOrganization?.partyId,
         };
         await updateFarm(updateData);
-        setFarms(farms.map(farm => farm.farmId === currentFarm.farmId ? { ...farm, farm: formData.farmName } : farm));
       } else {
         const createData = {
           name: formData.farmName,
-          PartyId: selectedOrganization?.partyId,
+          partyId: selectedOrganization?.partyId,
         };
-        const newFarm = await createFarm(createData);
-        setFarms([...farms, newFarm]);
+        await createFarm(createData);
       }
     } catch (error) {
       console.error("Error submitting farm:", error);
     }
 
+    fetchData(getOrganizationFarms, setFarms, undefined, [selectedOrganization?.organizationId ?? 0]);
     handleCloseForm();
   };
 
