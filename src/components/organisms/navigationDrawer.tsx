@@ -145,7 +145,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                     <MenuItem
                     text="Farm Management"
                     icon={undefined}
-                    href="/farm"
+                    href="/"
                   />
                   <MenuItem
                     text="Fields Management"

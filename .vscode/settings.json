@@ -7,5 +7,5 @@
     "watchseverity"
   ],
   "appService.defaultWebAppToDeploy": "/subscriptions/fd68ac2f-2a12-48cd-9883-b03bf143990d/resourceGroups/rg-FarmersFriend-dev/providers/Microsoft.Web/sites/app-FarmersFriend-dev",
-  "appService.deploySubpath": "./build"
+  "appService.deploySubpath": "."
 }

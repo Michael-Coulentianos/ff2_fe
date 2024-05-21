@@ -35,7 +35,7 @@ jobs:
         run: CI=false npm run build --if-present
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip . -x "node_modules/*" "*.test.js" "tests/*" "docs/*"
+        run: zip -r release.zip . -x "**/node_modules/**"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -66,7 +66,7 @@ jobs:
 
       - name: Clean wwwroot using Kudu
         run: |
-          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true
+          az webapp config appsettings set --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --settings SCM_DO_BUILD_DURING_DEPLOYMENT=false
           KUDU_USER=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingUserName' -o tsv)
           KUDU_PASS=$(az webapp deployment list-publishing-profiles --name app-FarmersFriend-qa --resource-group rg-FarmersFriend-qa --query '[0].publishingPassword' -o tsv)
           KUDU_URL=https://app-FarmersFriend-qa.scm.azurewebsites.net/api/command
@@ -79,7 +79,7 @@ jobs:
           app-name: 'app-FarmersFriend-qa'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B9100A944703400DA6F41E34DA61CB97 }}
-          package: './build'
+          package: .
 
       - name: Install Node.js modules on Azure
         run: |

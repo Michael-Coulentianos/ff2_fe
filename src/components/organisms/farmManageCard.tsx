@@ -203,7 +203,7 @@ export default function FarmFieldManagement() {
               </Collapse>
             </div>
           ))}
-        {unlinkedFields.length > 0 && (
+        {unlinkedFields?.length > 0 && (
           <div>
             <ListItemButton onClick={toggleUnlinkedFields}>
               <ListItemText primary="Unlinked Fields" />
