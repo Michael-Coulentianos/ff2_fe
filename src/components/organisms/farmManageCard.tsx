@@ -28,7 +28,7 @@ import {
 } from "@mui/icons-material";
 import { useGlobalState } from "../../GlobalState";
 import { useFetchData } from "../../hooks/useFethData";
-import { getOrganizationFarms } from "../../api-ffm-service";
+import { getOrganizationFarms, deleteFarm, updateFarm, createFarm } from "../../api-ffm-service";
 import { getUnlinkedFields } from "../../api-gs-service";
 import { Farm } from "../../models/farm.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -90,16 +90,19 @@ export default function FarmFieldManagement() {
     setConfirmOpen(true);
   };
 
-  const handleConfirm = () => {
-    if (selectedFarmId !== null) {
-      console.log(`Delete Farm ${selectedFarmId}`);
-      // Implement your farm deletion logic here
-      setFarms((prevFarms) =>
-        prevFarms.filter((farm) => farm.farmId !== selectedFarmId)
-      );
-      setConfirmOpen(false);
-      setSelectedFarmId(null);
+  const handleConfirm = async () => {
+    if (selectedFarmId) {
+      try {
+        await deleteFarm(selectedFarmId);
+        setFarms(
+          farms.filter((farm) => farm.farmId !== selectedFarmId)
+        );
+      } catch (error) {
+        console.error("Failed to delete organization:", error);
+      }
     }
+
+    setConfirmOpen(false);
   };
 
   const handleFieldEdit = (farm) => {
@@ -124,18 +127,35 @@ export default function FarmFieldManagement() {
     }
   }, [currentFarm, reset]);
 
-  const handleAddFarm = (data) => {
-    if (currentFarm) {
-      console.log(`Edit farm ${currentFarm.farmId}: `, data.farmName);
-      // Implement your edit farm logic here
-    } else {
-      console.log("Add a new farm: ", data.farmName);
-      // Implement your add farm logic here
+  const onSubmit = async (formData: any) => {
+    try {
+      if (currentFarm) {
+        const updateData = {
+          farmsarmId: currentFarm.farmId,
+          name: formData.farmName,
+          partyId: selectedOrganization?.partyId,
+        };
+        await updateFarm(updateData);
+        setFarms(farms.map(farm => farm.farmId === currentFarm.farmId ? { ...farm, farm: formData.farmName } : farm));
+      } else {
+        const createData = {
+          name: formData.farmName,
+          PartyId: selectedOrganization?.partyId,
+        };
+        const newFarm = await createFarm(createData);
+        setFarms([...farms, newFarm]);
+      }
+    } catch (error) {
+      console.error("Error submitting farm:", error);
     }
+
+    handleCloseForm();
+  };
+
+  const handleCloseForm = () => {
     setDialogOpen(false);
     setCurrentFarm(null);
   };
-
 
   return (
     <Paper
@@ -259,7 +279,7 @@ export default function FarmFieldManagement() {
         >
           <CloseIcon />
         </IconButton>
-        <form onSubmit={handleSubmit(handleAddFarm)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent dividers>
             <Grid container spacing={2} sx={{ padding: 2 }}>
               <Grid item xs={12}>

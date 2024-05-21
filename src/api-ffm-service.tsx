@@ -201,7 +201,7 @@ export const getOrganizationFarms = async (organizationId: number): Promise<Farm
   }
 };
 
-export const updateFarm = async (farm: Farm): Promise<Farm> => {
+export const updateFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
     const response = await api.put<Farm>(`/UpdateFarm/${farm.farmId}`, farm);
     return response.data;
@@ -216,13 +216,28 @@ export const updateFarm = async (farm: Farm): Promise<Farm> => {
 
 export const deleteFarm = async (farmId: number): Promise<void> => {
   try {
-    const response = await api.delete<void>(`/DeleteFarm/${farmId}`);
-    return response.data; 
+    const response = await api.delete(`RemoveFarm`, {
+      data: {
+        FarmId: farmId,
+        AzureUserId: azureUserId,
+      },
+    });
+
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`Deletion failed with message: ${response.data.message}`);
+    }
+
+    if (response.data.details) {
+      console.log('Deletion details:', response.data.details);
+    }
+
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(`Failed to delete farm: ${error.response.data}`);
+      throw new Error(`Failed to delete farm: ${error.response.data.error || error.response.data}`);
+    } else if (error.request) {
+      throw new Error('No response received during the deletion process');
     } else {
-      throw new Error('Something went wrong while deleting the farm');
+      throw new Error(`Error during the deletion process: ${error.message}`);
     }
   }
 };
