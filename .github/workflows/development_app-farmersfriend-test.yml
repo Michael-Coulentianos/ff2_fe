@@ -30,8 +30,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-			npm ci -g node-prune
-			node-prune
+	npm ci -g node-prune
 
       - name: Build the app
         run: CI=false npm run build --if-present
