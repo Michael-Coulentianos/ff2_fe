@@ -17,7 +17,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 import FormSection from "../molecules/DynamicFormSection";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { updateUserProfile, getUserProfile } from "../../api-ffm-service";
+import { updateUserProfile, getUserProfile, setAzureUserId } from "../../api-ffm-service";
+import { useGlobalState } from "../../GlobalState";
 import { UserProfile } from "../../models/userProfile.interface";
 
 const validationSchema = yup.object({
@@ -41,6 +42,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
 export const UserProfileForm = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
+  const { activeAccount } = useGlobalState();
   const [modalOpen, setModalOpen] = useState(false);
   const {
     control,
@@ -51,14 +53,17 @@ export const UserProfileForm = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  // useEffect(() => {
-  //   const fetchUserProfile = async () => {
-  //     const data = await getUserProfile();
-  //     setUserProfile(data);
-  //     reset(data);
-  //   };
-  //   fetchUserProfile();
-  // }, [reset]);
+  useEffect(() => {
+    setAzureUserId(activeAccount?.localAccountId);
+    const fetchUserProfile = async () => {
+      const data = await getUserProfile();
+      if(data){
+        setUserProfile(data);
+        reset(data);
+      }
+    };
+    fetchUserProfile();
+  }, [reset]);
 
   const handleFormSubmit = async (data) => {
     try {

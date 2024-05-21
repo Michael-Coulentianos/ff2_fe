@@ -136,15 +136,12 @@ export default function FarmFieldManagement() {
     setCurrentFarm(null);
   };
 
-  const addField = (farmId: number) => {
-    navigate('/FieldsPage', { state: { farmId } });
-  };
 
   return (
     <Paper
       elevation={3}
       className="overlay"
-      sx={{ padding: 1, maxWidth: "230px" }}
+      sx={{ padding: 1, maxWidth: "250px" }}
     >
       <List subheader={"Manage Farms"}>
         <Button

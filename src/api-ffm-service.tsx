@@ -8,6 +8,7 @@ import { Activity } from "./models/activity.interface";
 import { Farm } from "./models/farm.interface";
 import { Note } from "./models/note.interface";
 import { Organization } from "./models/organization.interface";
+import { Status } from "./models/status.interface";
 
 
 const api = axios.create({
@@ -35,7 +36,7 @@ export const setAzureUserId = (userId) => {
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
     const response = await api.get<ResponseApi<UserProfile>>("UserDetails");
-    
+    console.log(response);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -639,11 +640,13 @@ export const deleteActivity = async (activityId: number): Promise<void> => {
   }
 };
 
-//Field iFrame APIs
-export const getFieldiFrame = async (activityId: string): Promise<any[]> => {
+export const updateActivityStatus = async (activityStatus: any): Promise<any[]> => {
   try {
-      const response = await api.post<ResponseApi<any>>("ActivityStatuses");
+      activityStatus.azureUserId = azureUserId;
+      console.log(activityStatus);
 
+      const response = await api.post<ResponseApi<any>>("CreateActivityStatus", activityStatus);
+      console.log(response);
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
       }

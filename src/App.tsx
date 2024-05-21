@@ -68,7 +68,7 @@ const App = ({ instance }) => {
             <Main open={open} sx={{ minHeight: '86vh', marginTop: 2, padding: '10px' }}>
               <Routing />
             </Main>
-            <Footer open={open} />
+            {/* <Footer open={open} /> */}
           </Router>
         </AuthenticatedTemplate>
       </MsalProvider>

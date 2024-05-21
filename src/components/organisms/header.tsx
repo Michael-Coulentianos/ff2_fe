@@ -35,8 +35,8 @@ export default function Header() {
   useEffect(() => {
     if (instance) {
       const activeAccount = instance.getActiveAccount();
+      setAzureUserId(activeAccount?.localAccountId);
       if (activeAccount) {
-        setAzureUserId(activeAccount.localAccountId);
         setActiveAccount(activeAccount);
       }
     }
