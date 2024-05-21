@@ -9,6 +9,8 @@ const api = axios.create({
   },
 });
 
+const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
+
 // FARM APIS
 export const getField = async (cropperRef: string): Promise<any> => {
   try {
@@ -110,7 +112,6 @@ export const getFieldsMetaData = async (partyId: string): Promise<any> => {
 // FARM LINK APIS
 export const getLinkedFields = async (farmId: string): Promise<any> => {
   try {
-    const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
     const response = await api.get<any>("farm/fields/linked", {
       params: { farmId, code },
     });
@@ -127,7 +128,6 @@ export const getLinkedFields = async (farmId: string): Promise<any> => {
 
 export const getUnlinkedFields = async (partyId: string): Promise<any> => {
   try {
-    const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
     const response = await api.get<any>("farm/fields/unlinked", {
       params: { partyId, code },
     });

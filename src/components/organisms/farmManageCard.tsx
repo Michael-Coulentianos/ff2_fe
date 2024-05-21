@@ -83,8 +83,8 @@ export default function FarmFieldManagement() {
     }
   };
 
-  const handleNavigation = (id, page) => {
-    navigate(page, { state: { id } });
+  const handleNavigation = (fieldData, page) => {
+    navigate(page, { state: { fieldData } });
   };
 
   const toggleUnlinkedFields = () => {
@@ -221,7 +221,7 @@ export default function FarmFieldManagement() {
                       <IconButton
                         edge="end"
                         aria-label="view"
-                        onClick={() => handleNavigation(field.cropperRef, "/fields")}
+                        onClick={() => handleNavigation(field, "/fields")}
                         color="primary"
                       >
                         <ViewIcon />
@@ -256,7 +256,7 @@ export default function FarmFieldManagement() {
                     <IconButton
                       edge="end"
                       aria-label="view"
-                      onClick={() => handleNavigation(field.cropperRef, "/fields")}
+                      onClick={() => handleNavigation(field, "/fields")}
                       color="primary"
                     >
                       <ViewIcon />

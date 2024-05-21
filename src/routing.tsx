@@ -14,7 +14,6 @@ const Routing: React.FC = () => {
       <Route path="/notes" element={<Notes />} />
       <Route path="/fields" element={<FieldManagement />} />
       <Route path="/activity" element={<Activities />} />
-      {/* Add more routes here */}
     </Routes>
   );
 };

@@ -2,8 +2,12 @@ import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import FieldForm from "../organisms/FieldDetails";
 import FarmFieldManagement from "../organisms/farmManageCard";
+import { useLocation } from "react-router-dom";
 
 const FieldManagement = () => {
+  const location = useLocation();
+  const fieldData = location.state?.fieldData;
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -12,10 +16,9 @@ const FieldManagement = () => {
       </Grid>
       <Grid item xs={9}>
         <FieldMapComponent height={"485px"}></FieldMapComponent>
-        <FarmFieldManagement></FarmFieldManagement>
       </Grid>
       <Grid item xs={3}>
-        <FieldForm></FieldForm>
+        <FieldForm fieldData={fieldData}></FieldForm>
       </Grid>
     </Grid>
   );

@@ -1,5 +1,4 @@
 import {
-  Container,
   Typography,
   FormControlLabel,
   Checkbox,
@@ -7,10 +6,10 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextBox from "../atom/textBox";
 
-const FieldForm = () => {
+const FieldForm = ({ fieldData }) => {
   const [formData, setFormData] = useState({
     name: "",
     size: "",
@@ -21,6 +20,23 @@ const FieldForm = () => {
     cropHistory: "",
     notes: "",
   });
+
+  console.log(formData);
+
+  useEffect(() => {
+    if (fieldData) {
+      setFormData({
+        name: fieldData.fieldName || "",
+        size: fieldData.size || "",
+        irrigated: fieldData.irrigated || false,
+        farm: fieldData.farm || "",
+        seasonalField: fieldData.seasonalField || false,
+        activities: fieldData.activities || "",
+        cropHistory: fieldData.cropHistory || "",
+        notes: fieldData.notes || "",
+      });
+    }
+  }, [fieldData]);
 
   const handleChange = (event) => {
     const { name, value, checked } = event.target;
@@ -42,15 +58,16 @@ const FieldForm = () => {
       <Typography variant="h6">Field Details</Typography>
       <form onSubmit={handleSubmit}>
         <Box sx={{ overflow: "auto" }}>
-         
           <TextBox
             label="Field Name"
+            //name="name"
             value={formData.name}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
           />
           <TextBox
             label="Size"
+            //name="size"
             value={formData.size}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
@@ -68,6 +85,7 @@ const FieldForm = () => {
           />
           <TextBox
             label="Farm"
+            //name="farm"
             value={formData.farm}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
@@ -85,6 +103,7 @@ const FieldForm = () => {
           />
           <TextBox
             label="Activities"
+            //name="activities"
             value={formData.activities}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
@@ -93,12 +112,14 @@ const FieldForm = () => {
           />
           <TextBox
             label="Crop History"
+            //name="cropHistory"
             value={formData.cropHistory}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
           />
           <TextBox
             label="Notes"
+            //name="notes"
             value={formData.notes}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
