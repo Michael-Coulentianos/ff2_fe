@@ -9,6 +9,7 @@ import { getActivities, getActivityStatuses, updateActivityStatus } from "../../
 import { useGlobalState } from '../../../GlobalState';
 import { useFetchData } from '../../../hooks/useFethData';
 import "./overview.css";
+import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
 
 registerLicense("Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw==");
@@ -26,6 +27,7 @@ interface Task {
   RankId: number;
   Color: string;
   ClassName: string;
+  activity: any;
 }
 
 const KanbanBoard = () => {
@@ -33,6 +35,8 @@ const KanbanBoard = () => {
   const [activities, setActivities] = useState<any[]>([]);
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const { selectedOrganization, activeAccount } = useGlobalState();
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useFetchData(getActivities, setActivities, undefined, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getActivityStatuses, setActivityStatuses);
@@ -52,6 +56,7 @@ const KanbanBoard = () => {
         RankId: activity.activityStatusId,
         Color: "#02897B",
         ClassName: "e-task, e-normal, e-assignee",
+        activity: activity // Include the associated activity data
       }));
       setTasks(transformedData);
     }
@@ -60,14 +65,11 @@ const KanbanBoard = () => {
   const handleDragStop = async (args) => {
     const { data, event } = args;
     const movedTask = data[0];
-
-    console.log('Moved Task:', movedTask);
-    console.log('args:', args);
-
     const dropKeyField = event.target.closest('.e-column')?.getAttribute('data-key');
 
-    console.log('Dropped into Column:', dropKeyField);
-    console.log('Dropped into Column:', event);
+    console.log('Task dragged to column:', dropKeyField);
+    console.log('Moved Task:', data);
+    console.log('args:', args);
 
     const newStatusObj = activityStatuses.find(status => status.value === dropKeyField);
 
@@ -92,6 +94,22 @@ const KanbanBoard = () => {
     }
   };
 
+  const handleCardClick = (args) => {
+    setSelectedTask(args.data);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedTask(null);
+  };
+
+  const handleFormSubmit = (data) => {
+    console.log("Form Submitted:", data);
+    // Update the task in the state or make an API call to save the changes
+    closeModal();
+  };
+
   return (
     <>
       <div className="kanban-control-section">
@@ -103,14 +121,21 @@ const KanbanBoard = () => {
               dataSource={tasks}
               cardSettings={{
                 contentField: "Summary",
-                headerField: "Id",
+                headerField: "Title",
                 tagsField: "Tags",
                 grabberField: "Color",
                 footerCssField: "ClassName",
               }}
               dragStop={handleDragStop}
+              cardClick={handleCardClick}
             >
               <ColumnsDirective>
+                <ColumnDirective headerText="Not Done" keyField="Not Done" />
+                <ColumnDirective headerText="To Do" keyField="To Do" />
+                <ColumnDirective headerText="Done" keyField="Done" />
+                <ColumnDirective headerText="Won't Do" keyField="Won't Do" />
+              </ColumnsDirective>
+              {/* <ColumnsDirective>
                 {activityStatuses.map((status) => (
                   <ColumnDirective
                     key={status.key}
@@ -118,11 +143,24 @@ const KanbanBoard = () => {
                     keyField={status.value}
                   />
                 ))}
-              </ColumnsDirective>
+              </ColumnsDirective> */}
             </KanbanComponent>
           </div>
         </div>
       </div>
+
+      {showModal && selectedTask && (
+        <ActivityDialog
+          isOpen={showModal}
+          onClose={closeModal}
+          onSubmit={handleFormSubmit}
+          activityCategory={activityStatuses}
+          activityStatus={activityStatuses}
+          seasonStages={[]} // Pass your season stages data here
+          notes={[]} // Pass your notes data here
+          formData={selectedTask.activity} // Pass the associated activity data
+        />
+      )}
     </>
   );
 };

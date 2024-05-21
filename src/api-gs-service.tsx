@@ -108,10 +108,11 @@ export const getFieldsMetaData = async (partyId: string): Promise<any> => {
 };
 
 // FARM LINK APIS
-export const getLinkedField = async (farmId: string): Promise<any> => {
+export const getLinkedFields = async (farmId: string): Promise<any> => {
   try {
+    const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
     const response = await api.get<any>("farm/fields/linked", {
-      params: { farmId },
+      params: { farmId, code },
     });
     return response.data;
   } catch (error: any) {

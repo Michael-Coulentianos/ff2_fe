@@ -28,7 +28,7 @@ import {
 import { useGlobalState } from "../../GlobalState";
 import { fetchData, useFetchData } from "../../hooks/useFethData";
 import { getOrganizationFarms, deleteFarm, updateFarm, createFarm } from "../../api-ffm-service";
-import { getUnlinkedFields } from "../../api-gs-service";
+import { getUnlinkedFields, getLinkedFields } from "../../api-gs-service";
 import { Farm } from "../../models/farm.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { useNavigate } from "react-router-dom";
@@ -53,9 +53,8 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 export default function FarmFieldManagement() {
   const [farms, setFarms] = useState<Farm[]>([]);
   const [unlinkedFields, setUnlinkedFields] = useState<any[]>([]);
-  const [expandedFarms, setExpandedFarms] = useState<{
-    [key: number]: boolean;
-  }>({});
+  const [linkedFields, setLinkedFields] = useState<{ [key: number]: any[] }>({});
+  const [expandedFarms, setExpandedFarms] = useState<{ [key: number]: boolean }>({});
   const [expandedUnlinkedFields, setExpandedUnlinkedFields] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
@@ -68,11 +67,20 @@ export default function FarmFieldManagement() {
   useFetchData(getOrganizationFarms, setFarms, undefined, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [activeAccount?.localAccountId ?? '']);
 
-  const toggleFarm = (farmId: number) => {
+  const toggleFarm = (farmId: number, farmIdentifier: string) => {
     setExpandedFarms((prevState) => ({
       ...prevState,
       [farmId]: !prevState[farmId],
     }));
+
+    if (!expandedFarms[farmId]) {
+      fetchData(getLinkedFields, (data) => {
+        setLinkedFields((prevState) => ({
+          ...prevState,
+          [farmId]: data,
+        }));
+      }, undefined, [farmIdentifier]);
+    }
   };
 
   const handleNavigation = (id, page) => {
@@ -178,7 +186,7 @@ export default function FarmFieldManagement() {
           Array.isArray(farms) &&
           farms.map((farm) => (
             <div key={farm.farmId}>
-              <ListItemButton onClick={() => toggleFarm(farm.farmId)}>
+              <ListItemButton onClick={() => toggleFarm(farm.farmId, farm.farmIdentifier)}>
                 <ListItemText primary={farm.farm} />
                 {expandedFarms[farm.farmId] ? <ExpandLess /> : <ExpandMore />}
                 <IconButton
@@ -207,6 +215,20 @@ export default function FarmFieldManagement() {
                 unmountOnExit
               >
                 <List component="div" disablePadding>
+                  {linkedFields[farm.farmId]?.map((field, index) => (
+                    <ListItemButton key={index}>
+                      <ListItemText primary={field.fieldName} />
+                      <IconButton
+                        edge="end"
+                        aria-label="view"
+                        onClick={() => handleNavigation(field.cropperRef, "/fields")}
+                        color="primary"
+                      >
+                        <ViewIcon />
+                      </IconButton>
+                    </ListItemButton>
+                  ))}
+                  <Divider />
                   <Button
                     variant="outlined"
                     size="small"
@@ -216,7 +238,6 @@ export default function FarmFieldManagement() {
                   >
                     Add Field
                   </Button>
-                  <Divider />
                 </List>
               </Collapse>
             </div>
