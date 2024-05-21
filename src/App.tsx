@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import "./App.css";
 import {
@@ -14,9 +14,6 @@ import Header from "./components/organisms/header";
 import Routing from "./routing";
 import LogoutPage from "./components/pages/loggedOut";
 import NavigationDrawer from "./components/organisms/navigationDrawer";
-import { getOrganizations } from "./api-ffm-service";
-import { Organization } from "./models/organization.interface";
-import { useFetchData } from "./hooks/useFethData";
 import { useGlobalState } from "./GlobalState";
 import StepperForm from "./components/organisms/stepperForm";
 
@@ -78,13 +75,13 @@ const App = ({ instance }) => {
               open={selectedOrganization ? open : false}
               sx={{
                 minHeight: "87vh",
-                marginTop: selectedOrganization ? 3 : 6,
+                marginTop: selectedOrganization ? 5 : 6,
                 padding: "10px",
               }}
             >
               {selectedOrganization ? <Routing /> : <StepperForm></StepperForm>}
             </Main>
-            {/* <Footer open={open} /> */}
+            {selectedOrganization && <Footer open={open} />}
           </Router>
         </AuthenticatedTemplate>
       </MsalProvider>
