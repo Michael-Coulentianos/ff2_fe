@@ -85,6 +85,7 @@ const MyMapComponent: React.FC<{
           };
           mapRef.current?.panTo(newLocation);
           setSelectedPosition(newLocation);
+          setInputValue(address); // Update input value
           onLocationSelect(newLocation);
         }
       });
@@ -101,6 +102,17 @@ const MyMapComponent: React.FC<{
         setSelectedPosition(location);
         onLocationSelect(location);
         console.log("Map clicked at:", location);  // Logging the location
+
+        // Reverse geocode to get the address
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location }, (results, status) => {
+          if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+            const address = results[0].formatted_address;
+            setInputValue(address); // Update input value with the clicked location address
+          } else {
+            console.error("Geocode failed:", status);
+          }
+        });
       }
     },
     [onLocationSelect]
