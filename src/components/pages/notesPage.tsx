@@ -8,26 +8,16 @@ import {
   createNote,
   updateNote,
   getNoteTypes,
+  setAzureUserId,
 } from "../../api-ffm-service";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import moment from "moment";
 import DynamicChip from "../atom/dynamicChip";
 import FileDisplay from "../organisms/fileDisplay";
-import { useFetchData, fetchData } from '../../hooks/useFethData';
+import { useFetchData, fetchData } from "../../hooks/useFethData";
 import Loading from "./loading";
-import { useGlobalState } from '../../GlobalState';
-
-interface DataItem {
-  id: string;
-  [key: string]: any;
-}
-
-interface ColumnConfig {
-  label: string;
-  dataKey: keyof DataItem;
-  renderCell: (item: DataItem) => React.ReactNode;
-}
+import { useGlobalState } from "../../GlobalState";
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -36,8 +26,8 @@ const Notes: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { selectedOrganization } = useGlobalState();
-  
+  const { selectedOrganization, activeAccount } = useGlobalState();
+
   useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
 
@@ -68,6 +58,8 @@ const Notes: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
+    console.log(formData);
+    formData.azureUserId = activeAccount.localAccountId;
     formData.partyId = selectedOrganization?.partyId;
     formData.noteTypeId = noteTypes.find(
       (nt) => nt.name === formData.noteType
@@ -75,7 +67,6 @@ const Notes: React.FC = () => {
 
     const currentDate = new Date();
 
-    // Extract individual components of the date
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, "0");
     const day = String(currentDate.getDate()).padStart(2, "0");
@@ -84,7 +75,6 @@ const Notes: React.FC = () => {
     const seconds = String(currentDate.getSeconds()).padStart(2, "0");
     const milliseconds = String(currentDate.getMilliseconds()).padStart(7, "0");
 
-    // Construct the formatted date string
     const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 
     formData.createdDate = formattedDate;
@@ -123,7 +113,7 @@ const Notes: React.FC = () => {
     if (selectedNote) {
       try {
         formData.property = JSON.stringify(properties);
-        const response = await updateNote(formData);
+        await updateNote(formData);
         fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
       } catch (error) {
         console.error("Error updating note:", error);
@@ -131,9 +121,10 @@ const Notes: React.FC = () => {
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        await createNote(formData);
+        const response = await createNote(formData);
+        console.log(response);
         fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
-
+        console.log(notes);
       } catch (error) {
         console.error("Error creating note:", error);
       }
@@ -157,7 +148,7 @@ const Notes: React.FC = () => {
     }
   };
 
-  const myColumns: ColumnConfig[] = [
+  const myColumns = [
     {
       label: "Owner",
       dataKey: "owner",
@@ -250,15 +241,15 @@ const Notes: React.FC = () => {
                 >
                   Add Note
                 </Button>
-                <NotesDialog
+              </Paper>
+            )}
+            <NotesDialog
                   isOpen={formOpen}
                   onClose={handleCloseForm}
                   onSubmit={handleSubmit}
                   formData={selectedNote}
                   noteTypes={noteTypes}
                 />
-              </Paper>
-            )}
           </Grid>
 
           {notes.length > 0 && (
@@ -271,13 +262,6 @@ const Notes: React.FC = () => {
                 >
                   Add Note
                 </Button>
-                <NotesDialog
-                  isOpen={formOpen}
-                  onClose={handleCloseForm}
-                  onSubmit={handleSubmit}
-                  formData={selectedNote}
-                  noteTypes={noteTypes}
-                />
               </Grid>
               <Grid item xs={12}>
                 <DynamicTable

@@ -6,9 +6,7 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
-import Loading from "../pages/loading";
 import { CircularProgress } from "@mui/material";
-import TextBox from "../atom/textBox";
 
 interface Location {
   lat: number;
@@ -56,12 +54,12 @@ const MyMapComponent: React.FC<{
 
   const handleInputChange = (event, newValue) => {
     setInputValue(newValue);
-    if (!autocompleteService.current || event.target.value === "") {
+    if (!autocompleteService.current || newValue === "") {
       setSuggestions([]);
       return;
     }
     autocompleteService.current.getPlacePredictions(
-      { input: event.target.value },
+      { input: newValue },
       (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
           setSuggestions(results);
@@ -74,7 +72,7 @@ const MyMapComponent: React.FC<{
 
   const handleSuggestionSelected = (event, value) => {
     if (value) {
-      setSelectedSuggestion(value.description);
+      setSelectedSuggestion(value);
       const address = value.description;
       const geocoder = new google.maps.Geocoder();
 
@@ -102,19 +100,7 @@ const MyMapComponent: React.FC<{
         };
         setSelectedPosition(location);
         onLocationSelect(location);
-        ////convert location to string/adddress
-        // const geocoder = new google.maps.Geocoder();
-        //geocoder.geocode({ location }, (results, status) => {
-        //   if (
-        //     status === google.maps.GeocoderStatus.OK &&
-        //     results &&
-        //     results[0]
-        //   ) {
-        //     const formattedAddress = results[0].formatted_address;
-        //   } else {
-        //     console.error("Geocode failed:", status);
-        //   }
-        // });
+        console.log("Map clicked at:", location);  // Logging the location
       }
     },
     [onLocationSelect]
@@ -146,7 +132,6 @@ const MyMapComponent: React.FC<{
           mapRef.current = map;
         }}
       >
-        {currentPosition && <Marker position={currentPosition} />}
         {selectedPosition && <Marker position={selectedPosition} />}
       </GoogleMap>
     </div>

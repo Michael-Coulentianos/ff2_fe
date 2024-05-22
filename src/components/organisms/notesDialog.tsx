@@ -60,6 +60,7 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
 
   const onSubmit2 = (data) => {
     data.attachment = file;
+    console.log("Form data submitted in NotesDialog:", data);
     onSubmit(data);
   };
 

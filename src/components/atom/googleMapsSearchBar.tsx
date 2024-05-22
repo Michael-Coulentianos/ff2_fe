@@ -25,6 +25,8 @@ const GoogleMapsSearchBar: React.FC<SearchBarProps> = ({
       onInputChange={handleInputChange}
       options={suggestions}
       getOptionLabel={(option) => option.description}
+      freeSolo
+      disablePortal
       renderInput={(params) => (
         <TextField
           {...params}
@@ -33,6 +35,11 @@ const GoogleMapsSearchBar: React.FC<SearchBarProps> = ({
           size="small"
           margin="dense"
         />
+      )}
+      renderOption={(props, option) => (
+        <li {...props}>
+          {option.description}
+        </li>
       )}
     />
   );

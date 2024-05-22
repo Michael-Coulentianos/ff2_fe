@@ -32,7 +32,7 @@ const validationSchema = yup.object({
   addressLine2: yup.string().optional(),
   city: yup.string().optional(),
   code: yup.string().optional(),
-  sameAddress: yup.boolean().optional(),
+  sameAddress: yup.boolean().default(true)
 });
 
 const OrganizationDialog = ({
@@ -50,7 +50,9 @@ const OrganizationDialog = ({
     watch,
   } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: {},
+    defaultValues: {
+      sameAddress: true
+    },
   });
 
   const checkboxValue = watch("sameAddress");
