@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useRef } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -6,15 +6,16 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import WelcomeCard from "../molecules/welcome";
-import { Container, Grid, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import theme from "../../theme";
+import { createFarm, createOrganization, getLegalEntities } from "../../api-ffm-service";
+import { useGlobalState } from "../../GlobalState";
 import { useNavigate } from "react-router-dom";
-import FarmManagement from "../pages/FarmPage";
-import { createOrganization, getLegalEntities } from "../../api-ffm-service";
 import { useState } from "react";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import { useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
+import OnBoardingFarmAndField from "./onBoardingFarmAndField";
 
 const steps = ["Welcome", "Add Organisation", "Add Farm & Field"];
 
@@ -30,12 +31,21 @@ const stepCaption = [
 export default function StepperForm() {
   const [activeStep, setActiveStep] = useState(0);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
-  useFetchData(getLegalEntities, setLegalEntities);
-
+  const { selectedOrganization } = useGlobalState();
   const navigate = useNavigate();
 
+  useFetchData(getLegalEntities, setLegalEntities);
+  const orgFormRef = useRef<{ submitForm: () => void }>(null);
+  const farmFormRef = useRef<{ submitForm: () => void }>(null);
+
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === 1) {
+      orgFormRef.current?.submitForm();
+    } else if (activeStep === steps.length - 1) {
+      farmFormRef.current?.submitForm();
+    } else {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
@@ -46,54 +56,69 @@ export default function StepperForm() {
     navigate("/");
   };
 
-  const handleSubmit = async (formData: any) => {
-    const org: any = {
-      name: formData.name,
-      vatNumber: formData.vatNumber,
-      legalEntityTypeId: formData.legalEntityTypeId,
-      registrationNumber: formData.registrationNumber,
-      contactDetail: [{
-        fullName: formData.fullName,
-        contacts: [
-          { type: "Mobile", details: formData.contactNumber },
-          { type: "Email", details: formData.emailAddress },
-        ]
-      }],
-      physicalAddress: {
-        addressLine1: formData.addressLine1,
-        addressLine2: formData.addressLine2,
-        city: formData.city,
-        code: formData.code,
-      },
-      sameAddress: formData.sameAddress,
-      postalAddress: formData.sameAddress
-        ? {
+  const handleOrgSubmit = async (formData: any) => {
+    try {
+      const org = {
+        name: formData.name,
+        vatNumber: formData.vatNumber,
+        legalEntityTypeId: formData.legalEntityTypeId,
+        registrationNumber: formData.registrationNumber,
+        contactDetail: [{
+          fullName: formData.fullName,
+          contacts: [
+            { type: "Mobile", details: formData.contactNumber },
+            { type: "Email", details: formData.emailAddress },
+          ]
+        }],
+        physicalAddress: {
           addressLine1: formData.addressLine1,
           addressLine2: formData.addressLine2,
           city: formData.city,
           code: formData.code,
-        }
-        : {
-          addressLine1: formData.postalAddressLine1,
-          addressLine2: formData.postalAddressLine2,
-          city: formData.postalAddressCity,
-          code: formData.postalAddressCode,
-        }
-    };
+        },
+        sameAddress: formData.sameAddress,
+        postalAddress: formData.sameAddress
+          ? {
+            addressLine1: formData.addressLine1,
+            addressLine2: formData.addressLine2,
+            city: formData.city,
+            code: formData.code,
+          }
+          : {
+            addressLine1: formData.postalAddressLine1,
+            addressLine2: formData.postalAddressLine2,
+            city: formData.postalAddressCity,
+            code: formData.postalAddressCode,
+          }
+      };
   
-    await createOrganization(org);
+      // await createOrganization(org);
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } catch (error) {
+      console.error("Failed to create organization:", error);
+    }
   };
   
+  const handleFarmSubmit = async (formData: any) => {
+    try {
+      const createData = {
+        name: formData.farmName,
+        partyId: selectedOrganization?.partyId,
+      };
+  
+      //await createFarm(createData);
+  
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } catch (error) {
+      console.error("Failed to create farm:", error);
+    }
+  };
   
 
   const stepContent = [
     <WelcomeCard />,
-    <Container sx={{ pt: 9 }}>
-      <OnBoardingOrganisationForm onSubmit={handleSubmit} legalEntities={legalEntities} />
-    </Container>,
-    <Container sx={{ pt: 2, ml: 0 }}>
-      <FarmManagement />
-    </Container>,
+    <OnBoardingOrganisationForm ref={orgFormRef} onSubmit={handleOrgSubmit} legalEntities={legalEntities} />,
+    <OnBoardingFarmAndField ref={farmFormRef} onSubmit={handleFarmSubmit} />
   ];
 
   return (
@@ -139,10 +164,10 @@ export default function StepperForm() {
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ position: 'fixed', bottom: 0, width: '100%', display: "flex", justifyContent: "space-between", p: 2 }}>
-        <Button color="inherit" disabled={activeStep === 0} onClick={handleBack}>
+      <Box sx={{ position: 'fixed', bottom: 0, width: '100%', display: "flex", alignItems: "right", justifyContent: "right", p: 2 }}>
+        {/* <Button color="inherit" disabled={activeStep === 0} onClick={handleBack}>
           Back
-        </Button>
+        </Button> */}
         <Button onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}>
           {activeStep === steps.length - 1 ? "Finish" : "Next"}
         </Button>

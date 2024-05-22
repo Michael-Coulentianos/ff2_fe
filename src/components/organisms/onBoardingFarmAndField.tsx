@@ -1,90 +1,52 @@
-import * as React from "react";
 import Box from "@mui/material/Box";
-import { Grid, Checkbox, FormControlLabel, Button, Container, Typography } from "@mui/material";
-import SaveIcon from "@mui/icons-material/Save";
-import { useForm, Controller } from "react-hook-form";
+import { Container, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormSection from "../molecules/DynamicFormSection";
+import FieldMapComponent from "../molecules/FieldMapComponent";
+import { ForwardRefRenderFunction, forwardRef, useImperativeHandle } from "react";
 
 const validationSchema = yup.object({
-  fullName: yup.string().required("Required"),
-  contactNumber: yup.string().required("Required"),
-  emailAddress: yup.string().email().required("Required"),
-  name: yup.string().required("Required"),
-  vatNumber: yup.string().required("Required"),
-  legalEntityTypeId: yup.string().required("Required"),
-  registrationNumber: yup.string().required("Required"),
-  addressLine1: yup.string().required("Required"),
-  addressLine2: yup.string().optional(),
-  city: yup.string().required("Required"),
-  code: yup.string().required("Required"),
-  sameAddress: yup.boolean().default(true)
+  farm: yup.string().required("Required"),
 });
 
-const OnBoardingFarmAndField = ({ onSubmit, legalEntities }) => {
-  const { control, handleSubmit, formState: { errors }, watch } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: {
-      sameAddress: true
-    },
+type OnBoardingFarmAndFieldProps = {
+  onSubmit: (formData: any) => Promise<void>;
+};
+
+const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown, OnBoardingFarmAndFieldProps> = ({ onSubmit }, ref) => {
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema)
   });
 
-  const checkboxValue = watch("sameAddress");
-
-  const fieldDefinitions = {
-    organizationDetails: [
-      { id: "name", label: "Organization Name", type: "text" },
-      { id: "vatNumber", label: "VAT Number", type: "text" },
-      { id: "registrationNumber", label: "Registration Number", type: "text" },
-      {
-        id: "legalEntityTypeId",
-        label: "Legal Entity Type",
-        type: "select",
-        options: legalEntities.map((entity) => ({
-          label: entity.name,
-          value: entity.legalEntityTypeId,
-        })),
-      },
-    ],
-    contact: [
-      { id: "fullName", label: "Full Name", type: "text" },
-      { id: "contactNumber", label: "Contact Number", type: "text" },
-      { id: "emailAddress", label: "Email", type: "email" },
-    ],
-    address: [
-      { id: "addressLine1", label: "Address Line 1", type: "text" },
-      { id: "addressLine2", label: "Address Line 2", type: "text" },
-      { id: "city", label: "City", type: "text" },
-      { id: "code", label: "Postal Code", type: "text" },
-    ],
-    postal: [
-      { id: "postalAddressLine1", label: "Address Line 1", type: "text" },
-      { id: "postalAddressLine2", label: "Address Line 2", type: "text" },
-      { id: "postalAddressCity", label: "City", type: "text" },
-      { id: "postalAddressCode", label: "Postal Code", type: "text" },
-    ],
-  };
+  useImperativeHandle(ref, () => ({
+    submitForm: handleSubmit(onSubmit)
+  }));
 
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Add New Farm
+        Add Farm & Field
       </Typography>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form>
         <Box sx={{ mt: 4 }}>
           <FormSection
-            title="Organisation Details"
-            fields={fieldDefinitions.organizationDetails}
+            title="Farm Details"
+            fields={[
+              { id: "farmName", label: "Farm Name", type: "text" }
+            ]}
             control={control}
             errors={errors}
             columns={2}
           />
         </Box>
-        
       </form>
+      <Box sx={{ mt: 4 }}>
+        <FieldMapComponent height={"400"}/>
+      </Box>
     </Container>
   );
 };
 
-export default OnBoardingFarmAndField;
+export default forwardRef(OnBoardingFarmAndField);
