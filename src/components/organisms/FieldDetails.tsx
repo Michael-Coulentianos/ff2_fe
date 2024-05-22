@@ -11,8 +11,18 @@ import {
 import React, { useState, useEffect } from "react";
 import TextBox from "../atom/textBox";
 import Dropdown from "../atom/dropdown";
+import { getOrganizationFarms } from "../../api-ffm-service";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
+import { Farm } from "../../models/farm.interface";
+import { useGlobalState } from "../../GlobalState";
 
 const FieldForm = ({ fieldData }) => {
+  const { selectedOrganization, activeAccount } = useGlobalState();
+  const [farms, setFarms] = useState<Farm[]>([]);
+  useFetchData(getOrganizationFarms, setFarms, undefined, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
+
   const [formData, setFormData] = useState({
     name: "",
     size: "",
@@ -23,8 +33,6 @@ const FieldForm = ({ fieldData }) => {
     cropHistory: "",
     notes: "",
   });
-
-  console.log(formData);
 
   useEffect(() => {
     if (fieldData) {
@@ -56,6 +64,12 @@ const FieldForm = ({ fieldData }) => {
     console.log("Form data submitted:", formData);
   };
 
+  // Convert farms array to dropdown items
+  const farmItems = farms.map((farm) => ({
+    value: farm.farmIdentifier,
+    label: farm.farm,
+  }));
+
   return (
     <Paper elevation={3} sx={{ marginTop: 1, padding: 1 }}>
       <Typography variant="h6">Field Details</Typography>
@@ -86,25 +100,8 @@ const FieldForm = ({ fieldData }) => {
             }
             label="Irrigated Field"
           />
-          {
-            <Dropdown
-              label="Farms"
-              items={[
-                { value: 10, label: "Option 1" },
-                { value: 20, label: "Option 2" },
-                { value: 30, label: "Option 3" },
-                { value: 40, label: "Option 4" },
-                { value: 50, label: "Option 5" },
-              ]}
-            ></Dropdown>
-            /* <TextBox
-            label="Farm"
-            //name="farm"
-            value={formData.farm}
-            onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
-          /> */
-          }
+      
+          <Dropdown label="Farm" items={farmItems}></Dropdown>
           <FormControlLabel
             control={
               <Checkbox
