@@ -1,15 +1,12 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
-import Logout from "@mui/icons-material/Logout";
+import FFElogo from "../../assets/logos/fflogoYellow.png";
+import FFMlogo from "../../assets/logos/fflogoOrange.png";
 import menuIcon from "../../assets/icons/menuIcon.svg";
 
 export default function ApplicationsMenu() {
@@ -21,7 +18,8 @@ export default function ApplicationsMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  return (<>
+  return (
+    <>
       <Box>
         <Tooltip title="Applications">
           <IconButton
@@ -64,29 +62,25 @@ export default function ApplicationsMenu() {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleClose}>
-          <Avatar /> App 1
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Avatar /> App 2
+          <img
+            src={FFElogo}
+            alt="FFElogo"
+            height={"25px"}
+            width={"25px"}
+            style={{ marginRight: "5px" }}
+          />
+          Farmers Friend Enterprise
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Add another account
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
+          <img
+            src={FFMlogo}
+            alt="FFMlogo"
+            height={"25px"}
+            width={"25px"}
+            style={{ marginRight: "5px" }}
+          />
+          Farmers Friend Mobile
         </MenuItem>
       </Menu>
     </>

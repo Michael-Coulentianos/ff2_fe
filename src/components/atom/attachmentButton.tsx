@@ -41,7 +41,7 @@ const AddAttachmentButton: React.FC<AddAttachmentButtonProps> = ({
         onBlur={onBlur}
       />
       <label htmlFor={id}>
-        <Button variant="contained" color="primary" component="span">
+        <Button variant="contained" color="primary" component="span" sx={{marginTop:"5px"}}>
           {label}
         </Button>
       </label>

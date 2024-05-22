@@ -10,7 +10,6 @@ interface FieldMapProps {
 const FieldMapComponent: React.FC<FieldMapProps> = ({ height }) => {
   const { activeAccount } = useGlobalState();
   const azureUserId = activeAccount?.localAccountId;
-
   const mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}`;
 
   return (

@@ -1,23 +1,16 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import "./App.css";
-import {
-  AuthenticatedTemplate,
-  MsalProvider,
-  UnauthenticatedTemplate,
-} from "@azure/msal-react";
+import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
 import { BrowserRouter as Router } from "react-router-dom";
 import theme from "./theme";
-import Footer from "./components/organisms/footer";
 import Header from "./components/organisms/header";
 import Routing from "./routing";
 import LogoutPage from "./components/pages/loggedOut";
 import NavigationDrawer from "./components/organisms/navigationDrawer";
 import { useGlobalState } from "./GlobalState";
 import StepperForm from "./components/organisms/stepperForm";
-import { getOrganizations, setAzureUserId } from "./api-ffm-service";
-import { Organization } from "./models/organization.interface";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -40,8 +33,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 
 const App = ({ instance }) => {
   const [open, setOpen] = useState(true);
-  const { setSelectedOrganization, activeAccount, setActiveAccount } = useGlobalState();
-  const [organizations, setOrganizations] = useState<Organization[]>([]);
+  const { selectedOrganization } = useGlobalState();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -50,23 +42,6 @@ const App = ({ instance }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  useEffect(() => {
-    if (instance) {
-      const account = instance.getActiveAccount();
-      if (account && !activeAccount) {
-        setActiveAccount(account);
-        setAzureUserId(account.localAccountId);
-
-        getOrganizations().then((orgs) => {
-          setOrganizations(orgs);
-          if (orgs.length > 0) {
-            setSelectedOrganization(orgs[0]);
-          }
-        });
-      }
-    }
-  }, [instance, activeAccount, setActiveAccount, setSelectedOrganization]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -82,19 +57,7 @@ const App = ({ instance }) => {
           </div>
         </UnauthenticatedTemplate>
         <AuthenticatedTemplate>
-        <Router>
-            <Header />
-            <NavigationDrawer
-              open={open}
-              handleDrawerOpen={handleDrawerOpen}
-              handleDrawerClose={handleDrawerClose}
-            />
-            <Main open={open} sx={{ minHeight: '86vh', marginTop: 6, padding: '10px' }}>
-              <Routing />
-            </Main>
-            <Footer open={open} />
-          </Router>
-          {/* <Router>
+          <Router>
             <Header />
             {selectedOrganization && (
               <NavigationDrawer
@@ -113,8 +76,7 @@ const App = ({ instance }) => {
             >
               {selectedOrganization ? <Routing /> : <StepperForm />}
             </Main>
-            {selectedOrganization && <Footer open={open} />}
-          </Router> */}
+          </Router>
         </AuthenticatedTemplate>
       </MsalProvider>
     </ThemeProvider>

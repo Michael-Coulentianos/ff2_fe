@@ -10,6 +10,7 @@ import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
 import DateRangePicker from "../atom/dateRange";
 import AddIcon from "@mui/icons-material/Add";
 import theme from "../../theme";
+import MyMapComponent from "./googleMaps";
 
 interface Field {
   id: string;
@@ -27,6 +28,8 @@ interface DynamicFormSectionProps {
   columns?: number;
   onFileChange?: (file: File | null) => void;
   onClick?: () => void;
+  onPositionChange?: (position: { lat: number; lng: number }) => void; 
+  onLocationSelect?
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -37,16 +40,10 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   columns = 1,
   onFileChange = () => {},
   onClick,
+  onPositionChange = () => {},
+  onLocationSelect,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
-  const [position, setPosition] = useState({ lat: 0, lng: 0 });
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
-  const handlePositionChange = (newPosition) => {
-    setPosition(newPosition);
-    console.log("New Position:", newPosition);
-  };
 
   return (
     <React.Fragment>
@@ -160,7 +157,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         label={field.label}
                         error={!!errors.location}
                         helperText={errors.location?.message}
-                        onPositionChange={handlePositionChange}
+                        onPositionChange={onPositionChange}
                       />
                     );
                   case "multiText":
@@ -190,11 +187,9 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     );
                   case "googleMapsSearch":
                     return (
-                      <GoogleMapsSearchBar
-                        onAddressSelected={(address) => {
-                          onChange(address);
-                        }}
-                      />
+                      <MyMapComponent
+                        onLocationSelect={onLocationSelect}
+                      ></MyMapComponent>
                     );
                   case "dateRange":
                     return <DateRangePicker></DateRangePicker>;

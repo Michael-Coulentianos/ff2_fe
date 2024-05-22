@@ -31,6 +31,7 @@ import { UserProfileForm } from "./profileSettings";
 import { useGlobalState } from "../../GlobalState";
 import QuickAdd from "../atom/quickAdd";
 import { useState } from "react";
+import { Logout } from "@mui/icons-material";
 
 export default function Header() {
   const theme = useTheme();
@@ -100,7 +101,7 @@ export default function Header() {
                 }}
                 onClick={handleLogoutRedirect}
               >
-                <ExitToAppIcon fontSize="small" />
+                <Logout fontSize="small" />
               </IconButton>
             </Tooltip>
             <Dialog
