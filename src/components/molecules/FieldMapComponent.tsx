@@ -5,13 +5,23 @@ import { useGlobalState } from '../../GlobalState';
 
 interface FieldMapProps {
   height: string;
+  fieldData?: any;
 }
 
-const FieldMapComponent: React.FC<FieldMapProps> = ({ height }) => {
+const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData }) => {
   const { activeAccount } = useGlobalState();
   const azureUserId = activeAccount?.localAccountId;
-  const mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}`;
+  console.log("fieldData");
+  console.log(fieldData);
+  const cropperRef = fieldData?.cropperRef;
+  let mapUrl = ""
+  if (cropperRef !== undefined){
+  mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}/${cropperRef}`;
+} else 
+{
+  mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}`;
 
+}
   return (
     <Paper elevation={2} sx={{ backgroundColor: "white", margin: 1 }}>
       <Iframe
