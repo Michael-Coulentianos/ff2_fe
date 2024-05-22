@@ -46,16 +46,18 @@ const ActivityDialog = ({
     watch,
   } = useForm<FormData>({
     defaultValues: {
-      name: "Ty testing",
-      description: "rewytryrdydry",
-      startDate: "2024-05-13",
-      endDate: "2024-05-13",
-      field: "etryeryeryerye",
-      cost: "250",
-      contractWorkCost: "2500",
-      partyId: 238,
-      activityCategoryId: undefined,
-      seasonStageId: 1,
+      activityId: formData?.activityId,
+      name: formData?.name,
+      description: formData?.description,
+      startDate: formData?.startDate,
+      endDate: formData?.endDate,
+      field: formData?.field,
+      cost: formData?.cost,
+      contractWorkCost: formData?.contractWorkCost,
+      activityCategoryId: formData?.activityCategoryId,
+      seasonStageId: formData?.seasonStageId,
+      partyId: formData?.partyId,
+      activityStatusId: formData?.activityStatusId,
     },
   });
 
@@ -67,24 +69,30 @@ const ActivityDialog = ({
     }
   }
 
-  const processProperties = (properties, parentKey = ''): Field[] => {
+  const processProperties = (properties, parentKey = ""): Field[] => {
     return properties.flatMap((prop) => {
-      if (prop.key.toLowerCase() === 'color') return [];
-      const id = (parentKey ? `${parentKey}_` : '') + prop.key.toLowerCase().replace(/\s+/g, '');
-      const result: Field[] = [{
-        id,
-        label: prop.key,
-        type: prop.type,
-        options: prop.type === 'select'
-          ? prop.value.map((option) => ({
-              label: option.Option + (option.unit ? ` (${option.unit})` : ''),
-              value: option.id,
-              id: option.id,
-              properties: option.properties || [],
-            }))
-          : undefined,
-      }];
-  
+      if (prop.key.toLowerCase() === "color") return [];
+      const id =
+        (parentKey ? `${parentKey}_` : "") +
+        prop.key.toLowerCase().replace(/\s+/g, "");
+      const result: Field[] = [
+        {
+          id,
+          label: prop.key,
+          type: prop.type,
+          options:
+            prop.type === "select"
+              ? prop.value.map((option) => ({
+                  label:
+                    option.Option + (option.unit ? ` (${option.unit})` : ""),
+                  value: option.id,
+                  id: option.id,
+                  properties: option.properties || [],
+                }))
+              : undefined,
+        },
+      ];
+
       return result;
     });
   };
@@ -125,16 +133,18 @@ const ActivityDialog = ({
       { id: "startDate", label: "Start Date", type: "date" },
       { id: "endDate", label: "End Date", type: "date" },
       ...(formData
-        ? [{
-            id: "activityStatusId",
-            label: "Activity Status",
-            type: "select",
-            options: activityStatus?.map((type) => ({
-              label: type.value,
-              value: type.value,
-              id: type.key,
-            })),
-          }]
+        ? [
+            {
+              id: "activityStatusId",
+              label: "Activity Status",
+              type: "select",
+              options: activityStatus?.map((type) => ({
+                label: type.value,
+                value: type.value,
+                id: type.key,
+              })),
+            },
+          ]
         : []),
       {
         id: "seasonStageId",
@@ -145,10 +155,10 @@ const ActivityDialog = ({
           value: type.key,
           id: type.key,
         })),
-      }
+      },
     ],
     generalActivityDetails0: [
-      { id: "description", label: "Description", type: "multiText" }
+      { id: "description", label: "Description", type: "multiText" },
     ],
     generalActivityDetails2: [
       { id: "field", label: "Field", type: "text" },
