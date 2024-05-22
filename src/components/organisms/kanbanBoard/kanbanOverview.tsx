@@ -19,9 +19,10 @@ import {
   getActivityCategories,
   getSeasonStages,
   createActivity,
+  updateActivity,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
-import { useFetchData } from "../../../hooks/useFethData";
+import { fetchData, useFetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
@@ -121,9 +122,18 @@ const KanbanBoard = () => {
     setSelectedTask(null);
   };
 
-  const handleFormSubmit = (data) => {
-    console.log("Form Submitted:", data);
-    // Update the task in the state or make an API call to save the changes
+  const handleFormSubmit = async (formData) => {
+    formData.partyId = selectedOrganization?.partyId;
+    console.log(formData);
+    try {
+      const ty = await updateActivity(formData);
+    console.log(ty);
+
+    } catch (error) {
+      console.error("Error updating activity:", error);
+    }
+
+    fetchData(getActivities, setActivities, undefined, [selectedOrganization?.organizationId ?? 0]);
     closeModal();
   };
   console.log(selectedTask?.activity);
@@ -169,7 +179,7 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={[]} // Pass your notes data here
+          notes={[]}
           formData={selectedTask.activity}
         />
       )}

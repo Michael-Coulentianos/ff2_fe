@@ -61,6 +61,8 @@ const ActivityDialog = ({
     },
   });
 
+  console.log(formData);
+
   const activityCategoryId = watch("activityCategoryId");
 
   function addPropertyIfNotEmpty(obj: any, key: string, value: any) {

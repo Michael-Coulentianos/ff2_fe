@@ -154,6 +154,9 @@ const MyMapComponent: React.FC<{
         }}
         onLoad={(map) => {
           mapRef.current = map;
+          if (initialLocation) {
+            map.panTo(initialLocation);
+          }
         }}
       >
         {selectedPosition && <Marker position={selectedPosition} />}

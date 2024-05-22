@@ -44,6 +44,7 @@ const Activities: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
 
   useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getNotes, setNotes, undefined, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
@@ -70,6 +71,7 @@ const Activities: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => { 
+    formData.partyId = selectedOrganization?.partyId;
     if (selectedActivity) {
       try {
         await updateActivity(formData);
@@ -84,7 +86,7 @@ const Activities: React.FC = () => {
       }
     }
 
-    fetchData(getActivities, setActivities, setIsLoading);
+    fetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
     handleCloseForm();
   };
 
