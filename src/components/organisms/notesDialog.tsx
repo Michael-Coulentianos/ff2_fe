@@ -51,7 +51,6 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
     geocoder.geocode({ location }, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
         const formattedAddress = results[0].formatted_address;
-        console.log(formattedAddress);
         setValue("location", formattedAddress);
       } else {
         console.error("Geocode failed:", status);
@@ -61,7 +60,6 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
 
   const onSubmit2 = (data) => {
     data.attachment = file;
-    console.log(data);
     onSubmit(data);
   };
 
@@ -152,7 +150,6 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
 
   useEffect(() => {
     if (isOpen && formData) {
-      console.log(formData);
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
 
       const initialPosition = formData.position || { lat: 0, lng: 0 };
