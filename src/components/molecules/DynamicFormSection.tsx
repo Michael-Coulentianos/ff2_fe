@@ -30,6 +30,8 @@ interface DynamicFormSectionProps {
   onClick?: () => void;
   onPositionChange?: (position: { lat: number; lng: number }) => void;
   onLocationSelect?: any;
+  initialLocation?: { lat: number; lng: number };
+  initialAddress?: string;
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -42,6 +44,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   onClick,
   onPositionChange = () => {},
   onLocationSelect,
+  initialLocation,
+  initialAddress,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
@@ -196,6 +200,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     return (
                       <MyMapComponent
                         onLocationSelect={onLocationSelect}
+                        initialLocation={initialLocation}
+                        initialAddress={initialAddress}
                       ></MyMapComponent>
                     );
                   case "dateRange":

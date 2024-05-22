@@ -17,17 +17,19 @@ const libraries: Libraries = ["places"];
 
 const MyMapComponent: React.FC<{
   onLocationSelect: (location: Location) => void;
-}> = ({ onLocationSelect }) => {
+  initialLocation?: Location;
+  initialAddress?: string;
+}> = ({ onLocationSelect, initialLocation, initialAddress }) => {
   const [currentPosition, setCurrentPosition] = useState<Location | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<Location | null>(
-    null
+    initialLocation || null
   );
+  const [inputValue, setInputValue] = useState(initialAddress || "");
+
   const mapRef = useRef<google.maps.Map | null>(null);
   const [suggestions, setSuggestions] = useState<
     google.maps.places.AutocompletePrediction[]
   >([]);
-
-  const [inputValue, setInputValue] = useState("");
 
   const autocompleteService =
     useRef<google.maps.places.AutocompleteService | null>(null);
@@ -51,6 +53,16 @@ const MyMapComponent: React.FC<{
       });
     });
   }, [isLoaded]);
+
+  useEffect(() => {
+    if (initialLocation) {
+      mapRef.current?.panTo(initialLocation);
+      setSelectedPosition(initialLocation);
+    }
+    if (initialAddress) {
+      setInputValue(initialAddress);
+    }
+  }, [initialLocation, initialAddress]);
 
   const handleInputChange = (event, newValue) => {
     setInputValue(newValue);
@@ -130,7 +142,7 @@ const MyMapComponent: React.FC<{
         inputValue={inputValue}
       />
       <GoogleMap
-        center={currentPosition || { lat: -30.559482, lng: 22.937506 }}
+        center={selectedPosition || currentPosition || { lat: -30.559482, lng: 22.937506 }}
         zoom={15}
         mapContainerStyle={{ height: "200px", width: "535px" }}
         onClick={onMapClick}

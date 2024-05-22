@@ -45,12 +45,15 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
     lng: 0,
   });
 
+  const [address, setAddress] = useState<string>("");
+
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
     setPosition(location);
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ location }, (results, status) => {
       if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
         const formattedAddress = results[0].formatted_address;
+        setAddress(formattedAddress);
         setValue("location", formattedAddress);
       } else {
         console.error("Geocode failed:", status);
@@ -155,6 +158,9 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
 
       const initialPosition = formData.position || { lat: 0, lng: 0 };
       setPosition(initialPosition);
+
+      const initialAddress = formData.location || "";
+      setAddress(initialAddress);
 
       const initialValues = {
         ...formData,
@@ -336,6 +342,8 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
             errors={errors}
             columns={1}
             onLocationSelect={handleLocationSelect}
+            initialLocation={position}
+            initialAddress={address}
           />
 
           <FormSection
