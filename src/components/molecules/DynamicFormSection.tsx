@@ -10,6 +10,7 @@ import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
 import DateRangePicker from "../atom/dateRange";
 import AddIcon from "@mui/icons-material/Add";
 import theme from "../../theme";
+import MyMapComponent from "./googleMaps";
 
 interface Field {
   id: string;
@@ -27,7 +28,8 @@ interface DynamicFormSectionProps {
   columns?: number;
   onFileChange?: (file: File | null) => void;
   onClick?: () => void;
-  onPositionChange?: (position: { lat: number; lng: number }) => void; // Add this line
+  onPositionChange?: (position: { lat: number; lng: number }) => void; 
+  onLocationSelect?
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -38,7 +40,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   columns = 1,
   onFileChange = () => {},
   onClick,
-  onPositionChange = () => {}
+  onPositionChange = () => {},
+  onLocationSelect,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
@@ -184,11 +187,9 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     );
                   case "googleMapsSearch":
                     return (
-                      <GoogleMapsSearchBar
-                        onAddressSelected={(address) => {
-                          onChange(address);
-                        }}
-                      />
+                      <MyMapComponent
+                        onLocationSelect={onLocationSelect}
+                      ></MyMapComponent>
                     );
                   case "dateRange":
                     return <DateRangePicker></DateRangePicker>;

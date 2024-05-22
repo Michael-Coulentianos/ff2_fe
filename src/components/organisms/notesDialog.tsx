@@ -8,16 +8,16 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 
 const validationSchema = yup.object({
-  title: yup.string().optional(), 
+  title: yup.string().optional(),
   noteType: yup.string().optional(),
   partyId: yup.number().optional(),
   description: yup.string().required(),
-  createdDate: yup.string().optional(), 
+  createdDate: yup.string().optional(),
   attachment: yup.string().optional(),
-  location: yup.string().optional(), 
-  severityType: yup.string().optional(), 
-  severitySubType: yup.string().optional(), 
-  cropType: yup.string().optional(), 
+  location: yup.string().optional(),
+  severityType: yup.string().optional(),
+  severitySubType: yup.string().optional(),
+  cropType: yup.string().optional(),
   yieldEstimateHeads: yup.string().optional(),
   yieldEstimateRowWidth: yup.string().optional(),
   yieldEstimateGrams: yup.string().optional(),
@@ -26,14 +26,7 @@ const validationSchema = yup.object({
   severityScale: yup.string().optional(),
 });
 
-const NotesDialog = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  noteTypes,
-  formData,
-}) => {
-
+const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
   const {
     control,
     handleSubmit,
@@ -44,11 +37,29 @@ const NotesDialog = ({
   } = useForm({
     resolver: yupResolver(validationSchema),
   });
-  
-  const [file, setFile] = useState<File | null>(null);
-  const [position, setPosition] = useState<{ lat: number; lng: number }>({ lat: 0, lng: 0 });
 
-  const onSubmit2 = data => {
+  const [file, setFile] = useState<File | null>(null);
+
+  const [position, setPosition] = useState<{ lat: number; lng: number }>({
+    lat: 0,
+    lng: 0,
+  });
+
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setPosition(location);
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location }, (results, status) => {
+      if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+        const formattedAddress = results[0].formatted_address;
+        console.log(formattedAddress);
+        setValue("location", formattedAddress);
+      } else {
+        console.error("Geocode failed:", status);
+      }
+    });
+  };
+
+  const onSubmit2 = (data) => {
     data.attachment = file;
     console.log(data);
     onSubmit(data);
@@ -128,18 +139,22 @@ const NotesDialog = ({
         return [];
     }
   }
-  
+
   const formatDate = (dateStr) => {
     if (!dateStr) return ""; // Return empty string if dateStr is undefined, null, or empty
     const date = new Date(dateStr);
-    return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
-  }
-  
+    return new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  };
+
   useEffect(() => {
     if (isOpen && formData) {
       console.log(formData);
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
-      
+
       const initialPosition = formData.position || { lat: 0, lng: 0 };
       setPosition(initialPosition);
 
@@ -158,8 +173,9 @@ const NotesDialog = ({
         createdDate: formatDate(formData.createdDate),
       };
       reset(initialValues);
-    }else{
-      reset({title: "",
+    } else {
+      reset({
+        title: "",
         description: "",
         createdDate: "",
         attachment: "",
@@ -176,7 +192,6 @@ const NotesDialog = ({
         severityScale: "",
       });
     }
-    
   }, [formData, isOpen, reset, noteTypes, setValue]);
 
   const fieldDefinitions = {
@@ -190,11 +205,11 @@ const NotesDialog = ({
           label: type.name,
           value: type.name,
         })),
-      }
+      },
     ],
     generalNoteDetails0: [
       { id: "description", label: "Description", type: "multiText" },
-      { id: "location", label: "location", type: "map" },
+      { id: "googleMapsSearch", label: "Search Map", type: "googleMapsSearch" },
     ],
     generalNoteDetails3: [
       { id: "attachment1", label: "Add file", type: "attachment" },
@@ -208,7 +223,11 @@ const NotesDialog = ({
           { id: "Damage", label: "Damage" },
           { id: "Infection", label: "Infection" },
           { id: "Water", label: "Water" },
-        ].map((type) => ({ label: type.label, value: type.label, id: type.id })),
+        ].map((type) => ({
+          label: type.label,
+          value: type.label,
+          id: type.id,
+        })),
       },
       {
         id: "severitySubType",
@@ -217,7 +236,7 @@ const NotesDialog = ({
         options: options.map((type) => ({
           label: type.label,
           value: type.label,
-          id: type.id
+          id: type.id,
         })),
       },
       { id: "severityScale", label: "Severity Scale (%)", type: "radioGroup" },
@@ -261,7 +280,7 @@ const NotesDialog = ({
         ].map((type) => ({
           label: type.label,
           value: type.label,
-          id: type.id
+          id: type.id,
         })),
       },
       {
@@ -271,15 +290,10 @@ const NotesDialog = ({
         options: options2.map((type) => ({
           label: type.label,
           value: type.label,
-          id: type.id
+          id: type.id,
         })),
       },
     ],
-  };
-
-  const handleLocationSelect = (location: { lat: number; lng: number }) => {
-    setPosition(location);
-    setValue("location", JSON.stringify(location));
   };
 
   const formContent = (
@@ -292,7 +306,7 @@ const NotesDialog = ({
             errors={errors}
             columns={2}
           />
-          
+
           {watchNoteType === "Yield Estimate" && (
             <FormSection
               fields={fieldDefinitions.yieldEstimateNote}
@@ -323,9 +337,8 @@ const NotesDialog = ({
             control={control}
             errors={errors}
             columns={1}
+            onLocationSelect={handleLocationSelect}
           />
-
-          {/* <MyMapComponent onLocationSelect={handleLocationSelect} /> */}
 
           <FormSection
             fields={fieldDefinitions.generalNoteDetails3}
