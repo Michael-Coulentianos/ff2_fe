@@ -5,14 +5,30 @@ import {
   ColumnDirective,
 } from "@syncfusion/ej2-react-kanban";
 import { registerLicense } from "@syncfusion/ej2-base";
-import { getActivities, getActivityStatuses, updateActivityStatus } from "../../../api-ffm-service";
-import { useGlobalState } from '../../../GlobalState';
-import { useFetchData } from '../../../hooks/useFethData';
+import {
+  getActivities,
+  getActivityStatuses,
+  updateActivityStatus,
+  getNotes,
+  createNote,
+  getOrganizations,
+  getNoteTypes,
+  createOrganization,
+  updateOrganization,
+  getLegalEntities,
+  getActivityCategories,
+  getSeasonStages,
+  createActivity,
+} from "../../../api-ffm-service";
+import { useGlobalState } from "../../../GlobalState";
+import { useFetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
 
-registerLicense("Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw==");
+registerLicense(
+  "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
+);
 
 interface Task {
   Id: number;
@@ -37,13 +53,21 @@ const KanbanBoard = () => {
   const { selectedOrganization, activeAccount } = useGlobalState();
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [activityCategories, setActivityCategories] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities, undefined, [selectedOrganization?.organizationId ?? 0]);
+  const [seasonStages, setSeasonStages] = useState<any[]>([]);
+
+  useFetchData(getActivities, setActivities, undefined, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
+
   useFetchData(getActivityStatuses, setActivityStatuses);
+  useFetchData(getActivityCategories, setActivityCategories);
+  useFetchData(getSeasonStages, setSeasonStages);
 
   useEffect(() => {
     if (activities.length > 0) {
-      const transformedData = activities.map(activity => ({
+      const transformedData = activities.map((activity) => ({
         Id: activity.activityId,
         Title: activity.name,
         Status: activity.status,
@@ -56,7 +80,7 @@ const KanbanBoard = () => {
         RankId: activity.activityStatusId,
         Color: "#02897B",
         ClassName: "e-task, e-normal, e-assignee",
-        activity: activity // Include the associated activity data
+        activity: activity
       }));
       setTasks(transformedData);
     }
@@ -65,27 +89,27 @@ const KanbanBoard = () => {
   const handleDragStop = async (args) => {
     const { data } = args;
     const movedTask = data[0];
-  
-    const newStatusObj = activityStatuses.find(status => status.value === movedTask.Status);
+
+    const newStatusObj = activityStatuses.find(
+      (status) => status.value === movedTask.Status
+    );
     if (!newStatusObj) {
       console.error("Error: New Status not found");
       return;
     }
-  
+
     const statusUpdate: Status = {
       statusId: newStatusObj.key,
       activityId: movedTask.Id,
-      azureUserId: activeAccount?.azureUserId ?? ""
+      azureUserId: activeAccount?.azureUserId ?? "",
     };
-  
+
     try {
       await updateActivityStatus(statusUpdate);
     } catch (error) {
       console.error("Error updating task status:", error);
     }
   };
-  
-  
 
   const handleCardClick = (args) => {
     setSelectedTask(args.data);
@@ -102,6 +126,7 @@ const KanbanBoard = () => {
     // Update the task in the state or make an API call to save the changes
     closeModal();
   };
+  console.log(selectedTask?.activity);
 
   return (
     <>
@@ -141,11 +166,11 @@ const KanbanBoard = () => {
           isOpen={showModal}
           onClose={closeModal}
           onSubmit={handleFormSubmit}
-          activityCategory={activityStatuses}
+          activityCategory={activityCategories}
           activityStatus={activityStatuses}
-          seasonStages={[]} // Pass your season stages data here
+          seasonStages={seasonStages}
           notes={[]} // Pass your notes data here
-          formData={selectedTask.activity} // Pass the associated activity data
+          formData={selectedTask.activity}
         />
       )}
     </>
