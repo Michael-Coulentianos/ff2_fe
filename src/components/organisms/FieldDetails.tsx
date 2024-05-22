@@ -2,12 +2,15 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
+  Select,
   Button,
   Paper,
   Box,
+  MenuItem,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import TextBox from "../atom/textBox";
+import Dropdown from "../atom/dropdown";
 
 const FieldForm = ({ fieldData }) => {
   const [formData, setFormData] = useState({
@@ -83,13 +86,25 @@ const FieldForm = ({ fieldData }) => {
             }
             label="Irrigated Field"
           />
-          <TextBox
+          {
+            <Dropdown
+              label="Farms"
+              items={[
+                { value: 10, label: "Option 1" },
+                { value: 20, label: "Option 2" },
+                { value: 30, label: "Option 3" },
+                { value: 40, label: "Option 4" },
+                { value: 50, label: "Option 5" },
+              ]}
+            ></Dropdown>
+            /* <TextBox
             label="Farm"
             //name="farm"
             value={formData.farm}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
-          />
+          /> */
+          }
           <FormControlLabel
             control={
               <Checkbox
