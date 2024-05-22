@@ -6,7 +6,6 @@ import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
-import MyMapComponent from "../molecules/googleMaps";
 
 const validationSchema = yup.object({
   title: yup.string().optional(), 
@@ -195,6 +194,7 @@ const NotesDialog = ({
     ],
     generalNoteDetails0: [
       { id: "description", label: "Description", type: "multiText" },
+      { id: "location", label: "location", type: "map" },
     ],
     generalNoteDetails3: [
       { id: "attachment1", label: "Add file", type: "attachment" },

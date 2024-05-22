@@ -63,36 +63,29 @@ const KanbanBoard = () => {
   }, [activities]);
 
   const handleDragStop = async (args) => {
-    const { data, event } = args;
+    const { data } = args;
     const movedTask = data[0];
-    const dropKeyField = event.target.closest('.e-column')?.getAttribute('data-key');
-
-    console.log('Task dragged to column:', dropKeyField);
-    console.log('Moved Task:', data);
-    console.log('args:', args);
-
-    const newStatusObj = activityStatuses.find(status => status.value === dropKeyField);
-
+  
+    const newStatusObj = activityStatuses.find(status => status.value === movedTask.Status);
     if (!newStatusObj) {
       console.error("Error: New Status not found");
       return;
     }
-
+  
     const statusUpdate: Status = {
       statusId: newStatusObj.key,
       activityId: movedTask.Id,
       azureUserId: activeAccount?.azureUserId ?? ""
     };
-
-    console.log('Status Update:', statusUpdate);
-
+  
     try {
       await updateActivityStatus(statusUpdate);
-      console.log(`Task ${movedTask.Id} moved to ${dropKeyField} (Status ID: ${statusUpdate.statusId})`);
     } catch (error) {
       console.error("Error updating task status:", error);
     }
   };
+  
+  
 
   const handleCardClick = (args) => {
     setSelectedTask(args.data);
@@ -130,12 +123,6 @@ const KanbanBoard = () => {
               cardClick={handleCardClick}
             >
               <ColumnsDirective>
-                <ColumnDirective headerText="Not Done" keyField="Not Done" />
-                <ColumnDirective headerText="To Do" keyField="To Do" />
-                <ColumnDirective headerText="Done" keyField="Done" />
-                <ColumnDirective headerText="Won't Do" keyField="Won't Do" />
-              </ColumnsDirective>
-              {/* <ColumnsDirective>
                 {activityStatuses.map((status) => (
                   <ColumnDirective
                     key={status.key}
@@ -143,7 +130,7 @@ const KanbanBoard = () => {
                     keyField={status.value}
                   />
                 ))}
-              </ColumnsDirective> */}
+              </ColumnsDirective>
             </KanbanComponent>
           </div>
         </div>

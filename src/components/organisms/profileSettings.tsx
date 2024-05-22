@@ -53,17 +53,17 @@ export const UserProfileForm = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  useEffect(() => {
-    setAzureUserId(activeAccount?.localAccountId);
-    const fetchUserProfile = async () => {
-      const data = await getUserProfile();
-      if(data){
-        setUserProfile(data);
-        reset(data);
-      }
-    };
-    fetchUserProfile();
-  }, [reset]);
+  // useEffect(() => {
+  //   setAzureUserId(activeAccount?.localAccountId);
+  //   const fetchUserProfile = async () => {
+  //     const data = await getUserProfile();
+  //     if(data){
+  //       setUserProfile(data);
+  //       reset(data);
+  //     }
+  //   };
+  //   fetchUserProfile();
+  // }, [reset]);
 
   const handleFormSubmit = async (data) => {
     try {

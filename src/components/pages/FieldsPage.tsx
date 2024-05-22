@@ -1,7 +1,6 @@
 import { Divider, Grid, Paper } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import FieldForm from "../organisms/FieldDetails";
-import FarmFieldManagement from "../organisms/farmManageCard";
 import { useLocation } from "react-router-dom";
 
 const FieldManagement = () => {

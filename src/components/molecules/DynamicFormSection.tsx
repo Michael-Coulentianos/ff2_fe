@@ -27,6 +27,7 @@ interface DynamicFormSectionProps {
   columns?: number;
   onFileChange?: (file: File | null) => void;
   onClick?: () => void;
+  onPositionChange?: (position: { lat: number; lng: number }) => void; // Add this line
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -37,16 +38,9 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   columns = 1,
   onFileChange = () => {},
   onClick,
+  onPositionChange = () => {}
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
-  const [position, setPosition] = useState({ lat: 0, lng: 0 });
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
-  const handlePositionChange = (newPosition) => {
-    setPosition(newPosition);
-    console.log("New Position:", newPosition);
-  };
 
   return (
     <React.Fragment>
@@ -160,7 +154,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         label={field.label}
                         error={!!errors.location}
                         helperText={errors.location?.message}
-                        onPositionChange={handlePositionChange}
+                        onPositionChange={onPositionChange}
                       />
                     );
                   case "multiText":
