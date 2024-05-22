@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 const FieldManagement = () => {
   const location = useLocation();
   const fieldData = location.state?.fieldData;
-
   return (
     <Grid container>
       <Grid item xs={12}>

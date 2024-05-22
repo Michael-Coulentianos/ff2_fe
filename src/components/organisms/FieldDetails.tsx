@@ -2,26 +2,28 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
-  Select,
   Button,
   Paper,
   Box,
-  MenuItem,
+  SelectChangeEvent,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import TextBox from "../atom/textBox";
 import Dropdown from "../atom/dropdown";
 import { getOrganizationFarms } from "../../api-ffm-service";
-import { fetchData, useFetchData } from "../../hooks/useFethData";
+import { useFetchData } from "../../hooks/useFethData";
 import { Farm } from "../../models/farm.interface";
 import { useGlobalState } from "../../GlobalState";
+import { createFarmFieldLink } from "../../api-gs-service";
 
 const FieldForm = ({ fieldData }) => {
-  const { selectedOrganization, activeAccount } = useGlobalState();
+  const { selectedOrganization } = useGlobalState();
   const [farms, setFarms] = useState<Farm[]>([]);
   useFetchData(getOrganizationFarms, setFarms, undefined, [
     selectedOrganization?.organizationId ?? 0,
   ]);
+  console.log("fieldData");
+  console.log(fieldData);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,11 +52,22 @@ const FieldForm = ({ fieldData }) => {
   }, [fieldData]);
 
   const handleChange = (event) => {
+    console.log(event);
     const { name, value, checked } = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]:
-        name === "irrigated" || name === "seasonalField" ? checked : value,
+        name === "irrigated" || name === "seasonalField" || name === "farm"
+          ? checked
+          : value,
+    }));
+  };
+
+  const handleDropdownChange = (event: SelectChangeEvent<string | number>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
     }));
   };
 
@@ -62,6 +75,7 @@ const FieldForm = ({ fieldData }) => {
     event.preventDefault();
     // Handle form submission (e.g., send data to server)
     console.log("Form data submitted:", formData);
+    createFarmFieldLink(fieldData.cropperRef, formData.farm);
   };
 
   // Convert farms array to dropdown items
@@ -100,8 +114,15 @@ const FieldForm = ({ fieldData }) => {
             }
             label="Irrigated Field"
           />
-      
-          <Dropdown label="Farm" items={farmItems}></Dropdown>
+
+          <Dropdown
+            label="Farm"
+            name="farm"
+            value={fieldData.farmId}
+            items={farmItems}
+            onChange={handleDropdownChange}
+          ></Dropdown>
+
           <FormControlLabel
             control={
               <Checkbox

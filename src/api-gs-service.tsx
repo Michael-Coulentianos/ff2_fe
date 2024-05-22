@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: 'https://func-geospatial-dev.azurewebsites.net/api',
   headers: {
     "Content-Type": "application/json",
-    "apiKey": 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==',
+    "code": 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==',
   },
 });
 
@@ -144,8 +144,10 @@ export const getUnlinkedFields = async (partyId: string): Promise<any> => {
 
 export const createFarmFieldLink = async (cropperRef: string, farmId: string): Promise<any> => {
   try {
+    console.log(cropperRef);
+    console.log(farmId);
     const response = await api.put<any>("farm/field/link", null, {
-      params: { cropperRef, farmId },
+      params: { cropperRef, farmId, code },
     });
     return response.data;
   } catch (error: any) {

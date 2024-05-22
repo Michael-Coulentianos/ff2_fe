@@ -10,26 +10,24 @@ interface DropdownItem {
 // Define the props interface
 interface DropdownProps {
   label: string;
+  name: string;
+  value: string | number;
   items: DropdownItem[];
+  onChange: (event: SelectChangeEvent<string | number>) => void;
 }
 
-// Create the StaticDropdown component as a React Functional Component
-const Dropdown: React.FC<DropdownProps> = ({ label, items, ...props }) => {
-  const [value, setValue] = React.useState<string | number>(''); // Default to empty string for no selection
-
-  const handleChange = (event: SelectChangeEvent<string | number>) => {
-    setValue(event.target.value);
-  };
-
+// Create the Dropdown component as a React Functional Component
+const Dropdown: React.FC<DropdownProps> = ({ label, name, value, items, onChange, ...props }) => {
   return (
     <FormControl fullWidth>
-      <InputLabel id="select-label">{label}</InputLabel>
+      <InputLabel id={`${name}-select-label`}>{label}</InputLabel>
       <Select
-        labelId="select-label"
-        id="select"
+        labelId={`${name}-select-label`}
+        id={`${name}-select`}
+        name={name}
         value={value}
         label={label}
-        onChange={handleChange}
+        onChange={onChange}
         displayEmpty
         {...props}
       >
