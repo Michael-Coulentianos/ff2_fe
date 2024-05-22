@@ -19,6 +19,7 @@ interface TextBoxProps {
   select?: boolean;
   children?: React.ReactNode;
   inputRef?: React.Ref<any>;
+  ref?: React.Ref<any>;
   sx?: any;
 }
 
@@ -40,6 +41,7 @@ const TextBox: React.FC<TextBoxProps> = ({
   children,
   inputRef,
   sx,
+  ref,
 }) => {
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     let { value } = event.target;
@@ -66,9 +68,10 @@ const TextBox: React.FC<TextBoxProps> = ({
 
   return (
     <TextField
+      ref={ref}
       select={select}
       label={label}
-      value={value} 
+      value={value}
       onChange={handleInput}
       onBlur={handleBlur}
       fullWidth={fullWidth}
