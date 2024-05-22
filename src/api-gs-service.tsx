@@ -2,14 +2,14 @@ import axios from "axios";
 
 // Set up the axios instance with the base URL and default headers
 const api = axios.create({
-  baseURL: 'https://func-geospatial-dev.azurewebsites.net/api',
+  baseURL: process.env.REACT_APP_GS_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "code": 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==',
+    "code": process.env.REACT_APP_GS_API_KEY,
   },
 });
 
-const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
+const code = process.env.REACT_APP_GS_API_KEY;
 
 // FARM APIS
 export const getField = async (cropperRef: string): Promise<any> => {
