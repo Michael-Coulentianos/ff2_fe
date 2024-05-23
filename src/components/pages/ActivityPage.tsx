@@ -21,7 +21,6 @@ import { useGlobalState } from "../../GlobalState";
 import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
-import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
 
 interface DataItem {
   id: string;
@@ -40,7 +39,7 @@ const Activities: React.FC = () => {
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, activeAccount } = useGlobalState();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,7 +57,7 @@ const Activities: React.FC = () => {
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
   useFetchData(getFields, setFields, setIsLoading, [
-    selectedOrganization?.partyIdentifier ?? 0,
+    activeAccount?.localAccountId ?? 0,
   ]);
 
   const handleOpenForm = () => {
