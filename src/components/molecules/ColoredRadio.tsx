@@ -1,10 +1,12 @@
+import React from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
 
-const ColoredRadio = () => {
+const ColoredRadio = ({ id, value, onChange, error, helperText }) => {
   return (
-    <FormControl component="fieldset" sx={{ marginBottom: 2, marginTop: 1 }}>
-      <FormLabel>Risk Percentage</FormLabel>
-      <RadioGroup row sx={{ justifyContent: 'space-between' }}>
+    <FormControl component="fieldset" sx={{ marginBottom: 2, marginTop: 1 }} error={error}>
+      <FormLabel component="legend">Risk Percentage</FormLabel>
+      <RadioGroup row value={value} onChange={onChange} sx={{ justifyContent: "space-between" }}>
         <FormControlLabel
           value="0-20%"
           control={
@@ -76,6 +78,7 @@ const ColoredRadio = () => {
           labelPlacement="bottom"
         />
       </RadioGroup>
+      {error && <p style={{ color: "red" }}>{helperText}</p>}
     </FormControl>
   );
 };

@@ -1,5 +1,8 @@
 interface note {
-  noteId: number;
+  title: number;
+  description: number;
+  attachment: number;
+  documentExtention: number;
 }
 
 export interface Activity {
@@ -11,6 +14,7 @@ export interface Activity {
   field: string;
   cost: number;
   contractWorkCost: number;
+  activityNotes: note[];
   notes: note[];
   category: string;
   activityCategoryId: number;
@@ -23,5 +27,6 @@ export interface Activity {
   azureUserId: string;
   status: string;
   propery?: any;
+  statusId: number;
   properties?: any;
 }

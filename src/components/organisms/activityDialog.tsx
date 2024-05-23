@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
+import { formatDate } from "../../utils/Utilities";
 
 interface FormData {
   activityId: string;
@@ -19,6 +20,7 @@ interface FormData {
   activityStatusId: number;
   seasonStageId: number;
   partyId: number;
+  property: any;
 }
 
 interface Field {
@@ -44,22 +46,39 @@ const ActivityDialog = ({
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
   } = useForm<FormData>({
     defaultValues: {
-      activityId: formData?.activityId,
-      name: formData?.name,
-      description: formData?.description,
-      startDate: formData?.startDate,
-      endDate: formData?.endDate,
-      field: formData?.field,
-      cost: formData?.cost,
-      contractWorkCost: formData?.contractWorkCost,
-      activityCategoryId: formData?.activityCategoryId,
-      seasonStageId: formData?.seasonStageId,
-      partyId: formData?.partyId,
-      activityStatusId: formData?.activityStatusId,
+      activityId: "",
+      name: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      field: "",
+      cost: "",
+      contractWorkCost: "",
+      activityCategoryId: 0,
+      seasonStageId: 0,
+      partyId: 0,
+      activityStatusId: 0,
     },
   });
+
+  useEffect(() => {
+    if (formData) {
+      const status = activityStatus.find(
+        (status) => status.value === formData.status
+      );
+      const properties = formData.property ? JSON.parse(formData.property) : {};
+      reset({
+        ...formData,
+        ...properties, 
+        startDate: formatDate(formData.startDate),
+        endDate: formatDate(formData.endDate),
+        activityStatusId: status ? status.key : null,
+      });
+    }
+  }, [formData, reset]);
 
   const activityCategoryId = watch("activityCategoryId");
 
@@ -101,7 +120,6 @@ const ActivityDialog = ({
 
   useEffect(() => {
     if (activityCategoryId) {
-      console.log(formData);
       const selectedCategory = activityCategory.find(
         (category) => category.activityCategoryId === activityCategoryId
       );
@@ -140,7 +158,7 @@ const ActivityDialog = ({
               type: "select",
               options: activityStatus?.map((type) => ({
                 label: type.value,
-                value: type.value,
+                value: type.key,
                 id: type.key,
               })),
             },
@@ -216,9 +234,8 @@ const ActivityDialog = ({
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
       activityStatusId: data.activityStatusId,
+      property: undefined
     };
-
-    console.log("Final Data:", finalData);
 
     onSubmit(finalData);
   };

@@ -6,9 +6,7 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 import GoogleMapsSearchBar from "../atom/googleMapsSearchBar";
-import Loading from "../pages/loading";
 import { CircularProgress } from "@mui/material";
-import TextBox from "../atom/textBox";
 
 interface Location {
   lat: number;
@@ -19,17 +17,19 @@ const libraries: Libraries = ["places"];
 
 const MyMapComponent: React.FC<{
   onLocationSelect: (location: Location) => void;
-}> = ({ onLocationSelect }) => {
+  initialLocation?: Location;
+  initialAddress?: string;
+}> = ({ onLocationSelect, initialLocation, initialAddress }) => {
   const [currentPosition, setCurrentPosition] = useState<Location | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<Location | null>(
-    null
+    initialLocation || null
   );
+  const [inputValue, setInputValue] = useState(initialAddress || "");
+
   const mapRef = useRef<google.maps.Map | null>(null);
   const [suggestions, setSuggestions] = useState<
     google.maps.places.AutocompletePrediction[]
   >([]);
-
-  const [inputValue, setInputValue] = useState("");
 
   const autocompleteService =
     useRef<google.maps.places.AutocompleteService | null>(null);
@@ -54,14 +54,24 @@ const MyMapComponent: React.FC<{
     });
   }, [isLoaded]);
 
+  useEffect(() => {
+    if (initialLocation) {
+      mapRef.current?.panTo(initialLocation);
+      setSelectedPosition(initialLocation);
+    }
+    if (initialAddress) {
+      setInputValue(initialAddress);
+    }
+  }, [initialLocation, initialAddress]);
+
   const handleInputChange = (event, newValue) => {
     setInputValue(newValue);
-    if (!autocompleteService.current || event.target.value === "") {
+    if (!autocompleteService.current || newValue === "") {
       setSuggestions([]);
       return;
     }
     autocompleteService.current.getPlacePredictions(
-      { input: event.target.value },
+      { input: newValue },
       (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
           setSuggestions(results);
@@ -74,7 +84,7 @@ const MyMapComponent: React.FC<{
 
   const handleSuggestionSelected = (event, value) => {
     if (value) {
-      setSelectedSuggestion(value.description);
+      setSelectedSuggestion(value);
       const address = value.description;
       const geocoder = new google.maps.Geocoder();
 
@@ -87,6 +97,7 @@ const MyMapComponent: React.FC<{
           };
           mapRef.current?.panTo(newLocation);
           setSelectedPosition(newLocation);
+          setInputValue(address); // Update input value
           onLocationSelect(newLocation);
         }
       });
@@ -102,19 +113,18 @@ const MyMapComponent: React.FC<{
         };
         setSelectedPosition(location);
         onLocationSelect(location);
-        ////convert location to string/adddress
-        // const geocoder = new google.maps.Geocoder();
-        //geocoder.geocode({ location }, (results, status) => {
-        //   if (
-        //     status === google.maps.GeocoderStatus.OK &&
-        //     results &&
-        //     results[0]
-        //   ) {
-        //     const formattedAddress = results[0].formatted_address;
-        //   } else {
-        //     console.error("Geocode failed:", status);
-        //   }
-        // });
+        console.log("Map clicked at:", location);  // Logging the location
+
+        // Reverse geocode to get the address
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location }, (results, status) => {
+          if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+            const address = results[0].formatted_address;
+            setInputValue(address); // Update input value with the clicked location address
+          } else {
+            console.error("Geocode failed:", status);
+          }
+        });
       }
     },
     [onLocationSelect]
@@ -132,7 +142,7 @@ const MyMapComponent: React.FC<{
         inputValue={inputValue}
       />
       <GoogleMap
-        center={currentPosition || { lat: -30.559482, lng: 22.937506 }}
+        center={selectedPosition || currentPosition || { lat: -30.559482, lng: 22.937506 }}
         zoom={15}
         mapContainerStyle={{ height: "200px", width: "535px" }}
         onClick={onMapClick}
@@ -144,9 +154,11 @@ const MyMapComponent: React.FC<{
         }}
         onLoad={(map) => {
           mapRef.current = map;
+          if (initialLocation) {
+            map.panTo(initialLocation);
+          }
         }}
       >
-        {currentPosition && <Marker position={currentPosition} />}
         {selectedPosition && <Marker position={selectedPosition} />}
       </GoogleMap>
     </div>

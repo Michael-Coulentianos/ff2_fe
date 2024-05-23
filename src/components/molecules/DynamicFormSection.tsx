@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Controller } from "react-hook-form";
 import { Grid, Typography, MenuItem, IconButton, Tooltip } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
@@ -28,8 +28,10 @@ interface DynamicFormSectionProps {
   columns?: number;
   onFileChange?: (file: File | null) => void;
   onClick?: () => void;
-  onPositionChange?: (position: { lat: number; lng: number }) => void; 
-  onLocationSelect?
+  onPositionChange?: (position: { lat: number; lng: number }) => void;
+  onLocationSelect?: any;
+  initialLocation?: { lat: number; lng: number };
+  initialAddress?: string;
 }
 
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
@@ -42,6 +44,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   onClick,
   onPositionChange = () => {},
   onLocationSelect,
+  initialLocation,
+  initialAddress,
 }) => {
   const gridColumnWidth = Math.floor(12 / columns);
 
@@ -136,9 +140,16 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         </Grid>
                       </Grid>
                     );
-
                   case "radioGroup":
-                    return <ColoredRadio />;
+                    return (
+                      <ColoredRadio
+                        id={field.id}
+                        value={value}
+                        onChange={onChange}
+                        error={!!errors[field.id]}
+                        helperText={errors[field.id]?.message}
+                      />
+                    );
                   case "attachment":
                     return (
                       <AddAttachmentButton
@@ -189,6 +200,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     return (
                       <MyMapComponent
                         onLocationSelect={onLocationSelect}
+                        initialLocation={initialLocation}
+                        initialAddress={initialAddress}
                       ></MyMapComponent>
                     );
                   case "dateRange":

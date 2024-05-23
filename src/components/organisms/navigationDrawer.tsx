@@ -148,11 +148,6 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                     href="/"
                   />
                   <MenuItem
-                    text="Fields Management"
-                    icon={undefined}
-                    href={"/fields"}
-                  />
-                  <MenuItem
                     text="Activity Management"
                     icon={undefined}
                     href="/activity"
