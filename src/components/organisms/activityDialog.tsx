@@ -13,7 +13,7 @@ interface FormData {
   description: string;
   startDate: string;
   endDate: string;
-  field: string;
+  field: number;
   cost: string;
   contractWorkCost: string;
   Properties: any;
@@ -68,7 +68,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
       description: "",
       startDate: "",
       endDate: "",
-      field: "",
+      field: 0,
       cost: "",
       contractWorkCost: "",
       partyId: 0,
@@ -92,6 +92,8 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
   }, [formData, reset]);
 
   const activityCategoryId = watch("activityCategoryId");
+
+  const field = watch("field");
 
   const processProperties = (properties, parentKey = ""): Field[] => {
     return properties.flatMap((prop) => {
@@ -139,6 +141,23 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
       }
     }
   }, [activityCategoryId, activityCategory]);
+
+  useEffect(() => {
+    if (field) {
+      const selectedField = fields.find(
+        (field) => field.Id === field
+      );
+
+      if (selectedField && selectedField.properties) {
+        const properties = JSON.parse(selectedField.properties);
+        const dynamicFields = processProperties(properties);
+
+        setDynamicFields(dynamicFields);
+      } else {
+        setDynamicFields([]);
+      }
+    }
+  }, [field, fields]);
 
   const fieldDefinitions = {
     generalActivityDetails: [

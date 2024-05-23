@@ -114,7 +114,7 @@ const FieldForm = ({ fieldData }) => {
           <Dropdown
             label="Farm"
             name="farm"
-            value={fieldData.farmId}
+            value={fieldData?.farmId}
             items={farmItems}
             onChange={handleDropdownChange}
           ></Dropdown>
