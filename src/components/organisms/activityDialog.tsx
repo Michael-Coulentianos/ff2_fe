@@ -5,6 +5,8 @@ import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 import { addPropertyIfNotEmpty, formatDate } from "../../utils/Utilities";
+import { Delete } from "@mui/icons-material";
+import GenericConfirmDialog from "./genericConfirmDialog";
 
 interface FormData {
   activityId: string;
@@ -30,8 +32,19 @@ interface Field {
   options?: Array<{ label: string; value: any; id: any; properties?: any }>;
   placeholder?: string;
 }
-
-const ActivityDialog = ({
+interface ActivitiesDialogInterface {
+  isOpen: any;
+  onClose: any;
+  onSubmit: any;
+  activityCategory: any;
+  activityStatus: any;
+  seasonStages: any;
+  notes: any;
+  fields: any;
+  formData: any;
+  handleDelete?: () => void;
+}
+const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
   isOpen,
   onClose,
   onSubmit,
@@ -41,6 +54,7 @@ const ActivityDialog = ({
   notes,
   fields,
   formData,
+  handleDelete,
 }) => {
   const {
     control,
@@ -274,6 +288,16 @@ const ActivityDialog = ({
       </DialogContent>
 
       <DialogActions>
+        {formData && (
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<Delete />}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        )}
         <Button
           variant="contained"
           color="primary"
@@ -287,13 +311,15 @@ const ActivityDialog = ({
   );
 
   return (
-    <DynamicFormDialog
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit(handleFormSubmit)}
-      title={formData ? "Update Activity" : "Add Activity"}
-      formContent={formContent}
-    />
+    <>
+      <DynamicFormDialog
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={handleSubmit(handleFormSubmit)}
+        title={formData ? "Update Activity" : "Add Activity"}
+        formContent={formContent}
+      />
+    </>
   );
 };
 
