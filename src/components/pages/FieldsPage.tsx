@@ -1,4 +1,4 @@
-import { Divider, Grid, Paper } from "@mui/material";
+import { Divider, Grid, Paper, Typography } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import FieldForm from "../organisms/FieldDetails";
 import { useLocation } from "react-router-dom";
@@ -9,11 +9,14 @@ const FieldManagement = () => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <h1 className="title">Field Management</h1>
-        <Divider />
+        <Typography variant="h5">Field Management</Typography>
+        <Divider sx={{ marginTop: 1 }} />
       </Grid>
       <Grid item xs={9}>
-        <FieldMapComponent height={"500px"} fieldData={fieldData}></FieldMapComponent>
+        <FieldMapComponent
+          height={"500px"}
+          fieldData={fieldData}
+        ></FieldMapComponent>
       </Grid>
       <Grid item xs={3}>
         <FieldForm fieldData={fieldData}></FieldForm>

@@ -25,7 +25,7 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
         height: "20px",
         width: "20px",
         fontSize: "5px",
-        top: open ? "140px" : "95px",
+        top: open ? "140px" : "90px",
         marginLeft: open ? "228px" : "0px",
         position: "absolute",
         backgroundColor: theme.palette.secondary.main,

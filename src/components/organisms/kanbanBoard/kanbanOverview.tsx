@@ -13,7 +13,9 @@ import {
   getSeasonStages,
   updateActivity,
   createActivity,
+  getNotes,
 } from "../../../api-ffm-service";
+import { getFields } from "../../../api-gs-service";
 import { useGlobalState } from "../../../GlobalState";
 import { fetchData } from "../../../hooks/useFethData";
 import "./overview.css";
@@ -51,6 +53,8 @@ const KanbanBoard = () => {
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const [fields, setFields] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
@@ -61,6 +65,12 @@ const KanbanBoard = () => {
         fetchData(getActivityStatuses, setActivityStatuses),
         fetchData(getActivityCategories, setActivityCategories),
         fetchData(getSeasonStages, setSeasonStages),
+        fetchData(getFields, setFields, undefined, [
+          selectedOrganization?.partyIdentifier ?? 0,
+        ]),
+        fetchData(getNotes, setNotes, undefined, [
+          selectedOrganization?.organizationId ?? 0,
+        ]),
       ]);
       setIsDataFetched(true);
     };
@@ -217,8 +227,8 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={[]}
-          fields={[]}
+          notes={notes}
+          fields={fields}
           formData={selectedTask?.activity}
         />
       )}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Grid, IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
 import ActivityDialog from "../organisms/activityDialog";
-import { useFetchData } from '../../hooks/useFethData';
+import { useFetchData } from "../../hooks/useFethData";
 import NotesDialog from "../organisms/notesDialog";
 import OrganizationDialog from "../organisms/organisationDialog";
 import {
@@ -12,16 +12,16 @@ import {
   getActivityCategories,
   getSeasonStages,
   getActivityStatuses,
-  createActivity
+  createActivity,
+  getNotes,
 } from "../../api-ffm-service";
 import theme from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
 import { LegalEntity } from "../../models/legalEntity.interface";
-import { useGlobalState } from '../../GlobalState';
+import { useGlobalState } from "../../GlobalState";
 import { getFields } from "../../api-gs-service";
 import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 import { CreateOrganization } from "../../models/createOrganization.interface";
-
 
 const options = ["New Organisation", "New Note", "New Activity"];
 
@@ -39,13 +39,19 @@ export default function QuickAdd() {
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fields, setFields] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
 
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
   useFetchData(getLegalEntities, setLegalEntities);
   useFetchData(getNoteTypes, setNoteTypes);
-  useFetchData(getFields, setFields, undefined, [selectedOrganization?.partyIdentifier ?? 0]);
+  useFetchData(getFields, setFields, undefined, [
+    selectedOrganization?.partyIdentifier ?? 0,
+  ]);
+  useFetchData(getNotes, setNotes, undefined, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -175,14 +181,14 @@ export default function QuickAdd() {
     handleCloseForm();
   };
 
-  const handleSubmitAct = async (formData: any) => { 
+  const handleSubmitAct = async (formData: any) => {
     formData.partyId = selectedOrganization?.partyId;
     try {
       await createActivity(formData);
     } catch (error) {
       console.error("Error creating activity:", error);
     }
-    
+
     handleCloseForm();
   };
 
@@ -211,7 +217,7 @@ export default function QuickAdd() {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={undefined}
+          notes={notes}
           fields={fields}
         />
         <Tooltip title="Quick Add">

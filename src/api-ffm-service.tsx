@@ -172,7 +172,7 @@ export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
     farm.azureUserId = azureUserId;
     const response = await api.post<ResponseApi<Farm>>("/CreateFarm",farm);
-
+    console.log(response);
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {

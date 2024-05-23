@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button, Divider } from "@mui/material";
+import { Grid, Button, Divider, Typography } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import {
@@ -39,16 +39,13 @@ const Activities: React.FC = () => {
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [formOpen, setFormOpen] = useState(false);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, activeAccount } = useGlobalState();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
   const [fields, setFields] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities, setIsLoading, [
-    selectedOrganization?.organizationId ?? 0,
-  ]);
   useFetchData(getActivities, setActivities, setIsLoading, [
     selectedOrganization?.organizationId ?? 0,
   ]);
@@ -60,7 +57,7 @@ const Activities: React.FC = () => {
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
   useFetchData(getFields, setFields, setIsLoading, [
-    selectedOrganization?.partyIdentifier ?? 0,
+    activeAccount?.localAccountId ?? 0,
   ]);
 
   const handleOpenForm = () => {
@@ -71,6 +68,7 @@ const Activities: React.FC = () => {
   const handleCloseForm = () => {
     setSelectedActivity(null);
     setFormOpen(false);
+    setIsLoading(false);
   };
 
   const handleEdit = (activity) => {
@@ -78,12 +76,13 @@ const Activities: React.FC = () => {
     setFormOpen(true);
   };
 
-  const handleDelete = (activity) => {
-    setSelectedActivity(activity);
+  const handleDelete = () => {
+    setSelectedActivity(selectedActivity);
     setConfirmOpen(true);
   };
 
   const handleSubmit = async (formData: any) => {
+    setIsLoading(true);
     formData.partyId = selectedOrganization?.partyId;
     if (selectedActivity) {
       try {
@@ -93,9 +92,6 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
-        console.log("cry");
-        console.log(formData);
-
         await createActivity(formData);
       } catch (error) {
         console.error("Error creating activity:", error);
@@ -108,7 +104,7 @@ const Activities: React.FC = () => {
     handleCloseForm();
   };
 
-  const handleConfirm = async () => {
+  const handleConfirmDelete = async () => {
     if (selectedActivity) {
       setIsLoading(true);
       try {
@@ -121,7 +117,7 @@ const Activities: React.FC = () => {
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
-      setIsLoading(false);
+      
       setConfirmOpen(false);
       handleCloseForm();
     }
@@ -181,7 +177,7 @@ const Activities: React.FC = () => {
       renderCell: (item) => (
         <ActionButtons
           onEdit={() => handleEdit(item)}
-          onDelete={() => handleDelete(item)}
+          onDelete={() => handleDelete()}
         ></ActionButtons>
       ),
     },
@@ -193,8 +189,8 @@ const Activities: React.FC = () => {
       {!isLoading && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <h1 className="title">Activity Management</h1>
-            <Divider />
+            <Typography variant="h5">Activity Management</Typography>
+            <Divider sx={{ marginTop: 1 }} />
           </Grid>
           <Grid item xs={12}>
             <Button
@@ -214,9 +210,14 @@ const Activities: React.FC = () => {
               seasonStages={seasonStages}
               notes={notes}
               fields={fields}
+              handleDelete={handleDelete}
             />
           </Grid>
           <Grid item xs={12}>
+          <Typography variant="body1" gutterBottom>
+              Activity List
+              <Divider sx={{ marginTop: 1 }} />
+            </Typography>
             <DynamicTable
               data={activities}
               columns={myColumns}
@@ -225,7 +226,7 @@ const Activities: React.FC = () => {
             <GenericConfirmDialog
               open={confirmOpen}
               onCancel={() => setConfirmOpen(false)}
-              onConfirm={handleConfirm}
+              onConfirm={handleConfirmDelete}
               title="Confirm Deletion"
               content="Are you sure you want to delete this activity?"
             />

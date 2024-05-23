@@ -12,12 +12,14 @@ import {
   createFarm,
   createOrganization,
   getLegalEntities,
+  getOrganizations,
+  getOrganizationFarms,
 } from "../../api-ffm-service";
 import { useGlobalState } from "../../GlobalState";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LegalEntity } from "../../models/legalEntity.interface";
-import { useFetchData } from "../../hooks/useFethData";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
 import OnBoardingFarmAndField from "./onBoardingFarmAndField";
 import { CreateOrganization } from "../../models/createOrganization.interface";
@@ -37,9 +39,14 @@ const stepCaption = [
 export default function StepperForm() {
   const [activeStep, setActiveStep] = useState(0);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, setSelectedOrganization } = useGlobalState();
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const navigate = useNavigate();
+  const [farms, setFarms] = useState<any[]>([]);
+  const [finish, setFinish] = useState(false);
 
+  useFetchData(getOrganizations, setOrganizations);
+  useFetchData(getOrganizationFarms, setFarms);
   useFetchData(getLegalEntities, setLegalEntities);
   const orgFormRef = useRef<{ submitForm: () => void }>(null);
   const farmFormRef = useRef<{ submitForm: () => void }>(null);
@@ -56,10 +63,23 @@ export default function StepperForm() {
 
   const handleFinish = async () => {
     if (farmFormRef.current) {
-      await farmFormRef.current.submitForm();
-      navigate("/settings");
+      farmFormRef.current.submitForm();
+    }
+
+    if (!selectedOrganization) {
+      fetchData(getOrganizations, setOrganizations);
+      if (organizations.length > 0) {
+        setSelectedOrganization(organizations[0]);
+        navigate("/");
+      }
     }
   };
+
+  if (farms.length > 0 && organizations.length > 0) {
+    if (finish === false) {
+      setFinish(true);
+    }
+  }
 
   const handleOrgSubmit = async (formData: any) => {
     try {
@@ -105,7 +125,8 @@ export default function StepperForm() {
             },
       };
 
-      await createOrganization(org);
+      const ty = await createOrganization(org);
+      console.log(ty);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
@@ -119,6 +140,7 @@ export default function StepperForm() {
         partyId: selectedOrganization?.partyId,
       };
       console.log(createData);
+
       await createFarm(createData);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
       if (activeStep === steps.length - 1) {
@@ -137,7 +159,11 @@ export default function StepperForm() {
       onSubmit={handleOrgSubmit}
       legalEntities={legalEntities}
     />,
-    <OnBoardingFarmAndField key="farmForm" ref={farmFormRef} onSubmit={handleFarmSubmit} />,
+    <OnBoardingFarmAndField
+      key="farmForm"
+      ref={farmFormRef}
+      onSubmit={handleFarmSubmit}
+    />,
   ];
 
   return (
@@ -216,11 +242,13 @@ export default function StepperForm() {
           p: 2,
         }}
       >
-        <Button
-          onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}
-        >
-          {activeStep === steps.length - 1 ? "Finish" : "Next"}
-        </Button>
+        {finish ? (
+          <Button type="submit" variant="contained" onClick={handleFinish}>
+            Finish
+          </Button>
+        ) : (
+          <Button onClick={handleNext}>Next</Button>
+        )}
       </Box>
     </>
   );
