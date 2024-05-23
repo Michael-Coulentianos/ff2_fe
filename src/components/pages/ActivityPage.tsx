@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button, Divider } from "@mui/material";
+import { Grid, Button, Divider, Typography } from "@mui/material";
 import ActionButtons from "../molecules/actionButtons";
 import DynamicTable from "../organisms/table";
 import {
@@ -21,6 +21,7 @@ import { useGlobalState } from "../../GlobalState";
 import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
+import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
 
 interface DataItem {
   id: string;
@@ -193,8 +194,8 @@ const Activities: React.FC = () => {
       {!isLoading && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <h1 className="title">Activity Management</h1>
-            <Divider />
+            <Typography variant="h5">Activity Management</Typography>
+            <Divider sx={{ marginTop: 1 }} />
           </Grid>
           <Grid item xs={12}>
             <Button
@@ -217,6 +218,11 @@ const Activities: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12}>
+            <KanbanBoard></KanbanBoard>
+            <Typography variant="body1" gutterBottom>
+              Activity List
+              <Divider sx={{ marginTop: 1 }} />
+            </Typography>
             <DynamicTable
               data={activities}
               columns={myColumns}

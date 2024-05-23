@@ -167,14 +167,14 @@ const KanbanBoard = () => {
 
   return (
     <>
-      <Button
+      {/* <Button
         variant="contained"
         color="primary"
         onClick={handleOpenForm}
         sx={{ marginBottom: "5px", marginLeft: "5px" }}
       >
         Add Activity
-      </Button>
+      </Button> */}
       <div className="kanban-control-section">
         <div className="col-lg-12 control-section">
           <div className="control-wrapper">
