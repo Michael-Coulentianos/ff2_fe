@@ -123,7 +123,7 @@ const Notes: React.FC = () => {
         console.error("Error creating note:", error);
       }
     }
-    
+
     fetchData(getNotes, setNotes, setIsLoading, [
       selectedOrganization?.organizationId ?? 0,
     ]);
@@ -247,6 +247,7 @@ const Notes: React.FC = () => {
               onSubmit={handleSubmit}
               formData={selectedNote}
               noteTypes={noteTypes}
+              handleDelete={() => handleDelete(selectedNote)}
             />
           </Grid>
 

@@ -201,6 +201,7 @@ export default function QuickAdd() {
           onSubmit={handleSubmitNote}
           formData={undefined}
           noteTypes={noteTypes}
+          handleDelete={undefined}
         />
         <OrganizationDialog
           isOpen={openOrg}
