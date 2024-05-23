@@ -94,9 +94,6 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
-        console.log("cry");
-        console.log(formData);
-
         await createActivity(formData);
       } catch (error) {
         console.error("Error creating activity:", error);
