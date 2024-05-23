@@ -20,7 +20,8 @@ import { LegalEntity } from "../../models/legalEntity.interface";
 import { useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
 import OnBoardingFarmAndField from "./onBoardingFarmAndField";
-import Loading from "../pages/loading";
+import { CreateOrganization } from "../../models/createOrganization.interface";
+import { ContactPerson } from "../../models/contactPerson.interface";
 
 const steps = ["Welcome", "Add Organisation", "Add Farm & Field"];
 
@@ -53,14 +54,16 @@ export default function StepperForm() {
     }
   };
 
-  const handleFinish = () => {
-    navigate("/");
-    <CircularProgress color="primary" />;
+  const handleFinish = async () => {
+    if (farmFormRef.current) {
+      await farmFormRef.current.submitForm();
+      navigate("/settings");
+    }
   };
 
   const handleOrgSubmit = async (formData: any) => {
     try {
-      const org = {
+      const org: Partial<CreateOrganization> = {
         name: formData.name,
         vatNumber: formData.vatNumber,
         legalEntityTypeId: formData.legalEntityTypeId,
@@ -72,9 +75,11 @@ export default function StepperForm() {
               { type: "Mobile", details: formData.contactNumber },
               { type: "Email", details: formData.emailAddress },
             ],
-          },
+          } as ContactPerson,
         ],
         physicalAddress: {
+          addressId: 0,
+          addressUniqueIdentifier: "",
           addressLine1: formData.addressLine1,
           addressLine2: formData.addressLine2,
           city: formData.city,
@@ -83,12 +88,16 @@ export default function StepperForm() {
         sameAddress: formData.sameAddress,
         postalAddress: formData.sameAddress
           ? {
+              addressId: 0,
+              addressUniqueIdentifier: "",
               addressLine1: formData.addressLine1,
               addressLine2: formData.addressLine2,
               city: formData.city,
               code: formData.code,
             }
           : {
+              addressId: 0,
+              addressUniqueIdentifier: "",
               addressLine1: formData.postalAddressLine1,
               addressLine2: formData.postalAddressLine2,
               city: formData.postalAddressCity,
@@ -96,7 +105,7 @@ export default function StepperForm() {
             },
       };
 
-      // await createOrganization(org);
+      await createOrganization(org);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
@@ -109,23 +118,26 @@ export default function StepperForm() {
         name: formData.farmName,
         partyId: selectedOrganization?.partyId,
       };
-
+      console.log(createData);
       await createFarm(createData);
-
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      if (activeStep === steps.length - 1) {
+        handleFinish();
+      }
     } catch (error) {
       console.error("Failed to create farm:", error);
     }
   };
 
   const stepContent = [
-    <WelcomeCard />,
+    <WelcomeCard key="welcome" />,
     <OnBoardingOrganisationForm
+      key="orgForm"
       ref={orgFormRef}
       onSubmit={handleOrgSubmit}
       legalEntities={legalEntities}
     />,
-    <OnBoardingFarmAndField ref={farmFormRef} onSubmit={handleFarmSubmit} />,
+    <OnBoardingFarmAndField key="farmForm" ref={farmFormRef} onSubmit={handleFarmSubmit} />,
   ];
 
   return (

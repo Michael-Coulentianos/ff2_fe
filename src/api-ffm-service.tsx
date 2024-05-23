@@ -65,7 +65,7 @@ export const updateUserProfile = async (userProfile: Partial<UserProfile>): Prom
 };
 
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<string>> => {
   try {
     organization.azureUserId = azureUserId ? azureUserId : '';
 
