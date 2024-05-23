@@ -9,7 +9,7 @@ import { DataUsage, Grass } from "@mui/icons-material";
 import MenuItem from "../molecules/menuItem";
 import DrawerToggleButton from "../atom/drawerToggle";
 import UserOrganizationComponent from "../molecules/UserOrgSelect";
-
+import { useNavigate } from "react-router-dom";
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -36,6 +36,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
     backgroundColor: "#F1A81E",
     color: "#00000",
   },
+  cursor: "pointer",
 }));
 
 const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
@@ -46,7 +47,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
     React.useState(false);
   const [openCollapseAdministration, setOpenCollapseAdministration] =
     React.useState(false);
-
+  const navigate = useNavigate();
   const handleOpenHeading = (section) => {
     switch (section) {
       case "My Farm":
@@ -127,7 +128,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                   disablePadding
                   onClick={() => handleOpenHeading(text)}
                 >
-                  <MenuItem text={text} icon={icon} href={""} />
+                  <MenuItem text={text} icon={icon} onClick={undefined} />
                   {open ? (
                     <ArrowDropUpIcon sx={{ color: "white" }} />
                   ) : (
@@ -139,47 +140,75 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                     <MenuItem
                       text="Farm Management"
                       icon={undefined}
-                      href="/"
+                      onClick={()=>navigate("/")}
                     />
                     <MenuItem
                       text="Activity Management"
                       icon={undefined}
-                      href="/activity"
+                      onClick={()=>navigate("/activity")}
                     />
                   </CollapsibleSection>
                 )}
                 {text === "Operations" && (
                   <CollapsibleSection open={open}>
-                    <MenuItem text="Warehouse" icon={undefined} href={""} />
+                    <MenuItem
+                      text="Warehouse"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
                     <MenuItem
                       text="Financial Management"
                       icon={undefined}
-                      href={""}
+                      onClick={undefined}
                     />
                     <MenuItem
                       text="Alert Management"
                       icon={undefined}
-                      href={""}
+                      onClick={undefined}
                     />
                   </CollapsibleSection>
                 )}
                 {text === "Crop and Climate" && (
                   <CollapsibleSection open={open}>
-                    <MenuItem text="Climate Data" icon={undefined} href={""} />
-                    <MenuItem text="Crop Data" icon={undefined} href={""} />
-                    <MenuItem text="Sensor Data" icon={undefined} href={""} />
+                    <MenuItem
+                      text="Climate Data"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
+                    <MenuItem
+                      text="Crop Data"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
+                    <MenuItem
+                      text="Sensor Data"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
                   </CollapsibleSection>
                 )}
                 {text === "Administration" && (
                   <CollapsibleSection open={open}>
-                    <MenuItem text="Reports" icon={undefined} href={""} />
-                    <MenuItem text="Documentation" icon={undefined} href={""} />
+                    <MenuItem
+                      text="Reports"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
+                    <MenuItem
+                      text="Documentation"
+                      icon={undefined}
+                      onClick={undefined}
+                    />
                     <MenuItem
                       text="Settings"
                       icon={undefined}
-                      href={"/settings"}
+                      onClick={()=>navigate("/settings")}
                     />
-                    <MenuItem text="Notes" icon={undefined} href={"/notes"} />
+                    <MenuItem
+                      text="Notes"
+                      icon={undefined}
+                      onClick={()=>navigate("/notes")}
+                    />
                   </CollapsibleSection>
                 )}
               </div>

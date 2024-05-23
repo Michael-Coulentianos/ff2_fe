@@ -6,7 +6,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import WelcomeCard from "../molecules/welcome";
-import { Grid, Paper } from "@mui/material";
+import { CircularProgress, Grid, Paper } from "@mui/material";
 import theme from "../../theme";
 import {
   createFarm,
@@ -55,7 +55,7 @@ export default function StepperForm() {
 
   const handleFinish = () => {
     navigate("/");
-    console.log("loading...");
+    <CircularProgress color="primary" />;
   };
 
   const handleOrgSubmit = async (formData: any) => {

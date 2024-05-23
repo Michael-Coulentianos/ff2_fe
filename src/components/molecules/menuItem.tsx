@@ -10,15 +10,12 @@ import { Link as RouterLink } from "react-router-dom";
 interface MenuItemProps {
   text: string;
   icon: React.ReactNode;
-  href: string;
   onClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ text, icon, href, onClick }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ text, icon,  onClick }) => (
   <ListItem disablePadding>
     <ListItemButton
-      component={RouterLink}
-      to={href}
       onClick={onClick}
       sx={{
         "&:hover": {
