@@ -114,7 +114,8 @@ export default function StepperForm() {
             },
       };
 
-      await createOrganization(org);
+      const ty = await createOrganization(org);
+      console.log(ty);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
