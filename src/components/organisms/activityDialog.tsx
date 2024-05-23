@@ -83,6 +83,8 @@ const ActivityDialog = ({
 
   const activityCategoryId = watch("activityCategoryId");
 
+  const field = watch("field");
+
   const processProperties = (properties, parentKey = ""): Field[] => {
     return properties.flatMap((prop) => {
       if (prop.key.toLowerCase() === "color") return [];
@@ -130,8 +132,22 @@ const ActivityDialog = ({
     }
   }, [activityCategoryId, activityCategory]);
 
-  console.log("fields");
-  console.log(fields);
+  useEffect(() => {
+    if (field) {
+      const selectedField = fields.find(
+        (field) => field.Id === field
+      );
+
+      if (selectedField && selectedField.properties) {
+        const properties = JSON.parse(selectedField.properties);
+        const dynamicFields = processProperties(properties);
+
+        setDynamicFields(dynamicFields);
+      } else {
+        setDynamicFields([]);
+      }
+    }
+  }, [field, fields]);
 
   const fieldDefinitions = {
     generalActivityDetails: [
@@ -182,7 +198,7 @@ const ActivityDialog = ({
         label: "Field",
         type: "select",
         options: fields.map((field) => ({
-          value: field.Id,
+          value: field.fieldId,
           label: field.name,
           name: field.Id
         })),
