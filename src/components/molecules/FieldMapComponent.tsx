@@ -13,13 +13,12 @@ const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData }) => {
   const azureUserId = activeAccount?.localAccountId;
 
   const cropperRef = fieldData?.cropperRef;
-  const partyIdentifier = selectedOrganization?.partyIdentifier;
   let mapUrl = ""
   if (cropperRef !== undefined){
-  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${partyIdentifier}/${cropperRef}`;
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}/${cropperRef}`;
 } else 
 {
-  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${partyIdentifier}`;
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}`;
 
 }
   return (

@@ -9,6 +9,7 @@ import {
   createOrganization,
   updateOrganization,
   getLegalEntities,
+  getOrganizationById
 } from "../../api-ffm-service";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -31,6 +32,7 @@ interface ColumnConfig {
 
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
+  const [organizationById, setOrganizationById] = useState<any[]>([]);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
   const [isLoading, setIsLoading] = useState(false);
@@ -105,7 +107,16 @@ const OrganizationSettings: React.FC = () => {
           sameAddress: formData.sameAddress,
         };
 
-        await createOrganization(org);
+        const response = await createOrganization(org) as unknown as { organizationId: number };
+        // fetchData(getOrganizations, setOrganizations);
+        // const newOrg = organizations.find((org) => org.organizationId === response.organizationId);
+
+        // // Set the selected organization if it was found
+        // if (newOrg) {
+        //   setSelectedOrganization(newOrg);
+        // } else {
+        //   console.error('Newly created organization not found in the organization list');
+        // }
       }
     } catch (error) {
       console.error("Error submitting organization:", error);

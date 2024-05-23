@@ -65,13 +65,10 @@ export const updateUserProfile = async (userProfile: Partial<UserProfile>): Prom
 };
 
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<string>> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<any>> => {
   try {
     organization.azureUserId = azureUserId ? azureUserId : '';
-
-    console.log(organization);
     const response = await api.post<ResponseApi<any>>("/CreateOrganization", organization);
-    console.log(response);
     
     return response.data.details;
   } catch (error: any) {
@@ -151,8 +148,10 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
         "x-OrganizationId": OrganizationId
       }
     };
-
+    console.log(OrganizationId);
     const response = await api.get<ResponseApi<Organization[]>>("OrganizationById", config);
+    console.log(response);
+
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }

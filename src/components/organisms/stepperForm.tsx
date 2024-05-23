@@ -40,6 +40,7 @@ export default function StepperForm() {
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
   const [organizations, setOrganizations] = useState<any[]>([]);
+
   const navigate = useNavigate();
 
   useFetchData(getLegalEntities, setLegalEntities);
@@ -57,16 +58,9 @@ export default function StepperForm() {
   };
 
   const handleFinish = async () => {
-    if (farmFormRef.current) {
-      farmFormRef.current.submitForm();
-    }
-
     if(!selectedOrganization){
-      fetchData(getOrganizations, setOrganizations);
-      if(organizations.length > 0){
-        setSelectedOrganization(organizations[0]);
-        navigate("/");
-      }
+      setSelectedOrganization(organizations[0]);
+      navigate("/");
     }
   };
 
@@ -114,7 +108,8 @@ export default function StepperForm() {
             },
       };
 
-      const ty = await createOrganization(org);
+      await createOrganization(org);
+      fetchData(getOrganizations, setOrganizations);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
@@ -125,11 +120,10 @@ export default function StepperForm() {
     try {
       const createData = {
         name: formData.farmName,
-        partyId: selectedOrganization?.partyId,
+        partyId: organizations[0]?.partyId,
       };
       console.log(createData);
       await createFarm(createData);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
       if (activeStep === steps.length - 1) {
         handleFinish();
       }
@@ -226,7 +220,7 @@ export default function StepperForm() {
         }}
       >
         <Button
-          onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}
+          onClick={handleNext}
         >
           {activeStep === steps.length - 1 ? "Finish" : "Next"}
         </Button>

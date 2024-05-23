@@ -49,16 +49,18 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
 
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
     setPosition(location);
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ location }, (results, status) => {
-      if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
-        const formattedAddress = results[0].formatted_address;
-        setAddress(formattedAddress);
-        setValue("location", formattedAddress);
-      } else {
-        console.error("Geocode failed:", status);
-      }
-    });
+    if (window.google) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ location }, (results, status) => {
+        if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
+          const formattedAddress = results[0].formatted_address;
+          setAddress(formattedAddress);
+          setValue("location", formattedAddress);
+        } else {
+          console.error("Geocode failed:", status);
+        }
+      });
+    }
   };
 
   const onSubmit2 = (data) => {
@@ -178,6 +180,7 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
       };
       reset(initialValues);
     } else {
+      // Set default values when no formData is provided
       reset({
         title: "",
         description: "",
@@ -195,6 +198,41 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
         cropSubType: "",
         severityScale: "",
       });
+
+      // Check if the browser supports Geolocation API
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setPosition({ lat: latitude, lng: longitude });
+
+            if (window.google) {
+              const geocoder = new window.google.maps.Geocoder();
+              geocoder.geocode(
+                { location: { lat: latitude, lng: longitude } },
+                (results, status) => {
+                  if (
+                    status === window.google.maps.GeocoderStatus.OK &&
+                    results &&
+                    results[0]
+                  ) {
+                    const formattedAddress = results[0].formatted_address;
+                    setAddress(formattedAddress);
+                    setValue("location", formattedAddress);
+                  } else {
+                    console.error("Geocode failed:", status);
+                  }
+                }
+              );
+            }
+          },
+          (error) => {
+            console.error("Error getting current location:", error);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
     }
   }, [formData, isOpen, reset, noteTypes, setValue]);
 
@@ -258,10 +296,10 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
           { id: 5, value: "Sugarcane" },
           { id: 6, value: "Wheat" },
           { id: 7, value: "Barley" },
-          { id: 8, value: "Tabaco" },
+          { id: 8, value: "Tobacco" },
           { id: 9, value: "Potatoes" },
-          { id: 9, value: "Cotton" },
-          { id: 10, value: "Sunflower" },
+          { id: 10, value: "Cotton" },
+          { id: 11, value: "Sunflower" },
         ].map((type) => ({
           label: type.value,
           value: type.id,

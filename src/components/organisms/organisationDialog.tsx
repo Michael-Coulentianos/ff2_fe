@@ -58,20 +58,9 @@ const OrganizationDialog = ({
   const checkboxValue = watch("sameAddress");
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && formData) {
       const initialValues = {
-        ...formData,
-        contactPerson: formData?.contactPerson || [
-          { fullName: "", contactNumber: "", emailAddress: "" },
-        ],
-        physicalAddress: formData?.physicalAddress || [
-          { addressLine1: "", addressLine2: "", city: "", code: "" },
-        ],
-        postalAddress: formData?.postalAddress || [
-          { addressLine1: "", addressLine2: "", city: "", code: "" },
-        ],
-        legalEntityTypeName: formData?.legalEntityTypeName || "",
-        sameAddress: formData?.sameAddress || false,
+        ...formData
       };
       reset(initialValues);
     }
