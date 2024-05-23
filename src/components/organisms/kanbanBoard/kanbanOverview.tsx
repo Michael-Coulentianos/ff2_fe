@@ -13,13 +13,14 @@ import {
   getSeasonStages,
   updateActivity,
   createActivity,
+  getNotes,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
 import { fetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
@@ -51,6 +52,7 @@ const KanbanBoard = () => {
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
+  const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
@@ -61,8 +63,11 @@ const KanbanBoard = () => {
         fetchData(getActivityStatuses, setActivityStatuses),
         fetchData(getActivityCategories, setActivityCategories),
         fetchData(getSeasonStages, setSeasonStages),
-      ]);
-      setIsDataFetched(true);
+      ]),
+        fetchData(getNotes, setNotes, undefined, [
+          selectedOrganization?.organizationId ?? 0,
+        ]),
+        setIsDataFetched(true);
     };
 
     fetchDataAsync();
@@ -157,7 +162,10 @@ const KanbanBoard = () => {
         selectedOrganization?.organizationId ?? 0,
       ]);
     } catch (error) {
-      console.error(`Error ${selectedTask ? "updating" : "creating"} activity:`, error);
+      console.error(
+        `Error ${selectedTask ? "updating" : "creating"} activity:`,
+        error
+      );
     }
     closeModal();
   };
@@ -201,7 +209,7 @@ const KanbanBoard = () => {
                 </ColumnsDirective>
               </KanbanComponent>
             ) : (
-              <p>Loading...</p>
+              <CircularProgress color="primary" />
             )}
           </div>
         </div>
@@ -214,7 +222,7 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={[]}
+          notes={notes}
           formData={selectedTask?.activity}
         />
       )}
