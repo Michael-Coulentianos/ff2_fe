@@ -136,6 +136,9 @@ const ActivityDialog = ({
     }
   }, [activityCategoryId, activityCategory]);
 
+  console.log("fields");
+  console.log(fields);
+
   const fieldDefinitions = {
     generalActivityDetails: [
       { id: "name", label: "Activity Name", type: "text" },
@@ -184,9 +187,10 @@ const ActivityDialog = ({
         id: "field",
         label: "Field",
         type: "select",
-        options: fields?.map((type) => ({
-          label: type.name,
-          value: type.cropperRef,
+        options: fields.map((field) => ({
+          value: field.cropperRef,
+          label: field.name,
+          name: field.id
         })),
       },
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },

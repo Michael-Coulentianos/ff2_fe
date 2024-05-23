@@ -22,8 +22,6 @@ const FieldForm = ({ fieldData }) => {
   useFetchData(getOrganizationFarms, setFarms, undefined, [
     selectedOrganization?.organizationId ?? 0,
   ]);
-  console.log("fieldData");
-  console.log(fieldData);
 
   const [formData, setFormData] = useState({
     name: "",

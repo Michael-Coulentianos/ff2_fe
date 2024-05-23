@@ -13,14 +13,12 @@ import {
   getActivities,
 } from "../../api-ffm-service";
 
-
-
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
 import Loading from "./loading";
-import { useGlobalState } from '../../GlobalState';
-import { useFetchData, fetchData } from '../../hooks/useFethData';
+import { useGlobalState } from "../../GlobalState";
+import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
 
@@ -48,13 +46,21 @@ const Activities: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [fields, setFields] = useState<any[]>([]);
 
-  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
-  useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
-  useFetchData(getNotes, setNotes, undefined, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getActivities, setActivities, setIsLoading, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
+  useFetchData(getActivities, setActivities, setIsLoading, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
+  useFetchData(getNotes, setNotes, undefined, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
-  useFetchData(getFields, setFields, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getFields, setFields, setIsLoading, [
+    selectedOrganization?.partyIdentifier ?? 0,
+  ]);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -76,7 +82,7 @@ const Activities: React.FC = () => {
     setConfirmOpen(true);
   };
 
-  const handleSubmit = async (formData: any) => { 
+  const handleSubmit = async (formData: any) => {
     formData.partyId = selectedOrganization?.partyId;
     if (selectedActivity) {
       try {
@@ -86,13 +92,18 @@ const Activities: React.FC = () => {
       }
     } else {
       try {
+        console.log("cry");
+        console.log(formData);
+
         await createActivity(formData);
       } catch (error) {
         console.error("Error creating activity:", error);
       }
     }
 
-    fetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
+    fetchData(getActivities, setActivities, setIsLoading, [
+      selectedOrganization?.organizationId ?? 0,
+    ]);
     handleCloseForm();
   };
 

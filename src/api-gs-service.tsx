@@ -15,7 +15,7 @@ const code = process.env.REACT_APP_GS_API_KEY;
 export const getField = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.get<any>("field", {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -31,7 +31,7 @@ export const getField = async (cropperRef: string): Promise<any> => {
 export const updateField = async (field: any, cropperRef: string): Promise<any> => {
   try {
     const response = await api.put<any>("field", field, {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -47,7 +47,7 @@ export const updateField = async (field: any, cropperRef: string): Promise<any> 
 export const getFieldMetaData = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.get<any>("field/metadata", {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -63,7 +63,7 @@ export const getFieldMetaData = async (cropperRef: string): Promise<any> => {
 export const deactivateField = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.put<any>("field/deactivate", null, {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -80,7 +80,7 @@ export const deactivateField = async (cropperRef: string): Promise<any> => {
 export const getFields = async (partyId: string): Promise<any> => {
   try {
     const response = await api.get<any>("fields", {
-      params: { partyId },
+      params: { partyId, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -96,7 +96,7 @@ export const getFields = async (partyId: string): Promise<any> => {
 export const getFieldsMetaData = async (partyId: string): Promise<any> => {
   try {
     const response = await api.get<any>("fields/metadata", {
-      params: { partyId },
+      params: { partyId, code  },
     });
     return response.data;
   } catch (error: any) {
