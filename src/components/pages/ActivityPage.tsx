@@ -50,9 +50,6 @@ const Activities: React.FC = () => {
   useFetchData(getActivities, setActivities, setIsLoading, [
     selectedOrganization?.organizationId ?? 0,
   ]);
-  useFetchData(getActivities, setActivities, setIsLoading, [
-    selectedOrganization?.organizationId ?? 0,
-  ]);
   useFetchData(getNotes, setNotes, undefined, [
     selectedOrganization?.organizationId ?? 0,
   ]);
@@ -72,6 +69,7 @@ const Activities: React.FC = () => {
   const handleCloseForm = () => {
     setSelectedActivity(null);
     setFormOpen(false);
+    setIsLoading(false);
   };
 
   const handleEdit = (activity) => {
@@ -85,6 +83,7 @@ const Activities: React.FC = () => {
   };
 
   const handleSubmit = async (formData: any) => {
+    setIsLoading(true);
     formData.partyId = selectedOrganization?.partyId;
     if (selectedActivity) {
       try {
@@ -119,7 +118,7 @@ const Activities: React.FC = () => {
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
-      setIsLoading(false);
+      
       setConfirmOpen(false);
       handleCloseForm();
     }
@@ -215,7 +214,6 @@ const Activities: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <KanbanBoard></KanbanBoard>
             <Typography variant="body1" gutterBottom>
               Activity List
               <Divider sx={{ marginTop: 1 }} />

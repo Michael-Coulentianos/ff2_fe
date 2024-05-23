@@ -58,10 +58,7 @@ const ActivityDialog = ({
       field: "",
       cost: "",
       contractWorkCost: "",
-      activityCategoryId: 0,
-      seasonStageId: 0,
       partyId: 0,
-      activityStatusId: 0,
     },
   });
 

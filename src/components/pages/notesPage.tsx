@@ -8,7 +8,6 @@ import {
   createNote,
   updateNote,
   getNoteTypes,
-  setAzureUserId,
 } from "../../api-ffm-service";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -18,6 +17,7 @@ import FileDisplay from "../organisms/fileDisplay";
 import { useFetchData, fetchData } from "../../hooks/useFethData";
 import Loading from "./loading";
 import { useGlobalState } from "../../GlobalState";
+import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -41,6 +41,8 @@ const Notes: React.FC = () => {
   const handleCloseForm = () => {
     setSelectedNote(null);
     setFormOpen(false);
+    setIsLoading(false);
+    setConfirmOpen(false);
   };
 
   const handleEdit = (note) => {
@@ -53,14 +55,8 @@ const Notes: React.FC = () => {
     setConfirmOpen(true);
   };
 
-  const addPropertyIfNotEmpty = (obj, key, value) => {
-    if (value !== null && value !== "" && value !== undefined) {
-      obj[key] = value;
-    }
-  };
-
   const handleSubmit = async (formData: any) => {
-    console.log(formData);
+    setIsLoading(true);
     formData.azureUserId = activeAccount.localAccountId;
     formData.partyId = selectedOrganization?.partyId;
     formData.noteTypeId = noteTypes.find(
@@ -116,26 +112,21 @@ const Notes: React.FC = () => {
       try {
         formData.property = JSON.stringify(properties);
         await updateNote(formData);
-        fetchData(getNotes, setNotes, setIsLoading, [
-          selectedOrganization?.id ?? 81,
-        ]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
     } else {
       try {
         formData.property = JSON.stringify(properties);
-        const response = await createNote(formData);
-        console.log(response);
-        fetchData(getNotes, setNotes, setIsLoading, [
-          selectedOrganization?.id ?? 81,
-        ]);
-        console.log(notes);
+        await createNote(formData);
       } catch (error) {
         console.error("Error creating note:", error);
       }
     }
-    setIsLoading(false);
+    
+    fetchData(getNotes, setNotes, setIsLoading, [
+      selectedOrganization?.organizationId ?? 0,
+    ]);
     handleCloseForm();
   };
 

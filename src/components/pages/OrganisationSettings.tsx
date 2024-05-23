@@ -16,7 +16,7 @@ import { CreateOrganization } from "../../models/createOrganization.interface";
 import { Contacts } from "../../models/contacts.interface";
 import Loading from "./loading";
 import { useGlobalState } from "../../GlobalState";
-import { fetchData } from "../../hooks/useFethData";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
 
 interface DataItem {
   id: string;
@@ -37,27 +37,6 @@ const OrganizationSettings: React.FC = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<any | null>(null);
-
-  function useFetchData(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
 
   useFetchData(getOrganizations, setOrganizations, setIsLoading);
   useFetchData(getLegalEntities, setLegalEntities, setIsLoading);
