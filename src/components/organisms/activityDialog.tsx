@@ -12,7 +12,7 @@ interface FormData {
   description: string;
   startDate: string;
   endDate: string;
-  field: string;
+  field: number;
   cost: string;
   contractWorkCost: string;
   Properties: any;
@@ -55,7 +55,7 @@ const ActivityDialog = ({
       description: "",
       startDate: "",
       endDate: "",
-      field: "",
+      field: 0,
       cost: "",
       contractWorkCost: "",
       activityCategoryId: 0,
@@ -182,9 +182,9 @@ const ActivityDialog = ({
         label: "Field",
         type: "select",
         options: fields.map((field) => ({
-          value: field.cropperRef,
+          value: field.Id,
           label: field.name,
-          name: field.id
+          name: field.Id
         })),
       },
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
