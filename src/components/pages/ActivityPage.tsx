@@ -21,6 +21,7 @@ import { useGlobalState } from "../../GlobalState";
 import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
+import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
 
 interface DataItem {
   id: string;
@@ -117,7 +118,7 @@ const Activities: React.FC = () => {
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
-      
+
       setConfirmOpen(false);
       handleCloseForm();
     }
@@ -197,13 +198,6 @@ const Activities: React.FC = () => {
             <Divider sx={{ marginTop: 1 }} />
           </Grid>
           <Grid item xs={12}>
-            <Button
-              variant="contained"
-              onClick={handleOpenForm}
-              color="primary"
-            >
-              Add Activity
-            </Button>
             <ActivitiesDialog
               isOpen={formOpen}
               onClose={handleCloseForm}
@@ -216,17 +210,7 @@ const Activities: React.FC = () => {
               fields={fields}
               handleDelete={handleDelete}
             />
-          </Grid>
-          <Grid item xs={12}>
-          <Typography variant="body1" gutterBottom>
-              Activity List
-              <Divider sx={{ marginTop: 1 }} />
-            </Typography>
-            <DynamicTable
-              data={activities}
-              columns={myColumns}
-              rowsPerPage={5}
-            />
+            <KanbanBoard></KanbanBoard>
             <GenericConfirmDialog
               open={confirmOpen}
               onCancel={() => setConfirmOpen(false)}
