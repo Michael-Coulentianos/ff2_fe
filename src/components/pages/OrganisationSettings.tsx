@@ -15,6 +15,8 @@ import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { Contacts } from "../../models/contacts.interface";
 import Loading from "./loading";
+import { useGlobalState } from "../../GlobalState";
+import { fetchData } from "../../hooks/useFethData";
 
 interface DataItem {
   id: string;
@@ -30,6 +32,7 @@ interface ColumnConfig {
 const OrganizationSettings: React.FC = () => {
   const [organizations, setOrganizations] = useState<any[]>([]);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
+  const { selectedOrganization, setSelectedOrganization } = useGlobalState();
   const [isLoading, setIsLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
@@ -99,11 +102,6 @@ const OrganizationSettings: React.FC = () => {
       if (selectedOrg) {
         formData.contactDetail = formData.contactPerson;
         await updateOrganization(formData);
-        setOrganizations(
-          organizations.map((org) =>
-            org.partyId === formData.partyId ? formData : org
-          )
-        );
       } else {
         formData.contactPerson[0].contacts[0].type = "Email";
         formData.contactPerson[0].contacts[1].type = "Mobile";
@@ -129,12 +127,11 @@ const OrganizationSettings: React.FC = () => {
         };
 
         await createOrganization(org);
-        setOrganizations([...organizations, formData]);
       }
     } catch (error) {
       console.error("Error submitting organization:", error);
     }
-
+    fetchData(getOrganizations, setOrganizations, setIsLoading);
     handleCloseForm();
   };
 
@@ -143,9 +140,10 @@ const OrganizationSettings: React.FC = () => {
       setIsLoading(true);
       try {
         await deleteOrganization(selectedOrg.partyId);
-        setOrganizations(
-          organizations.filter((org) => org.partyId !== selectedOrg.partyId)
-        );
+        fetchData(getOrganizations, setOrganizations, setIsLoading);
+        if(selectedOrg === selectedOrganization && organizations.length > 0){
+          setSelectedOrganization(organizations[0]);
+        }
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
