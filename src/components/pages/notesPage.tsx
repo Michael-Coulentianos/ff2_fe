@@ -28,7 +28,9 @@ const Notes: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { selectedOrganization, activeAccount } = useGlobalState();
 
-  useFetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
+  useFetchData(getNotes, setNotes, setIsLoading, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
 
   const handleOpenForm = () => {
@@ -114,7 +116,9 @@ const Notes: React.FC = () => {
       try {
         formData.property = JSON.stringify(properties);
         await updateNote(formData);
-        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
+        fetchData(getNotes, setNotes, setIsLoading, [
+          selectedOrganization?.id ?? 81,
+        ]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
@@ -123,7 +127,9 @@ const Notes: React.FC = () => {
         formData.property = JSON.stringify(properties);
         const response = await createNote(formData);
         console.log(response);
-        fetchData(getNotes, setNotes, setIsLoading, [selectedOrganization?.id ?? 81]);
+        fetchData(getNotes, setNotes, setIsLoading, [
+          selectedOrganization?.id ?? 81,
+        ]);
         console.log(notes);
       } catch (error) {
         console.error("Error creating note:", error);
@@ -192,10 +198,7 @@ const Notes: React.FC = () => {
       label: "Date",
       dataKey: "date",
       renderCell: (item) => (
-        <span>
-          <p>Date: {moment(item.createdDate).format("DD MMMM YYYY")}</p>
-          <p>Time: {moment(item.createdDate).format("HH:mm")}</p>
-        </span>
+        <p>Date: {moment(item.createdDate).format("DD MMMM YYYY")}</p>
       ),
     },
     {
@@ -244,12 +247,12 @@ const Notes: React.FC = () => {
               </Paper>
             )}
             <NotesDialog
-                  isOpen={formOpen}
-                  onClose={handleCloseForm}
-                  onSubmit={handleSubmit}
-                  formData={selectedNote}
-                  noteTypes={noteTypes}
-                />
+              isOpen={formOpen}
+              onClose={handleCloseForm}
+              onSubmit={handleSubmit}
+              formData={selectedNote}
+              noteTypes={noteTypes}
+            />
           </Grid>
 
           {notes.length > 0 && (

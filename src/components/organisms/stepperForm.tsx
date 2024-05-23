@@ -8,7 +8,11 @@ import Typography from "@mui/material/Typography";
 import WelcomeCard from "../molecules/welcome";
 import { Grid, Paper } from "@mui/material";
 import theme from "../../theme";
-import { createFarm, createOrganization, getLegalEntities } from "../../api-ffm-service";
+import {
+  createFarm,
+  createOrganization,
+  getLegalEntities,
+} from "../../api-ffm-service";
 import { useGlobalState } from "../../GlobalState";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -16,6 +20,7 @@ import { LegalEntity } from "../../models/legalEntity.interface";
 import { useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
 import OnBoardingFarmAndField from "./onBoardingFarmAndField";
+import Loading from "../pages/loading";
 
 const steps = ["Welcome", "Add Organisation", "Add Farm & Field"];
 
@@ -48,12 +53,9 @@ export default function StepperForm() {
     }
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
   const handleFinish = () => {
     navigate("/");
+    console.log("loading...");
   };
 
   const handleOrgSubmit = async (formData: any) => {
@@ -63,13 +65,15 @@ export default function StepperForm() {
         vatNumber: formData.vatNumber,
         legalEntityTypeId: formData.legalEntityTypeId,
         registrationNumber: formData.registrationNumber,
-        contactDetail: [{
-          fullName: formData.fullName,
-          contacts: [
-            { type: "Mobile", details: formData.contactNumber },
-            { type: "Email", details: formData.emailAddress },
-          ]
-        }],
+        contactDetail: [
+          {
+            fullName: formData.fullName,
+            contacts: [
+              { type: "Mobile", details: formData.contactNumber },
+              { type: "Email", details: formData.emailAddress },
+            ],
+          },
+        ],
         physicalAddress: {
           addressLine1: formData.addressLine1,
           addressLine2: formData.addressLine2,
@@ -79,50 +83,53 @@ export default function StepperForm() {
         sameAddress: formData.sameAddress,
         postalAddress: formData.sameAddress
           ? {
-            addressLine1: formData.addressLine1,
-            addressLine2: formData.addressLine2,
-            city: formData.city,
-            code: formData.code,
-          }
+              addressLine1: formData.addressLine1,
+              addressLine2: formData.addressLine2,
+              city: formData.city,
+              code: formData.code,
+            }
           : {
-            addressLine1: formData.postalAddressLine1,
-            addressLine2: formData.postalAddressLine2,
-            city: formData.postalAddressCity,
-            code: formData.postalAddressCode,
-          }
+              addressLine1: formData.postalAddressLine1,
+              addressLine2: formData.postalAddressLine2,
+              city: formData.postalAddressCity,
+              code: formData.postalAddressCode,
+            },
       };
-  
+
       // await createOrganization(org);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
     }
   };
-  
+
   const handleFarmSubmit = async (formData: any) => {
     try {
       const createData = {
         name: formData.farmName,
         partyId: selectedOrganization?.partyId,
       };
-  
-      //await createFarm(createData);
-  
+
+      await createFarm(createData);
+
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create farm:", error);
     }
   };
-  
 
   const stepContent = [
     <WelcomeCard />,
-    <OnBoardingOrganisationForm ref={orgFormRef} onSubmit={handleOrgSubmit} legalEntities={legalEntities} />,
-    <OnBoardingFarmAndField ref={farmFormRef} onSubmit={handleFarmSubmit} />
+    <OnBoardingOrganisationForm
+      ref={orgFormRef}
+      onSubmit={handleOrgSubmit}
+      legalEntities={legalEntities}
+    />,
+    <OnBoardingFarmAndField ref={farmFormRef} onSubmit={handleFarmSubmit} />,
   ];
 
   return (
-    <Box sx={{ width: "100%", height: "85vh", display: "flex", flexDirection: "column" }}>
+    <>
       <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
         {steps.map((label) => (
           <Step key={label}>
@@ -130,7 +137,14 @@ export default function StepperForm() {
           </Step>
         ))}
       </Stepper>
-      <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Grid container sx={{ height: "100%" }}>
           {activeStep > 0 && (
             <Grid item xs={4}>
@@ -143,14 +157,21 @@ export default function StepperForm() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  textAlign: "center",
                   backgroundColor: theme.palette.primary.main,
                   color: theme.palette.background.paper,
                 }}
               >
-                <Typography variant="h5" sx={{ mt: 2, mb: 1 }}>
+                <Typography variant="h4" sx={{ mt: 2, mb: 1 }}>
                   Step {activeStep + 1}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 2,
+                    mb: 1,
+                  }}
+                >
                   {stepDescriptions[activeStep - 1]}
                 </Typography>
                 <Typography variant="caption" sx={{ mt: 2, mb: 1 }}>
@@ -159,19 +180,36 @@ export default function StepperForm() {
               </Paper>
             </Grid>
           )}
-          <Grid item xs={activeStep > 0 ? 8 : 12} sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Grid
+            item
+            xs={activeStep > 0 ? 8 : 12}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             {stepContent[activeStep]}
           </Grid>
         </Grid>
       </Box>
-      <Box sx={{ position: 'fixed', bottom: 0, width: '100%', display: "flex", alignItems: "right", justifyContent: "right", p: 2 }}>
-        {/* <Button color="inherit" disabled={activeStep === 0} onClick={handleBack}>
-          Back
-        </Button> */}
-        <Button onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}>
+      <Box
+        sx={{
+          position: "fixed",
+          bottom: 0,
+          width: "100%",
+          display: "flex",
+          alignItems: "right",
+          justifyContent: "right",
+          p: 2,
+        }}
+      >
+        <Button
+          onClick={activeStep === steps.length - 1 ? handleFinish : handleNext}
+        >
           {activeStep === steps.length - 1 ? "Finish" : "Next"}
         </Button>
       </Box>
-    </Box>
+    </>
   );
 }

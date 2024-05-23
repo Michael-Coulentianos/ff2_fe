@@ -14,7 +14,7 @@ const FieldManagement = () => {
         <Divider />
       </Grid>
       <Grid item xs={9}>
-        <FieldMapComponent height={"485px"}></FieldMapComponent>
+        <FieldMapComponent height={"500px"}></FieldMapComponent>
       </Grid>
       <Grid item xs={3}>
         <FieldForm fieldData={fieldData}></FieldForm>

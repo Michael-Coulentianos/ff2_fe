@@ -12,12 +12,15 @@ import {
   getActivityCategories,
   getSeasonStages,
   updateActivity,
+  getNotes,
+  createActivity,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
 import { fetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
+import { Button } from "@mui/material";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
@@ -116,6 +119,10 @@ const KanbanBoard = () => {
     setSelectedTask(args.data);
     setShowModal(true);
   };
+  const handleOpenForm = () => {
+    setSelectedTask(null);
+    setShowModal(true);
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -133,10 +140,20 @@ const KanbanBoard = () => {
       console.error("Error updating activity:", error);
     }
     closeModal();
+    console.log(activities);
+    console.log(formData);
   };
 
   return (
     <>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpenForm}
+        sx={{ marginBottom: "5px", marginLeft: "5px" }}
+      >
+        Add Activity
+      </Button>
       <div className="kanban-control-section">
         <div className="col-lg-12 control-section">
           <div className="control-wrapper">
@@ -171,8 +188,7 @@ const KanbanBoard = () => {
           </div>
         </div>
       </div>
-
-      {showModal && selectedTask && (
+      {showModal && (
         <ActivityDialog
           isOpen={showModal}
           onClose={closeModal}
@@ -180,8 +196,8 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={[]}
-          formData={selectedTask.activity}
+          notes={notes}
+          formData={selectedTask?.activity}
         />
       )}
     </>
