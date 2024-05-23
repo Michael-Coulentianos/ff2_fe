@@ -76,8 +76,8 @@ const Activities: React.FC = () => {
     setFormOpen(true);
   };
 
-  const handleDelete = (activity) => {
-    setSelectedActivity(activity);
+  const handleDelete = () => {
+    setSelectedActivity(selectedActivity);
     setConfirmOpen(true);
   };
 
@@ -104,7 +104,7 @@ const Activities: React.FC = () => {
     handleCloseForm();
   };
 
-  const handleConfirm = async () => {
+  const handleConfirmDelete = async () => {
     if (selectedActivity) {
       setIsLoading(true);
       try {
@@ -177,7 +177,7 @@ const Activities: React.FC = () => {
       renderCell: (item) => (
         <ActionButtons
           onEdit={() => handleEdit(item)}
-          onDelete={() => handleDelete(item)}
+          onDelete={() => handleDelete()}
         ></ActionButtons>
       ),
     },
@@ -210,6 +210,7 @@ const Activities: React.FC = () => {
               seasonStages={seasonStages}
               notes={notes}
               fields={fields}
+              handleDelete={()=>handleDelete}
             />
           </Grid>
           <Grid item xs={12}>
@@ -221,7 +222,7 @@ const Activities: React.FC = () => {
             <GenericConfirmDialog
               open={confirmOpen}
               onCancel={() => setConfirmOpen(false)}
-              onConfirm={handleConfirm}
+              onConfirm={handleConfirmDelete}
               title="Confirm Deletion"
               content="Are you sure you want to delete this activity?"
             />
