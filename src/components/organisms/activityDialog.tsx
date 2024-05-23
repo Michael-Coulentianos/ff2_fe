@@ -6,7 +6,6 @@ import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
 import { addPropertyIfNotEmpty, formatDate } from "../../utils/Utilities";
 import { Delete } from "@mui/icons-material";
-import GenericConfirmDialog from "./genericConfirmDialog";
 
 interface FormData {
   activityId: string;
