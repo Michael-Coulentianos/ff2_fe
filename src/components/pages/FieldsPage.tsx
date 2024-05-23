@@ -6,7 +6,6 @@ import { useLocation } from "react-router-dom";
 const FieldManagement = () => {
   const location = useLocation();
   const fieldData = location.state?.fieldData;
-
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -14,7 +13,7 @@ const FieldManagement = () => {
         <Divider />
       </Grid>
       <Grid item xs={9}>
-        <FieldMapComponent height={"500px"}></FieldMapComponent>
+        <FieldMapComponent height={"500px"} fieldData={fieldData}></FieldMapComponent>
       </Grid>
       <Grid item xs={3}>
         <FieldForm fieldData={fieldData}></FieldForm>

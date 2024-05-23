@@ -218,6 +218,7 @@ const KanbanBoard = () => {
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
           notes={[]}
+          fields={[]}
           formData={selectedTask?.activity}
         />
       )}

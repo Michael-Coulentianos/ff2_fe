@@ -2,20 +2,20 @@ import axios from "axios";
 
 // Set up the axios instance with the base URL and default headers
 const api = axios.create({
-  baseURL: 'https://func-geospatial-dev.azurewebsites.net/api',
+  baseURL: process.env.REACT_APP_GS_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "apiKey": 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==',
+    "code": process.env.REACT_APP_GS_API_KEY,
   },
 });
 
-const code = 'Rt0SPeq_qEgW965i4tqGMJ78nKjLRSmRmyYG9Ql3tpGDAzFuEWpToQ==';
+const code = process.env.REACT_APP_GS_API_KEY;
 
 // FARM APIS
 export const getField = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.get<any>("field", {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -31,7 +31,7 @@ export const getField = async (cropperRef: string): Promise<any> => {
 export const updateField = async (field: any, cropperRef: string): Promise<any> => {
   try {
     const response = await api.put<any>("field", field, {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -47,7 +47,7 @@ export const updateField = async (field: any, cropperRef: string): Promise<any> 
 export const getFieldMetaData = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.get<any>("field/metadata", {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -63,7 +63,7 @@ export const getFieldMetaData = async (cropperRef: string): Promise<any> => {
 export const deactivateField = async (cropperRef: string): Promise<any> => {
   try {
     const response = await api.put<any>("field/deactivate", null, {
-      params: { cropperRef },
+      params: { cropperRef, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -80,7 +80,7 @@ export const deactivateField = async (cropperRef: string): Promise<any> => {
 export const getFields = async (partyId: string): Promise<any> => {
   try {
     const response = await api.get<any>("fields", {
-      params: { partyId },
+      params: { partyId, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -96,7 +96,7 @@ export const getFields = async (partyId: string): Promise<any> => {
 export const getFieldsMetaData = async (partyId: string): Promise<any> => {
   try {
     const response = await api.get<any>("fields/metadata", {
-      params: { partyId },
+      params: { partyId, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -144,8 +144,10 @@ export const getUnlinkedFields = async (partyId: string): Promise<any> => {
 
 export const createFarmFieldLink = async (cropperRef: string, farmId: string): Promise<any> => {
   try {
+    console.log(cropperRef);
+    console.log(farmId);
     const response = await api.put<any>("farm/field/link", null, {
-      params: { cropperRef, farmId },
+      params: { cropperRef, farmId, code },
     });
     return response.data;
   } catch (error: any) {

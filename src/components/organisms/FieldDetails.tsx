@@ -5,11 +5,24 @@ import {
   Button,
   Paper,
   Box,
+  SelectChangeEvent,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import TextBox from "../atom/textBox";
+import Dropdown from "../atom/dropdown";
+import { getOrganizationFarms } from "../../api-ffm-service";
+import { useFetchData } from "../../hooks/useFethData";
+import { Farm } from "../../models/farm.interface";
+import { useGlobalState } from "../../GlobalState";
+import { createFarmFieldLink } from "../../api-gs-service";
 
 const FieldForm = ({ fieldData }) => {
+  const { selectedOrganization } = useGlobalState();
+  const [farms, setFarms] = useState<Farm[]>([]);
+  useFetchData(getOrganizationFarms, setFarms, undefined, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
+
   const [formData, setFormData] = useState({
     name: "",
     size: "",
@@ -20,8 +33,6 @@ const FieldForm = ({ fieldData }) => {
     cropHistory: "",
     notes: "",
   });
-
-  console.log(formData);
 
   useEffect(() => {
     if (fieldData) {
@@ -39,11 +50,22 @@ const FieldForm = ({ fieldData }) => {
   }, [fieldData]);
 
   const handleChange = (event) => {
+    console.log(event);
     const { name, value, checked } = event.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]:
-        name === "irrigated" || name === "seasonalField" ? checked : value,
+        name === "irrigated" || name === "seasonalField" || name === "farm"
+          ? checked
+          : value,
+    }));
+  };
+
+  const handleDropdownChange = (event: SelectChangeEvent<string | number>) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
     }));
   };
 
@@ -51,7 +73,14 @@ const FieldForm = ({ fieldData }) => {
     event.preventDefault();
     // Handle form submission (e.g., send data to server)
     console.log("Form data submitted:", formData);
+    createFarmFieldLink(fieldData.cropperRef, formData.farm);
   };
+
+  // Convert farms array to dropdown items
+  const farmItems = farms.map((farm) => ({
+    value: farm.farmIdentifier,
+    label: farm.farm,
+  }));
 
   return (
     <Paper elevation={3} sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}>
@@ -60,14 +89,12 @@ const FieldForm = ({ fieldData }) => {
         <Box sx={{ overflow: "auto" }}>
           <TextBox
             label="Field Name"
-            //name="name"
             value={formData.name}
             onChange={handleChange}
             sx={{ marginTop: 1 }}
           />
           <TextBox
             label="Size"
-            //name="size"
             value={formData.size}
             onChange={handleChange}
             sx={{ marginTop: 1 }}
@@ -83,13 +110,15 @@ const FieldForm = ({ fieldData }) => {
             }
             label="Irrigated Field"
           />
-          <TextBox
+
+          <Dropdown
             label="Farm"
-            //name="farm"
-            value={formData.farm}
-            onChange={handleChange}
-            sx={{ marginTop: 1 }}
-          />
+            name="farm"
+            value={fieldData.farmId}
+            items={farmItems}
+            onChange={handleDropdownChange}
+          ></Dropdown>
+
           <FormControlLabel
             control={
               <Checkbox

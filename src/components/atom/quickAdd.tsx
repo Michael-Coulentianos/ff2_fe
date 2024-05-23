@@ -18,6 +18,7 @@ import theme from "../../theme";
 import AddIcon from "@mui/icons-material/Add";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import { useGlobalState } from '../../GlobalState';
+import { getFields } from "../../api-gs-service";
 import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 
@@ -37,12 +38,14 @@ export default function QuickAdd() {
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [fields, setFields] = useState<any[]>([]);
 
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
   useFetchData(getLegalEntities, setLegalEntities);
   useFetchData(getNoteTypes, setNoteTypes);
+  useFetchData(getFields, setFields, undefined, [selectedOrganization?.partyIdentifier ?? 0]);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -209,6 +212,7 @@ export default function QuickAdd() {
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
           notes={undefined}
+          fields={fields}
         />
         <Tooltip title="Quick Add">
           <IconButton
