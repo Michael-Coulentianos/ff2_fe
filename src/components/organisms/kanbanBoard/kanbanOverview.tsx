@@ -5,20 +5,13 @@ import {
   ColumnDirective,
 } from "@syncfusion/ej2-react-kanban";
 import { registerLicense } from "@syncfusion/ej2-base";
+import { formatDate } from "../../../utils/Utilities";
 import {
   getActivities,
   getActivityStatuses,
   updateActivityStatus,
-  getNotes,
-  createNote,
-  getOrganizations,
-  getNoteTypes,
-  createOrganization,
-  updateOrganization,
-  getLegalEntities,
   getActivityCategories,
   getSeasonStages,
-  createActivity,
   updateActivity,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
@@ -67,25 +60,29 @@ const KanbanBoard = () => {
   useFetchData(getSeasonStages, setSeasonStages);
 
   useEffect(() => {
-    if (activities.length > 0) {
-      const transformedData = activities.map((activity) => ({
-        Id: activity.activityId,
-        Title: activity.name,
-        Status: activity.status,
-        Summary: activity.description,
-        Type: "Task",
-        Priority: "Normal",
-        Tags: activity.category,
-        Estimate: 1,
-        Assignee: activity.assignedTo,
-        RankId: activity.activityStatusId,
-        Color: "#02897B",
-        ClassName: "e-task, e-normal, e-assignee",
-        activity: activity
-      }));
+    if (activities.length > 0 && activityStatuses.length > 0) {
+      const transformedData = activities.map((activity) => {
+        return {
+          Id: activity.activityId,
+          Title: activity.name,
+          Status: activity.status,
+          Summary: activity.description,
+          Type: "Task",
+          Priority: "Normal",
+          Tags: activity.category,
+          Estimate: 1,
+          Assignee: activity.assignedTo,
+          RankId: 0,
+          Color: "#02897B",
+          ClassName: "e-task, e-normal, e-assignee",
+          activity: activity
+          ,
+        };
+      });
       setTasks(transformedData);
+
     }
-  }, [activities]);
+  }, [activities, activityStatuses]);
 
   const handleDragStop = async (args) => {
     const { data } = args;
@@ -136,7 +133,6 @@ const KanbanBoard = () => {
     fetchData(getActivities, setActivities, undefined, [selectedOrganization?.organizationId ?? 0]);
     closeModal();
   };
-  console.log(selectedTask?.activity);
 
   return (
     <>
@@ -152,7 +148,7 @@ const KanbanBoard = () => {
                 headerField: "Title",
                 tagsField: "Tags",
                 grabberField: "Color",
-                footerCssField: "ClassName",
+                footerCssField: "Assignee",
               }}
               dragStop={handleDragStop}
               cardClick={handleCardClick}
