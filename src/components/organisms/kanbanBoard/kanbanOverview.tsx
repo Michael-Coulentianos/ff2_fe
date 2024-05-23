@@ -12,7 +12,6 @@ import {
   getActivityCategories,
   getSeasonStages,
   updateActivity,
-  getNotes,
   createActivity,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
@@ -110,6 +109,23 @@ const KanbanBoard = () => {
 
     try {
       await updateActivityStatus(statusUpdate);
+      console.log(movedTask);
+      const updatedTasks = tasks.map((task) => {
+        if (task.Id === movedTask.Id) {
+          return {
+            ...task,
+            Status: movedTask.Status,
+            activity: {
+              ...task.activity,
+              status: movedTask.Status,
+              activityStatusId: newStatusObj.key,
+            },
+          };
+        }
+        return task;
+      });
+
+      setTasks(updatedTasks);
     } catch (error) {
       console.error("Error updating task status:", error);
     }
@@ -132,16 +148,18 @@ const KanbanBoard = () => {
   const handleFormSubmit = async (formData) => {
     formData.partyId = selectedOrganization?.partyId;
     try {
-      await updateActivity(formData);
+      if (selectedTask) {
+        await updateActivity(formData);
+      } else {
+        await createActivity(formData);
+      }
       await fetchData(getActivities, setActivities, undefined, [
         selectedOrganization?.organizationId ?? 0,
       ]);
     } catch (error) {
-      console.error("Error updating activity:", error);
+      console.error(`Error ${selectedTask ? "updating" : "creating"} activity:`, error);
     }
     closeModal();
-    console.log(activities);
-    console.log(formData);
   };
 
   return (
