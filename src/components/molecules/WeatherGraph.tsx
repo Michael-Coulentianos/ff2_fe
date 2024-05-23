@@ -11,7 +11,7 @@ const WeatherGraph: React.FC = () => {
       <Iframe
         url="https://app-fieldmaptool-qa.azurewebsites.net/chart/ce2ad131-7f99-2b3d-a67b-b8513246b723/weather/"
         width="100%"
-        height="460px"
+        height="260px"
         display="initial"
         position="relative"
         frameBorder={0}

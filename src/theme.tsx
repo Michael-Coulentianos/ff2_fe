@@ -9,7 +9,7 @@ const theme = createTheme({
     },
     secondary: {
       main: "#F1A81E",
-      light: "#F3D9DA",
+      light: "#ECBA5E",
     },
     error: {
       main: "#f44336",
@@ -28,6 +28,22 @@ const theme = createTheme({
       secondary: "#555",
       disabled: "#aaa",
     },
+  },
+  typography: {
+    fontFamily: [
+      "Poppins",
+      "Inter",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
   },
 });
 

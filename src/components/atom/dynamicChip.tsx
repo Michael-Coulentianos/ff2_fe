@@ -2,24 +2,27 @@ import React from "react";
 import { Chip } from "@mui/material";
 
 interface DynamicChipProps {
-  label: string;
+  name: string;
+  types: any[];
 }
 
-const DynamicChip: React.FC<DynamicChipProps> = ({ label }) => {
-  // Define the background color mappings based on chip text
-  const backgroundColors: { [key: string]: string } = {
-    General: "#3C4F1E",
-    "Crop Analysis": "#F1A81E",
-    Infection: "#DC3545",
-    Damage: "#C96421",
+interface Property {
+  key: string;
+  value: string;
+}
+
+const DynamicChip: React.FC<DynamicChipProps> = ({ name, types }) => {
+  const getColorFromProperties = (properties: Property[]): string => {
+    const colorProp = properties.find(prop => prop.key.toLowerCase() === "color");
+    return colorProp ? colorProp.value : "#3C4F1E";
   };
 
-  // Determine the background color based on the chip text
-  const backgroundColor = backgroundColors[label] || "#3C4F1E"; // Default to black if text does not match any mapping
+  const type = types.find(t => t.name === name);
+  const backgroundColor = type ? getColorFromProperties(JSON.parse(type.properties as unknown as string)) : "#3C4F1E";
 
   return (
     <Chip
-      label={label}
+      label={name}
       style={{ backgroundColor, color: "#ffffff", width: "110px" }}
     />
   );

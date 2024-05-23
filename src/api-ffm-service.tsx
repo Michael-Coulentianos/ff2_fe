@@ -1,21 +1,24 @@
 import axios from "axios";
-import { Note } from "./models/note.interface";
-import { NoteType } from "./models/noteType.interface";
-import { Farm } from "./models/farm.interface";
-import { LegalEntity } from "./models/legalEntity.interface";
-import { Organization } from "./models/organization.interface";
-import { UserProfile } from "./models/userProfile.interface";
-import { ApiResponse } from './models/apiResponse.interface';
 import { CreateOrganization } from "./models/createOrganization.interface";
-import { AnyCnameRecord } from "dns";
+import { LegalEntity } from "./models/legalEntity.interface";
+import { NoteType } from "./models/noteType.interface";
+import { ResponseApi } from "./models/ResponseApi.interface";
+import { UserProfile } from "./models/userProfile.interface";
+import { Activity } from "./models/activity.interface";
+import { Farm } from "./models/farm.interface";
+import { Note } from "./models/note.interface";
+import { Organization } from "./models/organization.interface";
+
 
 const api = axios.create({
-  baseURL: "https://func-farmmanagement-api-dev.azurewebsites.net/api/",
+  baseURL: process.env.REACT_APP_FFM_BASE_URL + '/api/',
   headers: {
     "Content-Type": "application/json",
-    "x-api-key": "7E80B3AB-A941-4C36-BA76-6ECA579F3CCB",
+    "x-api-key": process.env.REACT_APP_FFM_API_KEY,
   },
 });
+
+let azureUserId = '';
 
 export const setAzureUserId = (userId) => {
   api.interceptors.request.use(config => {
@@ -24,16 +27,18 @@ export const setAzureUserId = (userId) => {
   }, error => {
     return Promise.reject(error);
   });
+
+  azureUserId = userId;
 }
 
 //User Profile CRUD APIs
 export const getUserProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await api.get<ApiResponse<UserProfile>>("UserDetails");
+    const response = await api.get<ResponseApi<UserProfile>>("UserDetails");
+
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
-
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -44,12 +49,10 @@ export const getUserProfile = async (): Promise<UserProfile> => {
   }
 };
 
-export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ApiResponse<string>> => {
+export const updateUserProfile = async (userProfile: Partial<UserProfile>): Promise<ResponseApi<string>> => {
   try {
-    
-    console.log("Req", userProfile);
-    const response = await api.put<ApiResponse<string>>("/UpdateUserProfile", userProfile);
-    console.log("Response", response);
+    userProfile.azureUserId = azureUserId ? azureUserId : '';
+    const response = await api.put<ResponseApi<string>>("/UpdateUserProfile", userProfile);
 
     return response.data;
   } catch (error: any) {
@@ -62,9 +65,13 @@ export const updateUserProfile = async (userProfile: Partial<UserProfile>): Prom
 };
 
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<CreateOrganization> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<string>> => {
   try {
-    const response = await api.post<ApiResponse<any>>("/CreateOrganization", organization);
+    organization.azureUserId = azureUserId ? azureUserId : '';
+
+    console.log(organization);
+    const response = await api.post<ResponseApi<any>>("/CreateOrganization", organization);
+    console.log(response);
     
     return response.data.details;
   } catch (error: any) {
@@ -78,7 +85,7 @@ export const createOrganization = async (organization: Partial<CreateOrganizatio
 
 export const getOrganizations = async (): Promise<Organization[]> => {
   try {
-    const response = await api.get<ApiResponse<Organization[]>>("Organizations");
+    const response = await api.get<ResponseApi<Organization[]>>("Organizations");
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -93,14 +100,12 @@ export const getOrganizations = async (): Promise<Organization[]> => {
   }
 };
 
-export const updateOrganization = async (organization: Partial<Organization>): Promise<ApiResponse<string>> => {
+export const updateOrganization = async (organization: Partial<Organization>): Promise<ResponseApi<string>> => {
   try {
-    
-    console.log("Req", organization);
-
-    const response = await api.put<ApiResponse<string>>("/UpdateOrganization", organization);
-    console.log("Response", response);
-
+    organization.azureUserId = azureUserId ? azureUserId : '';
+    const response = await api.put<ResponseApi<string>>("/UpdateOrganization", organization);
+    console.log(organization);
+    console.log(response);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -116,7 +121,7 @@ export const deleteOrganization = async (partyId: number): Promise<void> => {
     const response = await api.delete(`RemoveOrganization`, {
       data: {
         PartyId: partyId,
-        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+        AzureUserId: azureUserId,
       },
     });
 
@@ -147,7 +152,7 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
       }
     };
 
-    const response = await api.get<ApiResponse<Organization[]>>("OrganizationById", config);
+    const response = await api.get<ResponseApi<Organization[]>>("OrganizationById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -165,7 +170,9 @@ export const getOrganizationById = async (OrganizationId: number): Promise<Organ
 //Farm CRUD APIs
 export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
-    const response = await api.post<ApiResponse<Farm>>("/CreateOrganization",farm);
+    farm.azureUserId = azureUserId;
+    const response = await api.post<ResponseApi<Farm>>("/CreateFarm",farm);
+    console.log(response);
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -176,10 +183,16 @@ export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   }
 };
 
-export const getFarm = async (farmId: number): Promise<Farm[]> => {
+export const getOrganizationFarms = async (organizationId: number): Promise<Farm[]> => {
   try {
-    const response = await api.get<Farm[]>(`/GetFarm/${farmId}`);
-    return response.data;
+    const config = {
+      headers: {
+        "x-OrganizationId": organizationId
+      }
+    };
+
+    const response = await api.get<ResponseApi<Farm[]>>("OrganizationFarms", config);
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to retrieve farm: ${error.response.data}`);
@@ -189,10 +202,14 @@ export const getFarm = async (farmId: number): Promise<Farm[]> => {
   }
 };
 
-export const updateFarm = async (farm: Farm): Promise<Farm> => {
+
+export const updateFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
-    const response = await api.put<Farm>(`/UpdateFarm/${farm.farmId}`, farm);
-    return response.data;
+    farm.azureUserId = azureUserId;
+    const response = await api.put<ResponseApi<Farm>>("/UpdateFarm",farm);
+    console.log(response);
+
+    return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {
       throw new Error(`Failed to update farm: ${error.response.data}`);
@@ -204,13 +221,28 @@ export const updateFarm = async (farm: Farm): Promise<Farm> => {
 
 export const deleteFarm = async (farmId: number): Promise<void> => {
   try {
-    const response = await api.delete<void>(`/DeleteFarm/${farmId}`);
-    return response.data; 
+    const response = await api.delete(`RemoveFarm`, {
+      data: {
+        FarmId: farmId,
+        AzureUserId: azureUserId,
+      },
+    });
+
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`Deletion failed with message: ${response.data.message}`);
+    }
+
+    if (response.data.details) {
+      console.log('Deletion details:', response.data.details);
+    }
+
   } catch (error: any) {
     if (error.response && error.response.data) {
-      throw new Error(`Failed to delete farm: ${error.response.data}`);
+      throw new Error(`Failed to delete farm: ${error.response.data.error || error.response.data}`);
+    } else if (error.request) {
+      throw new Error('No response received during the deletion process');
     } else {
-      throw new Error('Something went wrong while deleting the farm');
+      throw new Error(`Error during the deletion process: ${error.message}`);
     }
   }
 };
@@ -223,7 +255,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
       }
     };
     
-    const response = await api.get<ApiResponse<Farm>>("OrganizationFarmById", config);
+    const response = await api.get<ResponseApi<Farm>>("OrganizationFarmById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -238,8 +270,7 @@ export const getOrganizationFarmById = async (farmId: number): Promise<Farm> => 
 };
 
 //Note CRUD APIs
-export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
-  console.log(note);
+export const createNote = async(note: Partial<any>): Promise<ResponseApi<any>> => {
   
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -247,9 +278,12 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
   formData.append('PartyId', note.partyId ?? '');
-  formData.append('AzureUserId', note.azureUserId);
+  formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
 
+  if(note.attachment){
+    formData.append('Attachment', note.attachment);
+  }
   try {
     const response = await fetch('https://func-farmmanagement-api-dev.azurewebsites.net/api/AddNote', {
       method: 'POST',
@@ -258,7 +292,6 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Connection': 'keep-alive',
-        'User-Agent': 'YourAppNameHere'
       },
       body: formData
     });
@@ -267,7 +300,7 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       throw new Error('Network response was not ok');
     }
 
-    const result: ApiResponse<string> = await response.json();
+    const result: ResponseApi<string> = await response.json();
     return result;
   } catch (error: any) {
     console.error('Error during note create:', error);
@@ -275,9 +308,15 @@ export const createNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   }
 };
 
-export const getNotes = async (): Promise<Note[]> => {
+export const getNotes = async (organizationId: number): Promise<Note[]> => {
   try {
-      const response = await api.get<ApiResponse<Note[]>>("Notes");
+      const config = {
+        headers: {
+          "x-OrganizationId": organizationId
+        }
+      };
+
+      const response = await api.get<ResponseApi<Note[]>>("Notes", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -302,7 +341,7 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
       }
     };
 
-      const response = await api.get<ApiResponse<Note>>("NoteById", config);
+      const response = await api.get<ResponseApi<Note>>("NoteById", config);
       if (response.data.statusCode === 200 && response.data.message === "SUCCESS") {
           return response.data.details;
       } else {
@@ -319,7 +358,7 @@ export const getNoteById = async (noteId: number): Promise<Note> => {
   }
 };
 
-export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> => {
+export const updateNote = async(note: Partial<any>): Promise<ResponseApi<any>> => {
   console.log(note);
   const formData = new FormData();
   formData.append('NoteTypeId', note.noteTypeId ?? '');
@@ -328,7 +367,7 @@ export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
   formData.append('Location', note.location ?? '');
   formData.append('Description', note.description ?? '');
   formData.append('PartyId', note.partyId ?? '');
-  formData.append('AzureUserId', note.azureUserId);
+  formData.append('AzureUserId', azureUserId);
   formData.append('Property', note.property);
   
   try {
@@ -348,7 +387,7 @@ export const updateNote = async(note: Partial<any>): Promise<ApiResponse<any>> =
       throw new Error('Network response was not ok');
     }
 
-    const result: ApiResponse<string> = await response.json();
+    const result: ResponseApi<string> = await response.json();
     result.details = note.noteId ?? '';
 
     console.log('Update successful:', result);
@@ -364,7 +403,7 @@ export const deleteNote = async (noteId: number): Promise<void> => {
     const response = await api.delete(`RemoveNote`, {
       data: {
         NoteId: noteId,
-        AzureUserId: "fd78de01-3de4-4cd7-8080-27e9aa6b6008",
+        AzureUserId: azureUserId,
       },
     });
 
@@ -389,11 +428,8 @@ export const deleteNote = async (noteId: number): Promise<void> => {
 
 //NoteType CRUD APIs
 export const getNoteTypes = async (): Promise<NoteType[]> => {
-  console.log("tytytyty");
-
   try {
-    const response = await api.get<ApiResponse<NoteType[]>>("NoteTypes");
-    console.log(response);
+    const response = await api.get<ResponseApi<NoteType[]>>("NoteTypes");
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -416,7 +452,7 @@ export const getNoteTypeById = async (noteTypeId: number): Promise<NoteType> => 
       }
     };
 
-    const response = await api.get<ApiResponse<NoteType>>("NoteTypeById", config);
+    const response = await api.get<ResponseApi<NoteType>>("NoteTypeById", config);
     if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
       throw new Error(`API call unsuccessful: ${response.data.message}`);
     }
@@ -434,8 +470,207 @@ export const getNoteTypeById = async (noteTypeId: number): Promise<NoteType> => 
 //LegalEntities CRUD APIs
 export const getLegalEntities = async (): Promise<LegalEntity[]> => {
   try {
-      const response = await api.get<ApiResponse<LegalEntity[]>>("LegalEntities");
+      const response = await api.get<ResponseApi<LegalEntity[]>>("LegalEntities");
 
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+//Activity CRUD APIs
+export const getActivityCategories = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ResponseApi<any[]>>("ActivityCategories");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const getSeasonStages = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ResponseApi<any[]>>("SeasonStages");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const getActivityStatuses = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ResponseApi<any[]>>("ActivityStatuses");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+      
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const getActivityById = async (): Promise<any[]> => {
+  try {
+      const response = await api.get<ResponseApi<any[]>>("ActivityById");
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+      
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const getActivities = async (organizationId: number): Promise<Activity[]> => {
+  try {
+    const config = {
+      headers: {
+        "x-OrganizationId": organizationId
+      }
+    };
+
+    const response = await api.get<ResponseApi<Activity[]>>("Activities", config);
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+      
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch activities: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching activities', error);
+          return []; 
+      }
+  }
+};
+
+export const createActivity = async (activity: Partial<Activity>): Promise<any[]> => {
+  try {
+      activity.azureUserId = azureUserId;
+      console.log(activity);
+      const response = await api.post<ResponseApi<any>>("CreateActivity", activity);
+      console.log(response);
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to create a activity: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while creating activity', error);
+          return []; 
+      }
+  }
+};
+
+export const updateActivity = async (activity: Partial<Activity>): Promise<any[]> => {
+  try {
+
+    activity.azureUserId = azureUserId;
+    activity.statusId = activity.activityStatusId;
+    console.log(activity);
+
+      const response = await api.put<ResponseApi<any>>("UpdateActivity", activity);
+      console.log(response);
+
+      if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+          throw new Error(`API call unsuccessful: ${response.data.message}`);
+      }
+
+      return response.data.details || [];
+  } catch (error: any) {
+      if (error.response && error.response.data) {
+          throw new Error(`Failed to fetch legal entity types: ${error.response.data.message || error.message}`);
+      } else {
+          console.error('Something went wrong while fetching legal entity types', error);
+          return []; 
+      }
+  }
+};
+
+export const deleteActivity = async (activityId: number): Promise<void> => {
+  try {
+    const response = await api.delete(`RemoveActivity`, {
+      data: {
+        ActivityId: activityId,
+        AzureUserId: azureUserId,
+      },
+    });
+
+    if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
+      throw new Error(`Deletion failed with message: ${response.data.message}`);
+    }
+
+    if (response.data.details) {
+      console.log('Deletion details:', response.data.details);
+    }
+
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to delete note: ${error.response.data.error || error.response.data}`);
+    } else if (error.request) {
+      throw new Error('No response received during the deletion process');
+    } else {
+      throw new Error(`Error during the deletion process: ${error.message}`);
+    }
+  }
+};
+
+export const updateActivityStatus = async (activityStatus: any): Promise<any[]> => {
+  try {
+      activityStatus.azureUserId = azureUserId;
+      console.log(activityStatus);
+
+      const response = await api.post<ResponseApi<any>>("CreateActivityStatus", activityStatus);
+      console.log(response);
       if (response.data.statusCode !== 200 || response.data.message !== "SUCCESS") {
           throw new Error(`API call unsuccessful: ${response.data.message}`);
       }

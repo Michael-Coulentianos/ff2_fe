@@ -1,68 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Button } from "@mui/material";
-import ActionButtons from "../molecules/actionButtons";
+import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
+import { Edit } from "@mui/icons-material";
 import DynamicTable from "../organisms/table";
 import {
   getNotes,
   deleteNote,
   createNote,
   updateNote,
-  getNoteById,
-  getOrganizations,
-  getNoteTypes
-} from "../../apiService";
+  getNoteTypes,
+} from "../../api-ffm-service";
 import NotesDialog from "../organisms/notesDialog";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
-import { useMsal } from "@azure/msal-react";
-
-interface DataItem {
-  id: string;
-  [key: string]: any;
-}
-
-interface ColumnConfig {
-  label: string;
-  dataKey: keyof DataItem;
-  renderCell: (item: DataItem) => React.ReactNode;
-}
+import moment from "moment";
+import DynamicChip from "../atom/dynamicChip";
+import FileDisplay from "../organisms/fileDisplay";
+import { useFetchData, fetchData } from "../../hooks/useFethData";
+import Loading from "./loading";
+import { useGlobalState } from "../../GlobalState";
+import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
-  const [noteTypes, setNoteTypes] = useState<any[]>([]);
+  const [noteTypes, setNoteTypes] = useState<any>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const { selectedOrganization, activeAccount } = useGlobalState();
 
-
-  const { instance } = useMsal();
-  const activeAccount = instance.getActiveAccount();
-
-  function useFetchData(fetchFunction, setData, setIsLoading) {
-    useEffect(() => {
-      async function fetchData() {
-        setIsLoading(true);
-        try {
-          const data = await fetchFunction();
-          setData(data);
-        } catch (error) {
-          console.error(
-            `Error fetching data from ${fetchFunction.name}:`,
-            error
-          );
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      fetchData();
-    }, [fetchFunction, setData, setIsLoading]);
-  }
-
-  useFetchData(getNotes, setNotes, setIsLoading);
+  useFetchData(getNotes, setNotes, setIsLoading, [
+    selectedOrganization?.organizationId ?? 0,
+  ]);
   useFetchData(getNoteTypes, setNoteTypes, setIsLoading);
-  useFetchData(getOrganizations, setOrganizations, setIsLoading);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -72,6 +41,8 @@ const Notes: React.FC = () => {
   const handleCloseForm = () => {
     setSelectedNote(null);
     setFormOpen(false);
+    setIsLoading(false);
+    setConfirmOpen(false);
   };
 
   const handleEdit = (note) => {
@@ -84,70 +55,78 @@ const Notes: React.FC = () => {
     setConfirmOpen(true);
   };
 
-  const addPropertyIfNotEmpty = (obj, key, value) => {
-    if (value !== null && value !== "" && value !== undefined) {
-        obj[key] = value;
-    }
-};
-
   const handleSubmit = async (formData: any) => {
-
-    formData.partyId = organizations.find(org => org.name === formData.party)?.partyId;
-    formData.noteTypeId = noteTypes.find(nt => nt.name === formData.noteType)?.noteTypeId;
+    setIsLoading(true);
+    formData.azureUserId = activeAccount.localAccountId;
+    formData.partyId = selectedOrganization?.partyId;
+    formData.noteTypeId = noteTypes.find(
+      (nt) => nt.name === formData.noteType
+    )?.noteTypeId;
 
     const currentDate = new Date();
 
-// Extract individual components of the date
-const year = currentDate.getFullYear(); // e.g., 2024
-const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month starts from 0
-const day = String(currentDate.getDate()).padStart(2, '0');
-const hours = String(currentDate.getHours()).padStart(2, '0');
-const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-const milliseconds = String(currentDate.getMilliseconds()).padStart(7, '0');
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+    const milliseconds = String(currentDate.getMilliseconds()).padStart(7, "0");
 
-// Construct the formatted date string
-const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
-
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`;
 
     formData.createdDate = formattedDate;
 
     const properties = {};
-    addPropertyIfNotEmpty(properties, 'severityType', formData.severityType);
-    addPropertyIfNotEmpty(properties, 'severitySubType', formData.severitySubType);
-    addPropertyIfNotEmpty(properties, 'cropType', formData.cropType);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateHeads', formData.yieldEstimateHeads);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateRowWidth', formData.yieldEstimateRowWidth);
-    addPropertyIfNotEmpty(properties, 'yieldEstimateGrams', formData.yieldEstimateGrams);
-    addPropertyIfNotEmpty(properties, 'cropAnalysisType', formData.cropAnalysisType);
-    addPropertyIfNotEmpty(properties, 'cropSubType', formData.cropSubType);
-    addPropertyIfNotEmpty(properties, 'severityScale', formData.severityScale);
+    addPropertyIfNotEmpty(properties, "severityType", formData.severityType);
+    addPropertyIfNotEmpty(
+      properties,
+      "severitySubType",
+      formData.severitySubType
+    );
+    addPropertyIfNotEmpty(properties, "cropType", formData.cropType);
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateHeads",
+      formData.yieldEstimateHeads
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateRowWidth",
+      formData.yieldEstimateRowWidth
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "yieldEstimateGrams",
+      formData.yieldEstimateGrams
+    );
+    addPropertyIfNotEmpty(
+      properties,
+      "cropAnalysisType",
+      formData.cropAnalysisType
+    );
+    addPropertyIfNotEmpty(properties, "cropSubType", formData.cropSubType);
+    addPropertyIfNotEmpty(properties, "severityScale", formData.severityScale);
 
     if (selectedNote) {
       try {
-        formData.azureUserId = activeAccount
-          ? activeAccount.localAccountId
-          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
         formData.property = JSON.stringify(properties);
         await updateNote(formData);
-        const updatedNotes = notes.filter(note => note.noteId !== formData.noteId);
-        setNotes([...updatedNotes, formData]);
       } catch (error) {
         console.error("Error updating note:", error);
       }
     } else {
       try {
-        formData.azureUserId = activeAccount
-          ? activeAccount.localAccountId
-          : "E25C69BF-3815-4937-A2A2-78D878441DE7";
         formData.property = JSON.stringify(properties);
         await createNote(formData);
-        setNotes([...notes, formData]);
       } catch (error) {
         console.error("Error creating note:", error);
       }
     }
-    setIsLoading(false);
+    
+    fetchData(getNotes, setNotes, setIsLoading, [
+      selectedOrganization?.organizationId ?? 0,
+    ]);
     handleCloseForm();
   };
 
@@ -156,18 +135,17 @@ const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${
       setIsLoading(true);
       try {
         await deleteNote(selectedNote.noteId);
-        setNotes(
-          notes.filter((note) => note.noteId !== selectedNote.noteId)
-        );
+        setNotes(notes.filter((note) => note.noteId !== selectedNote.noteId));
       } catch (error) {
         console.error("Failed to delete organization:", error);
       }
       setConfirmOpen(false);
       handleCloseForm();
+      setIsLoading(false);
     }
   };
 
-  const myColumns: ColumnConfig[] = [
+  const myColumns = [
     {
       label: "Owner",
       dataKey: "owner",
@@ -189,49 +167,118 @@ const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${
       renderCell: (item) => <span>{item.description}</span>,
     },
     {
-      label: "Date Created ",
-      dataKey: "date",
-      renderCell: (item) => <span>{item.createdDate}</span>,
+      label: "Type",
+      dataKey: "noteType",
+      renderCell: (item) => (
+        <DynamicChip name={item.noteType} types={noteTypes} />
+      ),
     },
     {
-      label: "Action Buttons",
+      label: "Attachment",
+      dataKey: "attachment",
+      renderCell: (item) =>
+        item.attachment ? (
+          <FileDisplay
+            fileName={item.fileName || "Attachment"}
+            fileType={item.fileType || "unknown"}
+            fileUrl={item.attachment}
+          />
+        ) : null,
+    },
+    {
+      label: "Date",
+      dataKey: "date",
+      renderCell: (item) => (
+        <p>Date: {moment(item.createdDate).format("DD MMMM YYYY")}</p>
+      ),
+    },
+    {
+      label: "",
       dataKey: "actionBtns",
       renderCell: (item) => (
-        <ActionButtons
-          onEdit={() => handleEdit(item)}
-          onDelete={() => handleDelete(item)}
-        ></ActionButtons>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<Edit />}
+          onClick={() => handleEdit(item)}
+        >
+          Edit
+        </Button>
       ),
     },
   ];
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Button variant="contained" onClick={handleOpenForm} color="primary">
-            Add Note
-          </Button>
-          <NotesDialog
-            isOpen={formOpen}
-            onClose={handleCloseForm}
-            onSubmit={handleSubmit}
-            formData={selectedNote}
-            noteTypes={noteTypes}
-            organizations={organizations}
-          />
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h5">Notes</Typography>
+            <Divider sx={{ marginTop: 1 }} />
+          </Grid>
+          <Grid item xs={12}>
+            {notes.length === 0 && (
+              <Paper
+                sx={{
+                  padding: "20px",
+                  margin: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ m: 2 }}>
+                  You do not have any notes. Please click the button below to
+                  add an organization.
+                </Typography>
+                <Button
+                  variant="contained"
+                  onClick={handleOpenForm}
+                  color="primary"
+                >
+                  Add Note
+                </Button>
+              </Paper>
+            )}
+            <NotesDialog
+              isOpen={formOpen}
+              onClose={handleCloseForm}
+              onSubmit={handleSubmit}
+              formData={selectedNote}
+              noteTypes={noteTypes}
+            />
+          </Grid>
+
+          {notes.length > 0 && (
+            <>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  onClick={handleOpenForm}
+                  color="primary"
+                >
+                  Add Note
+                </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <DynamicTable
+                  data={notes}
+                  columns={myColumns}
+                  rowsPerPage={5}
+                />
+                <GenericConfirmDialog
+                  open={confirmOpen}
+                  onCancel={() => setConfirmOpen(false)}
+                  onConfirm={handleConfirm}
+                  title="Confirm Deletion"
+                  content="Are you sure you want to delete this note?"
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
-        <Grid item xs={12}>
-          <DynamicTable data={notes} columns={myColumns} rowsPerPage={5}/>
-          <GenericConfirmDialog
-            open={confirmOpen}
-            onCancel={() => setConfirmOpen(false)}
-            onConfirm={handleConfirm}
-            title="Confirm Deletion"
-            content="Are you sure you want to delete this note?"
-          />
-        </Grid>
-      </Grid>
+      )}
     </>
   );
 };

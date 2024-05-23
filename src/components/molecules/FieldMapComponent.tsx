@@ -1,16 +1,33 @@
 import { Paper } from "@mui/material";
 import React from "react";
 import Iframe from "react-iframe";
+import { useGlobalState } from "../../GlobalState";
 
-const FieldMapComponent: React.FC = () => {
+interface FieldMapProps {
+  height: string;
+  fieldData?: any;
+}
+
+const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData }) => {
+  const { selectedOrganization, activeAccount } = useGlobalState();
+  const azureUserId = activeAccount?.localAccountId;
+
+  const cropperRef = fieldData?.cropperRef;
+  const partyIdentifier = selectedOrganization?.partyIdentifier;
+  let mapUrl = ""
+  if (cropperRef !== undefined){
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${partyIdentifier}/${cropperRef}`;
+} else 
+{
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${partyIdentifier}`;
+
+}
   return (
-    <Paper elevation={2} sx={{ backgroundColor: "white", margin: 1 }}>
+    <Paper elevation={2} sx={{ backgroundColor: "white", margin: 1, p: 0.2 }}>
       <Iframe
-        url="https://app-fieldmaptool-qa.azurewebsites.net/field/ce2ad131-7f99-2b3d-a67b-b8513246b723/bd4d51fd-bb76-4bb0-8ec1-a7978a139974"
+        url={mapUrl}
         width="100%"
-        height="400px"
-        id="myId"
-        className="myClassname"
+        height={height}
         display="initial"
         position="relative"
         frameBorder={0}

@@ -57,7 +57,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                 .map((item) => (
                   <TableRow key={item.id}>
                     {columns.map((column) => (
-                      <TableCell key={column.label}>
+                      <TableCell key={`${item.id}-${column.dataKey}`}>
                         {column.renderCell(item)}
                       </TableCell>
                     ))}

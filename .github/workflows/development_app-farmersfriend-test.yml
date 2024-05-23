@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - app-FarmersFriend-dev
+name: Build and deploy Node.js app to Azure Web App - app-FarmersFriend-test
 
 on:
   push:
@@ -16,19 +13,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: npm install, build, and test
+      - name: Install dependencies and node-prune
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm ci
+          npm install -g node-prune
+          node-prune
+
+      - name: Build the app
+        run: CI=false npm run build --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -42,8 +52,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -53,19 +61,17 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
-      - name: Login to Azure
+
+      - name: Azure CLI Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_ECC818C0A1064E3FB56B45C81B7F1985 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DC6B26DFD6FE455DBC8E72A353231D1F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1082C0F2BB76403D843A025DC4C0E880 }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'app-FarmersFriend-dev'
+          app-name: 'app-FarmersFriend-test'
           slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A602BB8867134769BA25C4C5F387A675 }}
           package: .
-          

@@ -14,6 +14,7 @@ export interface CreateOrganization {
   registrationNumber: string;
   createdDate: string;
   contactPerson: ContactPerson;
+  contactDetail: ContactPerson[];
   sameAddress: boolean;
   physicalAddress: Address;
   postalAddress: Address;

@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import SearchBar from "../molecules/searchBar";
 import {
   Box,
@@ -6,84 +7,69 @@ import {
   IconButton,
   Link,
   Toolbar,
-  styled,
   useTheme,
   useMediaQuery,
+  Typography,
+  Tooltip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
-import NavigationDrawer from "./navigationDrawer";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import EditIcon from "@mui/icons-material/Edit";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import MuiAppBar from "@mui/material/AppBar";
 import FFlogo from "../../assets/logos/fflogoGreen.png";
 import ApplicationsMenu from "../molecules/appMenu";
-import { loginRequest } from "../../../src/auth-config";
+import { loginRequest } from "../../auth-config";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
 import { UserProfileForm } from "./profileSettings";
-import { setAzureUserId } from "../../apiService";
-const drawerWidth = 240;
+import { useGlobalState } from "../../GlobalState";
+import QuickAdd from "../atom/quickAdd";
+import { useState } from "react";
+import { Logout } from "@mui/icons-material";
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
+export default function Header() {
   const theme = useTheme();
-
   const { instance } = useMsal();
-
-  if (instance) {
-    const activeAccount = instance.getActiveAccount();
-    if (activeAccount) {
-      setAzureUserId(activeAccount.localAccountId);
-    }
-  }
+  const { selectedOrganization } = useGlobalState();
 
   const handleLoginRedirect = () => {
     instance.loginRedirect(loginRequest).catch((error) => console.log(error));
   };
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   const handleLogoutRedirect = () => {
+    setOpenDialog(true);
+  };
+  const handleLogoutConfirm = () => {
     instance.logoutRedirect();
+    setOpenDialog(false);
   };
 
+  const handleLogoutCancel = () => {
+    setOpenDialog(false);
+  };
   const isSmScreen = useMediaQuery(theme.breakpoints.up("sm"));
   return (
     <Box>
       <CssBaseline />
-      <AppBar
-        sx={{ backgroundColor: theme.palette.common.white }}
+      <MuiAppBar
+        sx={{
+          backgroundColor: theme.palette.common.white,
+          height: "50px",
+        }}
         position="fixed"
-        open={open}
       >
         <Toolbar>
-          <NavigationDrawer
-            open={open}
-            handleDrawerOpen={handleDrawerOpen}
-            handleDrawerClose={handleDrawerClose}
-          ></NavigationDrawer>
-          <ApplicationsMenu></ApplicationsMenu>
+          <ApplicationsMenu />
           <Link href={"/"} underline="none" sx={{ mr: 1 }}>
-            <img src={FFlogo} alt="FFlogo" height={"40px"} width={"40px"} />
+            <img src={FFlogo} alt="FFlogo" height={"30px"} width={"30px"} />
           </Link>
           {isSmScreen && (
             <Link
@@ -97,48 +83,67 @@ export default function Header({ open, handleDrawerOpen, handleDrawerClose }) {
               Farmers Friend
             </Link>
           )}
-          <IconButton
-            aria-label="edit"
-            sx={{
-              color: "white",
-              backgroundColor: theme.palette.secondary.main,
-              width: "30px",
-              height: "30px",
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-          <SearchBar></SearchBar>
-
+          {selectedOrganization && (
+            <>
+              <QuickAdd />
+              <SearchBar />
+            </>
+          )}
           <AuthenticatedTemplate>
-            <UserProfileForm></UserProfileForm>
-            <IconButton
-              aria-label="edit"
-              sx={{
-                color: theme.palette.primary.main,
-              }}
-              onClick={handleLogoutRedirect}
-            >
-              <ExitToAppIcon
+            <UserProfileForm />
+            <Tooltip title="Log Out">
+              <IconButton
+                aria-label="exit"
                 sx={{
                   color: theme.palette.primary.main,
                   width: "30px",
                   height: "30px",
                 }}
-              />
-            </IconButton>
+                onClick={handleLogoutRedirect}
+              >
+                <Logout fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Dialog
+              open={openDialog}
+              onClose={handleLogoutCancel}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Confirm Logout"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Are you sure you want to log out?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleLogoutCancel} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleLogoutConfirm}
+                  color="primary"
+                  autoFocus
+                >
+                  Logout
+                </Button>
+              </DialogActions>
+            </Dialog>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <Button
               variant="outlined"
               onClick={handleLoginRedirect}
-              sx={{ height: "30px" }}
+              sx={{ maxHeight: "25px" }}
             >
-              Sign in
+              <Typography noWrap>Sign in</Typography>
             </Button>
           </UnauthenticatedTemplate>
         </Toolbar>
-      </AppBar>
+      </MuiAppBar>
     </Box>
   );
 }

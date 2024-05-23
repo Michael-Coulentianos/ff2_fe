@@ -1,24 +1,19 @@
 import React from "react";
-import {
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-} from "@mui/material";
+import { Controller, useFormContext } from "react-hook-form";
+import { Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
 
-const ColoredRadio = () => {
+const ColoredRadio = ({ id, value, onChange, error, helperText }) => {
   return (
-    <FormControl component="fieldset" sx={{ marginBottom: 2, marginTop: 1 }}>
-      <FormLabel>Risk Percentage</FormLabel>
-      <RadioGroup row>
+    <FormControl component="fieldset" sx={{ marginBottom: 2, marginTop: 1 }} error={error}>
+      <FormLabel component="legend">Risk Percentage</FormLabel>
+      <RadioGroup row value={value} onChange={onChange} sx={{ justifyContent: "space-between" }}>
         <FormControlLabel
           value="0-20%"
           control={
             <Radio
               sx={{
                 color: "#6F884B",
-                "& .MuiSvgIcon-root": { fontSize: 40 },
+                "& .MuiSvgIcon-root": { fontSize: 20 },
                 "&.Mui-checked": { color: "#6F884B" },
               }}
             />
@@ -31,8 +26,8 @@ const ColoredRadio = () => {
           control={
             <Radio
               sx={{
-                color: "#34B6A8F",
-                "& .MuiSvgIcon-root": { fontSize: 40 },
+                color: "#4B6A8F",
+                "& .MuiSvgIcon-root": { fontSize: 20 },
                 "&.Mui-checked": { color: "#4B6A8F" },
               }}
             />
@@ -46,7 +41,7 @@ const ColoredRadio = () => {
             <Radio
               sx={{
                 color: "#F1A81E",
-                "& .MuiSvgIcon-root": { fontSize: 40 },
+                "& .MuiSvgIcon-root": { fontSize: 20 },
                 "&.Mui-checked": { color: "#F1A81E" },
               }}
             />
@@ -60,7 +55,7 @@ const ColoredRadio = () => {
             <Radio
               sx={{
                 color: "#C96421",
-                "& .MuiSvgIcon-root": { fontSize: 40 },
+                "& .MuiSvgIcon-root": { fontSize: 20 },
                 "&.Mui-checked": { color: "#C96421" },
               }}
             />
@@ -74,7 +69,7 @@ const ColoredRadio = () => {
             <Radio
               sx={{
                 color: "#DC3545",
-                "& .MuiSvgIcon-root": { fontSize: 40 },
+                "& .MuiSvgIcon-root": { fontSize: 20 },
                 "&.Mui-checked": { color: "#DC3545" },
               }}
             />
@@ -83,6 +78,7 @@ const ColoredRadio = () => {
           labelPlacement="bottom"
         />
       </RadioGroup>
+      {error && <p style={{ color: "red" }}>{helperText}</p>}
     </FormControl>
   );
 };
