@@ -85,7 +85,7 @@ const FieldForm = ({ fieldData }) => {
   }));
 
   return (
-    <Paper elevation={3} sx={{ marginTop: 1, padding: 1 }}>
+    <Paper elevation={3} sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}>
       <Typography variant="h6">Field Details</Typography>
       <form onSubmit={handleSubmit}>
         <Box sx={{ overflow: "auto" }}>
@@ -93,13 +93,13 @@ const FieldForm = ({ fieldData }) => {
             label="Field Name"
             value={formData.name}
             onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
           />
           <TextBox
             label="Size"
             value={formData.size}
             onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
           />
           <FormControlLabel
             control={
@@ -137,7 +137,7 @@ const FieldForm = ({ fieldData }) => {
             //name="activities"
             value={formData.activities}
             onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
             multiline
             rows={1.5}
           />
@@ -146,21 +146,21 @@ const FieldForm = ({ fieldData }) => {
             //name="cropHistory"
             value={formData.cropHistory}
             onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
           />
           <TextBox
             label="Notes"
             //name="notes"
             value={formData.notes}
             onChange={handleChange}
-            sx={{ marginTop: 0.5 }}
+            sx={{ marginTop: 1 }}
             multiline
             rows={1.5}
           />
+          <Button type="submit" variant="contained" color="primary">
+            Save
+          </Button>
         </Box>
-        <Button type="submit" variant="contained" color="primary">
-          Save
-        </Button>
       </form>
     </Paper>
   );

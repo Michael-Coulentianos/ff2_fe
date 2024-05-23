@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import "./App.css";
-import { AuthenticatedTemplate, MsalProvider, UnauthenticatedTemplate } from "@azure/msal-react";
+import {
+  AuthenticatedTemplate,
+  MsalProvider,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
 import { ThemeProvider } from "@mui/material";
 import { BrowserRouter as Router } from "react-router-dom";
 import theme from "./theme";
@@ -11,6 +15,7 @@ import LogoutPage from "./components/pages/loggedOut";
 import NavigationDrawer from "./components/organisms/navigationDrawer";
 import { useGlobalState } from "./GlobalState";
 import StepperForm from "./components/organisms/stepperForm";
+import Footer from "./components/organisms/footer";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -69,13 +74,14 @@ const App = ({ instance }) => {
             <Main
               open={selectedOrganization ? open : false}
               sx={{
-                minHeight: "87vh",
-                marginTop: selectedOrganization ? 5 : 6,
+                minHeight: "88.3vh",
+                marginTop: 6,
                 padding: "10px",
               }}
             >
               {selectedOrganization ? <Routing /> : <StepperForm />}
             </Main>
+            {selectedOrganization && <Footer open={open} />}
           </Router>
         </AuthenticatedTemplate>
       </MsalProvider>

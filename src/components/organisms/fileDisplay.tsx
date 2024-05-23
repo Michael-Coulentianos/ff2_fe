@@ -83,7 +83,7 @@ const FileDisplay: React.FC<FileDisplayProps> = ({ fileName, fileType, fileUrl }
                     backgroundColor: getBackgroundColor(fileType),
                     color: '#ffffff',
                     width: 'auto',
-                    padding: '10px',
+                    padding: '2px',
                     display: 'flex',
                     alignItems: 'center'
                 }}
