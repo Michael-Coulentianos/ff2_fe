@@ -15,7 +15,7 @@ interface FormData {
   field: string;
   cost: string;
   contractWorkCost: string;
-  properties: any;
+  Properties: any;
   activityCategoryId: number;
   activityStatusId: number;
   seasonStageId: number;
@@ -229,7 +229,7 @@ const ActivityDialog = ({
       field: data.field,
       cost: data.cost,
       contractWorkCost: data.contractWorkCost,
-      properties: JSON.stringify(properties),
+      Properties: JSON.stringify(properties),
       activityCategoryId: data.activityCategoryId,
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
