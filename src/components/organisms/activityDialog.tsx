@@ -190,7 +190,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
         label: "Field",
         type: "select",
         options: fields.map((field) => ({
-          value: 20, //field.fieldId,
+          value: field.fieldId,
           label: field.name,
           id: field.cropperRef
         })),

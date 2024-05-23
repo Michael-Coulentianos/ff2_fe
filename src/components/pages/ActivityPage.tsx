@@ -210,10 +210,14 @@ const Activities: React.FC = () => {
               seasonStages={seasonStages}
               notes={notes}
               fields={fields}
-              handleDelete={()=>handleDelete}
+              handleDelete={handleDelete}
             />
           </Grid>
           <Grid item xs={12}>
+          <Typography variant="body1" gutterBottom>
+              Activity List
+              <Divider sx={{ marginTop: 1 }} />
+            </Typography>
             <DynamicTable
               data={activities}
               columns={myColumns}
