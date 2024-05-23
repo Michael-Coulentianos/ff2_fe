@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Collapse,
-  Drawer,
-  Grid,
-  List,
-  ListItem,
-  styled,
-} from "@mui/material";
+import { Collapse, Drawer, Grid, List, ListItem, styled } from "@mui/material";
 import { useMsal } from "@azure/msal-react";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
@@ -84,14 +77,14 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
     <Grid container>
       <Grid item>
         <Drawer
-          sx={{ 
+          sx={{
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
               boxSizing: "border-box",
               backgroundColor: "#3C4F1E",
               marginTop: "50px",
-              paddingBottom: "25px",
+              paddingBottom: "35px",
             },
           }}
           variant="persistent"
@@ -104,6 +97,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
           <List
             sx={{
               marginTop: "15px",
+              zIndex: -1,
             }}
           >
             {[
@@ -143,15 +137,15 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
                 {text === "My Farm" && (
                   <CollapsibleSection open={open}>
                     <MenuItem
-                    text="Farm Management"
-                    icon={undefined}
-                    href="/"
-                  />
-                  <MenuItem
-                    text="Activity Management"
-                    icon={undefined}
-                    href="/activity"
-                  />
+                      text="Farm Management"
+                      icon={undefined}
+                      href="/"
+                    />
+                    <MenuItem
+                      text="Activity Management"
+                      icon={undefined}
+                      href="/activity"
+                    />
                   </CollapsibleSection>
                 )}
                 {text === "Operations" && (
@@ -193,7 +187,7 @@ const NavigationDrawer = ({ open, handleDrawerOpen, handleDrawerClose }) => {
           </List>
         </Drawer>
       </Grid>
-      <Grid item style={{ zIndex: 1300 }}>
+      <Grid item style={{ zIndex: 1300, position: "fixed" }}>
         <DrawerToggleButton
           open={open}
           onClick={open ? handleDrawerClose : handleDrawerOpen}

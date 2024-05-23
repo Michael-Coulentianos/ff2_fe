@@ -3,6 +3,7 @@ import React from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import theme from "../../theme";
 
 interface DrawerToggleButtonProps {
   open: boolean;
@@ -24,10 +25,10 @@ const DrawerToggleButton: React.FC<DrawerToggleButtonProps> = ({
         height: "20px",
         width: "20px",
         fontSize: "5px",
-        top: open ? "150px" : "85px",
+        top: open ? "140px" : "95px",
         marginLeft: open ? "228px" : "0px",
         position: "absolute",
-        backgroundColor: "orange",
+        backgroundColor: theme.palette.secondary.main,
         "&:hover": {
           backgroundColor: "#F1A81E",
           color: "#00000",
