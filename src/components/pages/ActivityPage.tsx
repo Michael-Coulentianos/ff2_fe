@@ -213,10 +213,6 @@ const Activities: React.FC = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1" gutterBottom>
-              Activity List
-              <Divider sx={{ marginTop: 1 }} />
-            </Typography>
             <DynamicTable
               data={activities}
               columns={myColumns}
