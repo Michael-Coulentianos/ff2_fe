@@ -15,11 +15,12 @@ interface FormData {
   field: string;
   cost: string;
   contractWorkCost: string;
-  Properties: any;
+  properties: any;
   activityCategoryId: number;
   activityStatusId: number;
   seasonStageId: number;
   partyId: number;
+  property: any;
 }
 
 interface Field {
@@ -68,18 +69,12 @@ const ActivityDialog = ({
       const status = activityStatus.find(
         (status) => status.value === formData.status
       );
+      const properties = formData.property ? JSON.parse(formData.property) : {};
       reset({
-        activityId: formData.activityId,
-        name: formData.name,
-        description: formData.description,
+        ...formData,
+        ...properties, 
         startDate: formatDate(formData.startDate),
         endDate: formatDate(formData.endDate),
-        field: formData.field,
-        cost: formData.cost,
-        contractWorkCost: formData.contractWorkCost,
-        activityCategoryId: formData.activityCategoryId,
-        seasonStageId: formData.seasonStageId,
-        partyId: formData.partyId,
         activityStatusId: status ? status.key : null,
       });
     }
@@ -234,11 +229,12 @@ const ActivityDialog = ({
       field: data.field,
       cost: data.cost,
       contractWorkCost: data.contractWorkCost,
-      Properties: JSON.stringify(properties),
+      properties: JSON.stringify(properties),
       activityCategoryId: data.activityCategoryId,
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
       activityStatusId: data.activityStatusId,
+      property: undefined
     };
 
     onSubmit(finalData);

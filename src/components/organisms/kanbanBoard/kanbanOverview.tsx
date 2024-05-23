@@ -121,10 +121,8 @@ const KanbanBoard = () => {
 
   const handleFormSubmit = async (formData) => {
     formData.partyId = selectedOrganization?.partyId;
-    console.log(formData);
     try {
       const ty = await updateActivity(formData);
-    console.log(ty);
 
     } catch (error) {
       console.error("Error updating activity:", error);
