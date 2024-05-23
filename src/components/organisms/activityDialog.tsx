@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
-import { formatDate } from "../../utils/Utilities";
+import { addPropertyIfNotEmpty, formatDate } from "../../utils/Utilities";
 
 interface FormData {
   activityId: string;
@@ -82,12 +82,6 @@ const ActivityDialog = ({
   }, [formData, reset]);
 
   const activityCategoryId = watch("activityCategoryId");
-
-  function addPropertyIfNotEmpty(obj: any, key: string, value: any) {
-    if (value !== null && value !== undefined) {
-      obj[key] = value;
-    }
-  }
 
   const processProperties = (properties, parentKey = ""): Field[] => {
     return properties.flatMap((prop) => {

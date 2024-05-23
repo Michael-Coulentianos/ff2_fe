@@ -1,6 +1,12 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Checkbox, FormControlLabel, Button, Container, Typography } from "@mui/material";
+import {
+  Checkbox,
+  FormControlLabel,
+  Button,
+  Container,
+  Typography,
+} from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -19,7 +25,7 @@ const validationSchema = yup.object({
   addressLine2: yup.string().optional(),
   city: yup.string().required("Required"),
   code: yup.string().required("Required"),
-  sameAddress: yup.boolean().default(true)
+  sameAddress: yup.boolean().default(true),
 });
 
 type OnBoardingOrganisationFormProps = {
@@ -27,16 +33,24 @@ type OnBoardingOrganisationFormProps = {
   legalEntities: any[];
 };
 
-const OnBoardingOrganisationForm: ForwardRefRenderFunction<unknown, OnBoardingOrganisationFormProps> = ({ onSubmit, legalEntities }, ref) => {
-  const { control, handleSubmit, formState: { errors }, watch } = useForm({
+const OnBoardingOrganisationForm: ForwardRefRenderFunction<
+  unknown,
+  OnBoardingOrganisationFormProps
+> = ({ onSubmit, legalEntities }, ref) => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      sameAddress: true
+      sameAddress: true,
     },
   });
 
- useImperativeHandle(ref, () => ({
-    submitForm: handleSubmit(onSubmit)
+  useImperativeHandle(ref, () => ({
+    submitForm: handleSubmit(onSubmit),
   }));
 
   const checkboxValue = watch("sameAddress");
@@ -78,66 +92,56 @@ const OnBoardingOrganisationForm: ForwardRefRenderFunction<unknown, OnBoardingOr
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Add Organisation
       </Typography>
       <form>
-        <Box sx={{ mt: 4 }}>
-          <FormSection
-            title="Organisation Details"
-            fields={fieldDefinitions.organizationDetails}
-            control={control}
-            errors={errors}
-            columns={2}
-          />
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <FormSection
-            title="Contact Details"
-            fields={fieldDefinitions.contact}
-            control={control}
-            errors={errors}
-            columns={2}
-          />
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <FormSection
-            title="Physical Address"
-            fields={fieldDefinitions.address}
-            control={control}
-            errors={errors}
-            columns={2}
-          />
-        </Box>
-        <Box sx={{ mt: 4 }}>
-          <Controller
-            name="sameAddress"
-            control={control}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    {...field}
-                    checked={field.value}
-                    onChange={(e) => field.onChange(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Postal address the same"
-              />
-            )}
-          />
-        </Box>
-        {!checkboxValue && (
-          <Box sx={{ mt: 4 }}>
-            <FormSection
-              title="Postal Address"
-              fields={fieldDefinitions.postal}
-              control={control}
-              errors={errors}
-              columns={2}
+        <FormSection
+          title="Organisation Details"
+          fields={fieldDefinitions.organizationDetails}
+          control={control}
+          errors={errors}
+          columns={2}
+        />
+        <FormSection
+          title="Contact Details"
+          fields={fieldDefinitions.contact}
+          control={control}
+          errors={errors}
+          columns={2}
+        />
+        <FormSection
+          title="Physical Address"
+          fields={fieldDefinitions.address}
+          control={control}
+          errors={errors}
+          columns={2}
+        />
+        <Controller
+          name="sameAddress"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  {...field}
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label="Postal address the same"
             />
-          </Box>
+          )}
+        />
+        {!checkboxValue && (
+          <FormSection
+            title="Postal Address"
+            fields={fieldDefinitions.postal}
+            control={control}
+            errors={errors}
+            columns={2}
+          />
         )}
       </form>
     </Container>

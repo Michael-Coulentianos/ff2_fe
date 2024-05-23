@@ -55,6 +55,7 @@ const Activities: React.FC = () => {
   useFetchData(getNotes, setNotes, undefined, [
     selectedOrganization?.organizationId ?? 0,
   ]);
+
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);

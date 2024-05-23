@@ -12,15 +12,14 @@ import {
   getActivityCategories,
   getSeasonStages,
   updateActivity,
-  getNotes,
   createActivity,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
-import { fetchData, useFetchData } from "../../../hooks/useFethData";
+import { fetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
@@ -51,38 +50,41 @@ const KanbanBoard = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
-  const [notes, setNotes] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
-  useFetchData(getActivities, setActivities, undefined, [
-    selectedOrganization?.organizationId ?? 0,
-  ]);
-  useFetchData(getActivityStatuses, setActivityStatuses);
-  useFetchData(getActivityCategories, setActivityCategories);
-  useFetchData(getSeasonStages, setSeasonStages);
-  useFetchData(getNotes, setNotes, undefined, [
-    selectedOrganization?.organizationId ?? 0,
-  ]);
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      await Promise.all([
+        fetchData(getActivities, setActivities, undefined, [
+          selectedOrganization?.organizationId ?? 0,
+        ]),
+        fetchData(getActivityStatuses, setActivityStatuses),
+        fetchData(getActivityCategories, setActivityCategories),
+        fetchData(getSeasonStages, setSeasonStages),
+      ]);
+      setIsDataFetched(true);
+    };
+
+    fetchDataAsync();
+  }, [selectedOrganization?.organizationId]);
 
   useEffect(() => {
     if (activities.length > 0 && activityStatuses.length > 0) {
-      const transformedData = activities.map((activity) => {
-        return {
-          Id: activity.activityId,
-          Title: activity.name,
-          Status: activity.status,
-          Summary: activity.description,
-          Type: "Task",
-          Priority: "Normal",
-          Tags: activity.category,
-          Estimate: 1,
-          Assignee: activity.assignedTo,
-          RankId: 0,
-          Color: "#02897B",
-          ClassName: "e-task, e-normal, e-assignee",
-          activity: activity,
-        };
-      });
+      const transformedData = activities.map((activity) => ({
+        Id: activity.activityId,
+        Title: activity.name,
+        Status: activity.status,
+        Summary: activity.description,
+        Type: "Task",
+        Priority: "Normal",
+        Tags: activity.category,
+        Estimate: 1,
+        Assignee: activity.assignedTo,
+        RankId: 0,
+        Color: "#02897B",
+        ClassName: "e-task, e-normal, e-assignee",
+        activity: activity,
+      }));
       setTasks(transformedData);
     }
   }, [activities, activityStatuses]);
@@ -107,6 +109,23 @@ const KanbanBoard = () => {
 
     try {
       await updateActivityStatus(statusUpdate);
+      console.log(movedTask);
+      const updatedTasks = tasks.map((task) => {
+        if (task.Id === movedTask.Id) {
+          return {
+            ...task,
+            Status: movedTask.Status,
+            activity: {
+              ...task.activity,
+              status: movedTask.Status,
+              activityStatusId: newStatusObj.key,
+            },
+          };
+        }
+        return task;
+      });
+
+      setTasks(updatedTasks);
     } catch (error) {
       console.error("Error updating task status:", error);
     }
@@ -128,28 +147,22 @@ const KanbanBoard = () => {
 
   const handleFormSubmit = async (formData) => {
     formData.partyId = selectedOrganization?.partyId;
-    if (formData?.selectedActivity) {
-      try {
+    try {
+      if (selectedTask) {
         await updateActivity(formData);
-      } catch (error) {
-        console.error("Error updating activity:", error);
-      }
-    } else {
-      try {
+      } else {
         await createActivity(formData);
-      } catch (error) {
-        console.error("Error creating activity:", error);
       }
+      await fetchData(getActivities, setActivities, undefined, [
+        selectedOrganization?.organizationId ?? 0,
+      ]);
+    } catch (error) {
+      console.error(
+        `Error ${selectedTask ? "updating" : "creating"} activity:`,
+        error
+      );
     }
-
-    fetchData(
-      getActivities,
-      setActivities,
-      setIsLoading[selectedOrganization?.organizationId ?? 0]
-    );
     closeModal();
-    console.log(activities);
-    console.log(formData);
   };
 
   return (
@@ -165,30 +178,34 @@ const KanbanBoard = () => {
       <div className="kanban-control-section">
         <div className="col-lg-12 control-section">
           <div className="control-wrapper">
-            <KanbanComponent
-              id="kanban"
-              keyField="Status"
-              dataSource={tasks}
-              cardSettings={{
-                contentField: "Summary",
-                headerField: "Title",
-                tagsField: "Tags",
-                grabberField: "Color",
-                footerCssField: "Assignee",
-              }}
-              dragStop={handleDragStop}
-              cardClick={handleCardClick}
-            >
-              <ColumnsDirective>
-                {activityStatuses.map((status) => (
-                  <ColumnDirective
-                    key={status.key}
-                    headerText={status.value}
-                    keyField={status.value}
-                  />
-                ))}
-              </ColumnsDirective>
-            </KanbanComponent>
+            {isDataFetched ? (
+              <KanbanComponent
+                id="kanban"
+                keyField="Status"
+                dataSource={tasks}
+                cardSettings={{
+                  contentField: "Summary",
+                  headerField: "Title",
+                  tagsField: "Tags",
+                  grabberField: "Color",
+                  footerCssField: "Assignee",
+                }}
+                dragStop={handleDragStop}
+                cardClick={handleCardClick}
+              >
+                <ColumnsDirective>
+                  {activityStatuses.map((status) => (
+                    <ColumnDirective
+                      key={status.key}
+                      headerText={status.value}
+                      keyField={status.value}
+                    />
+                  ))}
+                </ColumnsDirective>
+              </KanbanComponent>
+            ) : (
+              <CircularProgress color="primary" />
+            )}
           </div>
         </div>
       </div>
@@ -200,7 +217,7 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={notes}
+          notes={[]}
           fields={[]}
           formData={selectedTask?.activity}
         />
