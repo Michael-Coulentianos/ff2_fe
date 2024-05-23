@@ -141,7 +141,7 @@ const OrganizationSettings: React.FC = () => {
       try {
         await deleteOrganization(selectedOrg.partyId);
         fetchData(getOrganizations, setOrganizations, setIsLoading);
-        if(selectedOrg === selectedOrganization && organizations.length > 0){
+        if (selectedOrg === selectedOrganization && organizations.length > 0) {
           setSelectedOrganization(organizations[0]);
         }
       } catch (error) {
@@ -203,8 +203,8 @@ const OrganizationSettings: React.FC = () => {
         <>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h1 className="title">Organisation settings</h1>
-              <Divider />
+              <Typography variant="h5">Organisation settings</Typography>
+              <Divider sx={{ marginTop: 1 }} />
             </Grid>
             <Grid item xs={12}>
               {organizations.length === 0 && (

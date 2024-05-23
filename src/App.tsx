@@ -13,9 +13,11 @@ import Header from "./components/organisms/header";
 import Routing from "./routing";
 import LogoutPage from "./components/pages/loggedOut";
 import NavigationDrawer from "./components/organisms/navigationDrawer";
-import { useGlobalState } from "./GlobalState";
 import StepperForm from "./components/organisms/stepperForm";
 import Footer from "./components/organisms/footer";
+import { getOrganizationFarms, getOrganizations } from "./api-ffm-service";
+import { useFetchData } from "./hooks/useFethData";
+import Loading from "./components/pages/loading";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -38,7 +40,13 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
 
 const App = ({ instance }) => {
   const [open, setOpen] = useState(true);
-  const { selectedOrganization } = useGlobalState();
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [farms, setFarms] = useState<any[]>([]);
+  const [ready, setReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useFetchData(getOrganizationFarms, setFarms, setIsLoading);
+  useFetchData(getOrganizations, setOrganizations, setIsLoading);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -46,6 +54,24 @@ const App = ({ instance }) => {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  if (farms.length > 0 && organizations.length > 0) {
+    if (ready === false) {
+      setReady(true);
+    }
+  }
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <Loading />;
+    } else {
+      if (ready && !isLoading) {
+        return <Routing />;
+      } else if (!ready && !isLoading) {
+        <StepperForm />;
+      }
+    }
   };
 
   return (
@@ -64,7 +90,7 @@ const App = ({ instance }) => {
         <AuthenticatedTemplate>
           <Router>
             <Header />
-            {selectedOrganization && (
+            {ready && (
               <NavigationDrawer
                 open={open}
                 handleDrawerOpen={handleDrawerOpen}
@@ -72,16 +98,16 @@ const App = ({ instance }) => {
               />
             )}
             <Main
-              open={selectedOrganization ? open : false}
+              open={ready ? open : false}
               sx={{
                 minHeight: "88.3vh",
                 marginTop: 6,
                 padding: "10px",
               }}
             >
-              {selectedOrganization ? <Routing /> : <StepperForm />}
+              {renderContent()}
             </Main>
-            {selectedOrganization && <Footer open={open} />}
+            {ready && <Footer open={open} />}
           </Router>
         </AuthenticatedTemplate>
       </MsalProvider>

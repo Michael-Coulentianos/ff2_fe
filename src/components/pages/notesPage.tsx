@@ -219,8 +219,8 @@ const Notes: React.FC = () => {
       {!isLoading && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <h1 className="title">Notes</h1>
-            <Divider />
+            <Typography variant="h5">Notes</Typography>
+            <Divider sx={{ marginTop: 1 }} />
           </Grid>
           <Grid item xs={12}>
             {notes.length === 0 && (
