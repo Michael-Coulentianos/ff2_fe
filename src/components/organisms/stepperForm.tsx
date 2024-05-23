@@ -12,12 +12,13 @@ import {
   createFarm,
   createOrganization,
   getLegalEntities,
+  getOrganizations,
 } from "../../api-ffm-service";
 import { useGlobalState } from "../../GlobalState";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LegalEntity } from "../../models/legalEntity.interface";
-import { useFetchData } from "../../hooks/useFethData";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
 import OnBoardingFarmAndField from "./onBoardingFarmAndField";
 import { CreateOrganization } from "../../models/createOrganization.interface";
@@ -37,7 +38,8 @@ const stepCaption = [
 export default function StepperForm() {
   const [activeStep, setActiveStep] = useState(0);
   const [legalEntities, setLegalEntities] = useState<LegalEntity[]>([]);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, setSelectedOrganization } = useGlobalState();
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useFetchData(getLegalEntities, setLegalEntities);
@@ -56,8 +58,15 @@ export default function StepperForm() {
 
   const handleFinish = async () => {
     if (farmFormRef.current) {
-      await farmFormRef.current.submitForm();
-      navigate("/settings");
+      farmFormRef.current.submitForm();
+    }
+
+    if(!selectedOrganization){
+      fetchData(getOrganizations, setOrganizations);
+      if(organizations.length > 0){
+        setSelectedOrganization(organizations[0]);
+        navigate("/");
+      }
     }
   };
 
