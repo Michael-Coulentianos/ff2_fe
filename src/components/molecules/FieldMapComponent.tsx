@@ -16,10 +16,10 @@ const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData }) => {
   const cropperRef = fieldData?.cropperRef;
   let mapUrl = ""
   if (cropperRef !== undefined){
-  mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}/${cropperRef}`;
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}/${cropperRef}`;
 } else 
 {
-  mapUrl = `https://app-fieldmaptool-dev.azurewebsites.net/field/${azureUserId}`;
+  mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}`;
 
 }
   return (

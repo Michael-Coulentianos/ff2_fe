@@ -12,6 +12,9 @@ import {
   getNotes,
   getActivities,
 } from "../../api-ffm-service";
+
+
+
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
 import ActivitiesDialog from "../organisms/activityDialog";
 import moment from "moment";
@@ -19,6 +22,7 @@ import Loading from "./loading";
 import { useGlobalState } from '../../GlobalState';
 import { useFetchData, fetchData } from '../../hooks/useFethData';
 import DynamicChip from "../atom/dynamicChip";
+import { getFields } from "../../api-gs-service";
 
 interface DataItem {
   id: string;
@@ -42,6 +46,7 @@ const Activities: React.FC = () => {
   const [selectedActivity, setSelectedActivity] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState<any[]>([]);
+  const [fields, setFields] = useState<any[]>([]);
 
   useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
   useFetchData(getActivities, setActivities, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
@@ -49,6 +54,7 @@ const Activities: React.FC = () => {
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
+  useFetchData(getFields, setFields, setIsLoading, [selectedOrganization?.organizationId ?? 0]);
 
   const handleOpenForm = () => {
     setFormOpen(true);
@@ -195,6 +201,7 @@ const Activities: React.FC = () => {
               activityStatus={activityStatuses}
               seasonStages={seasonStages}
               notes={notes}
+              fields={fields}
             />
           </Grid>
           <Grid item xs={12}>

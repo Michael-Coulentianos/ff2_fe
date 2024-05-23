@@ -39,6 +39,7 @@ const ActivityDialog = ({
   activityStatus,
   seasonStages,
   notes,
+  fields,
   formData,
 }) => {
   const {
@@ -72,7 +73,7 @@ const ActivityDialog = ({
       const properties = formData.property ? JSON.parse(formData.property) : {};
       reset({
         ...formData,
-        ...properties, 
+        ...properties,
         startDate: formatDate(formData.startDate),
         endDate: formatDate(formData.endDate),
         activityStatusId: status ? status.key : null,
@@ -179,7 +180,15 @@ const ActivityDialog = ({
       { id: "description", label: "Description", type: "multiText" },
     ],
     generalActivityDetails2: [
-      { id: "field", label: "Field", type: "text" },
+      {
+        id: "field",
+        label: "Field",
+        type: "select",
+        options: fields?.map((type) => ({
+          label: type.name,
+          value: type.cropperRef,
+        })),
+      },
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
       { id: "cost", label: "Cost", type: "currency" },
     ],
@@ -234,7 +243,7 @@ const ActivityDialog = ({
       seasonStageId: data.seasonStageId,
       partyId: data.partyId,
       activityStatusId: data.activityStatusId,
-      property: undefined
+      property: undefined,
     };
 
     onSubmit(finalData);

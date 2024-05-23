@@ -91,14 +91,12 @@ const FieldForm = ({ fieldData }) => {
         <Box sx={{ overflow: "auto" }}>
           <TextBox
             label="Field Name"
-            //name="name"
             value={formData.name}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
           />
           <TextBox
             label="Size"
-            //name="size"
             value={formData.size}
             onChange={handleChange}
             sx={{ marginTop: 0.5 }}
