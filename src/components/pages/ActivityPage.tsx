@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Grid, Button, Divider, Typography } from "@mui/material";
-import ActionButtons from "../molecules/actionButtons";
+import { Edit } from "@mui/icons-material";
 import DynamicTable from "../organisms/table";
 import {
   getActivityCategories,
@@ -172,13 +172,17 @@ const Activities: React.FC = () => {
       renderCell: (item) => <span>{item.assignedTo}</span>,
     },
     {
-      label: "Action Buttons",
+      label: "",
       dataKey: "actionButtons",
       renderCell: (item) => (
-        <ActionButtons
-          onEdit={() => handleEdit(item)}
-          onDelete={() => handleDelete()}
-        ></ActionButtons>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<Edit />}
+          onClick={() => handleEdit(item)}
+        >
+          Edit
+        </Button>
       ),
     },
   ];
