@@ -13,14 +13,13 @@ import {
   getSeasonStages,
   updateActivity,
   createActivity,
-  getNotes,
 } from "../../../api-ffm-service";
 import { useGlobalState } from "../../../GlobalState";
 import { fetchData } from "../../../hooks/useFethData";
 import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
-import { Button, CircularProgress } from "@mui/material";
+import { Button } from "@mui/material";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
@@ -52,7 +51,6 @@ const KanbanBoard = () => {
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
-  const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
@@ -63,11 +61,8 @@ const KanbanBoard = () => {
         fetchData(getActivityStatuses, setActivityStatuses),
         fetchData(getActivityCategories, setActivityCategories),
         fetchData(getSeasonStages, setSeasonStages),
-      ]),
-        fetchData(getNotes, setNotes, undefined, [
-          selectedOrganization?.organizationId ?? 0,
-        ]),
-        setIsDataFetched(true);
+      ]);
+      setIsDataFetched(true);
     };
 
     fetchDataAsync();
@@ -209,7 +204,7 @@ const KanbanBoard = () => {
                 </ColumnsDirective>
               </KanbanComponent>
             ) : (
-              <CircularProgress color="primary" />
+              <p>Loading...</p>
             )}
           </div>
         </div>
@@ -222,7 +217,7 @@ const KanbanBoard = () => {
           activityCategory={activityCategories}
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
-          notes={notes}
+          notes={[]}
           formData={selectedTask?.activity}
         />
       )}
