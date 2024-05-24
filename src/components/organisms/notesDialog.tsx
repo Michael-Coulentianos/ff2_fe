@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Grid, DialogContent, DialogActions, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -49,7 +49,6 @@ const NotesDialog = ({
   const [file, setFile] = useState<File | null>(null);
 
   const [position, setPosition] = useState<{ lat: number; lng: number }>();
-
   const [address, setAddress] = useState<string>("");
 
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
@@ -214,7 +213,7 @@ const NotesDialog = ({
         severityScale: "",
       });
     }
-  }, [formData, isOpen, reset, noteTypes, setValue]);
+  }, [formData, isOpen, reset, noteTypes, setValue, address]);
 
   const fieldDefinitions = {
     generalNoteDetails: [
