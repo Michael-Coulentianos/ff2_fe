@@ -58,7 +58,7 @@ const Activities: React.FC = () => {
   useFetchData(getActivityStatuses, setActivityStatuses);
   useFetchData(getSeasonStages, setSeasonStages);
   useFetchData(getFields, setFields, setIsLoading, [
-    activeAccount?.localAccountId ?? 0,
+    selectedOrganization?.partyIdentifier ?? 0,
   ]);
 
   const handleOpenForm = () => {

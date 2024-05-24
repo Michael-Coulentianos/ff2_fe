@@ -60,12 +60,12 @@ export default function FarmFieldManagement() {
   const [selectedFarmId, setSelectedFarmId] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentFarm, setCurrentFarm] = useState<Farm | null>(null);
-  const { selectedOrganization } = useGlobalState();
+  const { selectedOrganization, activeAccount } = useGlobalState();
 
   const navigate = useNavigate();
 
   useFetchData(getOrganizationFarms, setFarms, undefined, [selectedOrganization?.organizationId ?? 0]);
-  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier ?? '']);
+  useFetchData(getUnlinkedFields, setUnlinkedFields, undefined, [selectedOrganization?.partyIdentifier  ?? '']);
 
   const toggleFarm = (farmId: number, farmIdentifier: string) => {
     setExpandedFarms((prevState) => ({
