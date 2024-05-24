@@ -207,7 +207,7 @@ const Activities: React.FC = () => {
               activityStatus={activityStatuses}
               seasonStages={seasonStages}
               notes={notes}
-              fields={fields}
+              fieldsMap={fields}
               handleDelete={handleDelete}
             />
             <KanbanBoard></KanbanBoard>

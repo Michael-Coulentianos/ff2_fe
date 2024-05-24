@@ -39,7 +39,7 @@ interface ActivitiesDialogInterface {
   activityStatus: any;
   seasonStages: any;
   notes: any;
-  fields: any;
+  fieldsMap: any;
   formData: any;
   handleDelete?: () => void;
 }
@@ -51,7 +51,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
   activityStatus,
   seasonStages,
   notes,
-  fields,
+  fieldsMap,
   formData,
   handleDelete,
 }) => {
@@ -142,22 +142,22 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
     }
   }, [activityCategoryId, activityCategory]);
 
-  useEffect(() => {
-    if (field) {
-      const selectedField = fields.find(
-        (field) => field.Id === field
-      );
+  // useEffect(() => {
+  //   if (field) {
+  //     const selectedField = fields.find(
+  //       (field) => field.Id === field
+  //     );
 
-      if (selectedField && selectedField.properties) {
-        const properties = JSON.parse(selectedField.properties);
-        const dynamicFields = processProperties(properties);
+  //     if (selectedField && selectedField.properties) {
+  //       const properties = JSON.parse(selectedField.properties);
+  //       const dynamicFields = processProperties(properties);
 
-        setDynamicFields(dynamicFields);
-      } else {
-        setDynamicFields([]);
-      }
-    }
-  }, [field, fields]);
+  //       setDynamicFields(dynamicFields);
+  //     } else {
+  //       setDynamicFields([]);
+  //     }
+  //   }
+  // }, [field, fields]);
 
   const fieldDefinitions = {
     generalActivityDetails: [
@@ -207,7 +207,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
         id: "field",
         label: "Field",
         type: "select",
-        options: fields.map((field) => ({
+        options: fieldsMap.map((field) => ({
           value: field.fieldId,
           label: field.name,
           id: field.cropperRef

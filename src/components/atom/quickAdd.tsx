@@ -225,7 +225,7 @@ export default function QuickAdd() {
           activityStatus={activityStatuses}
           seasonStages={seasonStages}
           notes={notes}
-          fields={fields}
+          fieldsMap={fields}
         />
         <Tooltip title="Quick Add">
           <IconButton
