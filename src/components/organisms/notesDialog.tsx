@@ -6,6 +6,7 @@ import * as yup from "yup";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
+import { Delete } from "@mui/icons-material";
 
 const validationSchema = yup.object({
   title: yup.string().optional(),
@@ -26,7 +27,14 @@ const validationSchema = yup.object({
   severityScale: yup.string().optional(),
 });
 
-const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
+const NotesDialog = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  noteTypes,
+  formData,
+  handleDelete,
+}) => {
   const {
     control,
     handleSubmit,
@@ -41,8 +49,8 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
   const [file, setFile] = useState<File | null>(null);
 
   const [position, setPosition] = useState<{ lat: number; lng: number }>({
-    lat: 0,
-    lng: 0,
+    lat: -30.559482,
+    lng: 22.937506,
   });
 
   const [address, setAddress] = useState<string>("");
@@ -155,10 +163,13 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
   };
 
   useEffect(() => {
-    if (isOpen && formData) {
+    if (onClose && formData) {
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
 
-      const initialPosition = formData.position || { lat: 0, lng: 0 };
+      const initialPosition = formData.position || {
+        lat: -30.559482,
+        lng: 22.937506,
+      };
       setPosition(initialPosition);
 
       const initialAddress = formData.location || "";
@@ -362,7 +373,7 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
               fields={fieldDefinitions.severityNote}
               control={control}
               errors={errors}
-              columns={2}
+              columns={1}
             />
           )}
           {watchNoteType === "Crop/Soil Analysis" && (
@@ -395,6 +406,16 @@ const NotesDialog = ({ isOpen, onClose, onSubmit, noteTypes, formData }) => {
       </DialogContent>
 
       <DialogActions>
+        {formData && (
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<Delete />}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        )}
         <Button
           variant="contained"
           color="primary"

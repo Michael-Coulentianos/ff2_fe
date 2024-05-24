@@ -113,12 +113,14 @@ const MyMapComponent: React.FC<{
         };
         setSelectedPosition(location);
         onLocationSelect(location);
-        console.log("Map clicked at:", location);  // Logging the location
-
         // Reverse geocode to get the address
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({ location }, (results, status) => {
-          if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+          if (
+            status === google.maps.GeocoderStatus.OK &&
+            results &&
+            results[0]
+          ) {
             const address = results[0].formatted_address;
             setInputValue(address); // Update input value with the clicked location address
           } else {
@@ -142,8 +144,8 @@ const MyMapComponent: React.FC<{
         inputValue={inputValue}
       />
       <GoogleMap
-        center={selectedPosition || currentPosition || { lat: -30.559482, lng: 22.937506 }}
-        zoom={15}
+        center={{ lat: -30.559482, lng: 22.937506 }}
+        zoom={selectedSuggestion ? 15 : 5}
         mapContainerStyle={{ height: "200px", width: "535px" }}
         onClick={onMapClick}
         options={{
