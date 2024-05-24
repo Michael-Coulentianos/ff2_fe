@@ -1,10 +1,12 @@
-import { Container, Typography } from "@mui/material";
+import { Container, Paper, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormSection from "../molecules/DynamicFormSection";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import { ForwardRefRenderFunction, forwardRef, useImperativeHandle } from "react";
+import Iframe from "react-iframe";
+import { useGlobalState } from "../../GlobalState";
 
 const validationSchema = yup.object({
   farmName: yup.string().required("Required"),
@@ -23,6 +25,10 @@ const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown, OnBoardingFarmAn
     submitForm: handleSubmit(onSubmit),
   }));
 
+  const { activeAccount } = useGlobalState();
+  const azureUserId = activeAccount?.localAccountId;
+  let mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}`;
+
   return (
     <Container>
       <Typography variant="h5" gutterBottom>
@@ -37,7 +43,16 @@ const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown, OnBoardingFarmAn
           columns={2}
         />
       </form>
-      <FieldMapComponent height={"380"} />
+      <Paper elevation={2} sx={{ backgroundColor: "white", margin: 1, p: 0.2 }}>
+      <Iframe
+        url={mapUrl}
+        width="100%"
+        height="380"
+        display="initial"
+        position="relative"
+        frameBorder={0}
+      />
+    </Paper>
     </Container>
   );
 };
