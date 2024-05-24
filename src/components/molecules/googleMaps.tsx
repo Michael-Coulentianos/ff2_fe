@@ -20,11 +20,11 @@ const MyMapComponent: React.FC<{
   initialLocation?: Location;
   initialAddress?: string;
 }> = ({ onLocationSelect, initialLocation, initialAddress }) => {
-  const [currentPosition, setCurrentPosition] = useState<Location | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<Location>();
   const [selectedPosition, setSelectedPosition] = useState<Location | null>(
     initialLocation || null
   );
-  const [inputValue, setInputValue] = useState(initialAddress || "");
+  const [inputValue, setInputValue] = useState("");
 
   const mapRef = useRef<google.maps.Map | null>(null);
   const [suggestions, setSuggestions] = useState<
@@ -59,8 +59,11 @@ const MyMapComponent: React.FC<{
       mapRef.current?.panTo(initialLocation);
       setSelectedPosition(initialLocation);
     }
+
     if (initialAddress) {
       setInputValue(initialAddress);
+    } else {
+      setInputValue("");
     }
   }, [initialLocation, initialAddress]);
 
@@ -144,8 +147,8 @@ const MyMapComponent: React.FC<{
         inputValue={inputValue}
       />
       <GoogleMap
-        center={{ lat: -30.559482, lng: 22.937506 }}
-        zoom={selectedSuggestion ? 15 : 5}
+        center={currentPosition}
+        zoom={15}
         mapContainerStyle={{ height: "200px", width: "535px" }}
         onClick={onMapClick}
         options={{
