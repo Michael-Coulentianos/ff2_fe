@@ -14,12 +14,13 @@ import { getOrganizations } from "../../api-ffm-service";
 import { useFetchData } from '../../hooks/useFethData';
 import { useGlobalState } from '../../GlobalState';
 import { Organization } from '../../models/organization.interface';
+import { useLocation, useNavigate } from "react-router-dom";
 
 const UserOrganizationComponent: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const theme = useTheme();
-
+  
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
 
   useFetchData(getOrganizations, setOrganizations);
@@ -34,6 +35,7 @@ const UserOrganizationComponent: React.FC = () => {
 
   const handleOrgClick = (org: Organization) => {
     setSelectedOrganization(org);
+    //navigate("/");
     handleClose();
   };
 

@@ -22,6 +22,7 @@ import { useGlobalState } from "../../GlobalState";
 import { getFields } from "../../api-gs-service";
 import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 import { CreateOrganization } from "../../models/createOrganization.interface";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const options = ["New Organisation", "New Note", "New Activity"];
 
@@ -40,6 +41,8 @@ export default function QuickAdd() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [fields, setFields] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useFetchData(getActivityCategories, setActivityCategories);
   useFetchData(getActivityStatuses, setActivityStatuses);
@@ -143,6 +146,7 @@ export default function QuickAdd() {
     }
 
     handleCloseForm();
+    navigate(location.pathname);
   };
 
   const handleSubmitOrg = async (formData: any) => {
@@ -179,6 +183,7 @@ export default function QuickAdd() {
     }
 
     handleCloseForm();
+    navigate(location.pathname);
   };
 
   const handleSubmitAct = async (formData: any) => {
@@ -190,6 +195,7 @@ export default function QuickAdd() {
     }
 
     handleCloseForm();
+    navigate(location.pathname);
   };
 
   return (

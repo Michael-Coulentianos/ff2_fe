@@ -18,6 +18,7 @@ import { useFetchData, fetchData } from "../../hooks/useFethData";
 import Loading from "./loading";
 import { useGlobalState } from "../../GlobalState";
 import { addPropertyIfNotEmpty } from "../../utils/Utilities";
+import ActionButtons from "../molecules/actionButtons";
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -196,14 +197,10 @@ const Notes: React.FC = () => {
       label: "",
       dataKey: "actionBtns",
       renderCell: (item) => (
-        <Button
-          variant="outlined"
-          color="primary"
-          startIcon={<Edit />}
-          onClick={() => handleEdit(item)}
-        >
-          Edit
-        </Button>
+        <ActionButtons
+          onEdit={() => handleEdit(item)}
+          onDelete={() => handleDelete(item)}
+        ></ActionButtons>
       ),
     },
   ];
