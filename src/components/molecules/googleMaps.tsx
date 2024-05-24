@@ -46,12 +46,14 @@ const MyMapComponent: React.FC<{
       autocompleteService.current =
         new google.maps.places.AutocompleteService();
     }
-    navigator.geolocation.getCurrentPosition((position) => {
-      setCurrentPosition({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setCurrentPosition({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
       });
-    });
+    }
   }, [isLoaded]);
 
   useEffect(() => {

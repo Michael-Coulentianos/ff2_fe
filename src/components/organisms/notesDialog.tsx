@@ -48,11 +48,7 @@ const NotesDialog = ({
 
   const [file, setFile] = useState<File | null>(null);
 
-  const [position, setPosition] = useState<{ lat: number; lng: number }>({
-    lat: -30.559482,
-    lng: 22.937506,
-  });
-
+  const [position, setPosition] = useState<{ lat: number; lng: number }>();
   const [address, setAddress] = useState<string>("");
 
   const handleLocationSelect = (location: { lat: number; lng: number }) => {
@@ -60,12 +56,32 @@ const NotesDialog = ({
     if (window.google) {
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ location }, (results, status) => {
-        if (status === window.google.maps.GeocoderStatus.OK && results && results[0]) {
+        if (
+          status === window.google.maps.GeocoderStatus.OK &&
+          results &&
+          results[0]
+        ) {
           const formattedAddress = results[0].formatted_address;
           setAddress(formattedAddress);
           setValue("location", formattedAddress);
         } else {
           console.error("Geocode failed:", status);
+        }
+      });
+    }
+  };
+
+  const handleAddressInput = (address) => {
+    if (window.google) {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+          const location = results[0].geometry.location;
+          const newLocation = {
+            lat: location.lat(),
+            lng: location.lng(),
+          };
+          setPosition(newLocation);
         }
       });
     }
@@ -166,14 +182,8 @@ const NotesDialog = ({
     if (onClose && formData) {
       const noteProperty = JSON.parse(formData.noteProperty || "{}");
 
-      const initialPosition = formData.position || {
-        lat: -30.559482,
-        lng: 22.937506,
-      };
-      setPosition(initialPosition);
-
-      const initialAddress = formData.location || "";
-      setAddress(initialAddress);
+      setAddress(formData.location);
+      handleAddressInput(formData.location);
 
       const initialValues = {
         ...formData,
@@ -191,7 +201,8 @@ const NotesDialog = ({
       };
       reset(initialValues);
     } else {
-      // Set default values when no formData is provided
+      setAddress("");
+      setPosition(undefined);
       reset({
         title: "",
         description: "",
@@ -209,41 +220,6 @@ const NotesDialog = ({
         cropSubType: "",
         severityScale: "",
       });
-
-      // Check if the browser supports Geolocation API
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setPosition({ lat: latitude, lng: longitude });
-
-            if (window.google) {
-              const geocoder = new window.google.maps.Geocoder();
-              geocoder.geocode(
-                { location: { lat: latitude, lng: longitude } },
-                (results, status) => {
-                  if (
-                    status === window.google.maps.GeocoderStatus.OK &&
-                    results &&
-                    results[0]
-                  ) {
-                    const formattedAddress = results[0].formatted_address;
-                    setAddress(formattedAddress);
-                    setValue("location", formattedAddress);
-                  } else {
-                    console.error("Geocode failed:", status);
-                  }
-                }
-              );
-            }
-          },
-          (error) => {
-            console.error("Error getting current location:", error);
-          }
-        );
-      } else {
-        console.error("Geolocation is not supported by this browser.");
-      }
     }
   }, [formData, isOpen, reset, noteTypes, setValue]);
 

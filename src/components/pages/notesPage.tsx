@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, Button, Divider, Paper, Typography } from "@mui/material";
-import { Edit } from "@mui/icons-material";
 import DynamicTable from "../organisms/table";
 import {
   getNotes,
