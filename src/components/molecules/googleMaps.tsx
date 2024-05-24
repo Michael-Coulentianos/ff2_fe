@@ -147,7 +147,9 @@ const MyMapComponent: React.FC<{
         inputValue={inputValue}
       />
       <GoogleMap
-        center={currentPosition}
+        center={
+          initialLocation !== undefined ? initialLocation : currentPosition
+        }
         zoom={15}
         mapContainerStyle={{ height: "200px", width: "535px" }}
         onClick={onMapClick}
