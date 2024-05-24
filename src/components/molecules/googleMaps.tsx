@@ -60,7 +60,6 @@ const MyMapComponent: React.FC<{
       setSelectedPosition(initialLocation);
     }
 
-
     if (initialAddress) {
       setInputValue(initialAddress);
     } else {
