@@ -6,6 +6,9 @@
     "@azure/msal-browser": "^3.11.1",
     "@azure/msal-react": "^2.0.12",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
     "@date-io/date-fns": "^3.0.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -48,7 +51,8 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@capacitor/cli": "^6.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
