@@ -12,12 +12,13 @@ import { getOrganizationFarms } from "../../api-ffm-service";
 import { useFetchData } from "../../hooks/useFethData";
 import { Farm } from "../../models/farm.interface";
 import { useGlobalState } from "../../GlobalState";
-import { createFarmFieldLink, getFieldMetaData } from "../../api-gs-service";
+import { createFarmFieldLink, getFieldMetaData, updateField } from "../../api-gs-service";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormSection from "../molecules/DynamicFormSection";
 import { useNavigate } from "react-router-dom";
+import { FieldMetadata } from "../../models/fieldMetadata.interface";
 
 const validationSchema = yup.object({
   name: yup.string().required(),
@@ -79,7 +80,19 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
     // Handle form submission (e.g., send data to server)
     console.log("Form data submitted:", data);
     await createFarmFieldLink(data.cropperRef, data.farmId);
-          //navigate("/");
+
+    const exampleFieldMetadata: FieldMetadata = {
+      fieldId: data.fieldId,
+      coords: data.coords,
+      partyId: data.partyId,
+      name: data.name,
+      metadata:  {
+        irrDry: data.metadata.irrDry,
+      },
+    };
+
+    await updateField(exampleFieldMetadata);
+    navigate("/");
   };
 
   const fieldDefinitions = {

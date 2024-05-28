@@ -1,4 +1,5 @@
 import axios from "axios";
+import { FieldMetadata } from "./models/fieldMetadata.interface";
 
 // Set up the axios instance with the base URL and default headers
 const api = axios.create({
@@ -28,10 +29,10 @@ export const getField = async (cropperRef: string): Promise<any> => {
   }
 };
 
-export const updateField = async (field: any, cropperRef: string): Promise<any> => {
+export const updateField = async (field: FieldMetadata): Promise<any> => {
   try {
-    const response = await api.put<any>("field", field, {
-      params: { cropperRef, code  },
+    const response = await api.put<FieldMetadata>("field", field, {
+      params: { code  },
     });
     return response.data;
   } catch (error: any) {
