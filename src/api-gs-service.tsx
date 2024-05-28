@@ -44,10 +44,10 @@ export const updateField = async (field: any, cropperRef: string): Promise<any> 
   }
 };
 
-export const getFieldMetaData = async (cropperRef: string): Promise<any> => {
+export const getFieldMetaData = async (fieldId: number): Promise<any> => {
   try {
     const response = await api.get<any>("field/metadata", {
-      params: { cropperRef, code  },
+      params: { fieldId, code  },
     });
     return response.data;
   } catch (error: any) {
@@ -144,11 +144,10 @@ export const getUnlinkedFields = async (partyId: string): Promise<any> => {
 
 export const createFarmFieldLink = async (cropperRef: string, farmId: string): Promise<any> => {
   try {
-    console.log(cropperRef);
-    console.log(farmId);
     const response = await api.put<any>("farm/field/link", null, {
       params: { cropperRef, farmId, code },
     });
+    console.log(response.data);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
