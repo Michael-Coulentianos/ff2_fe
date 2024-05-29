@@ -143,10 +143,10 @@ export const getUnlinkedFields = async (partyId: string): Promise<any> => {
   }
 };
 
-export const createFarmFieldLink = async (cropperRef: string, farmId: string): Promise<any> => {
+export const createFarmFieldLink = async (fieldId: number, farmId: string): Promise<any> => {
   try {
     const response = await api.put<any>("farm/field/link", null, {
-      params: { cropperRef, farmId, code },
+      params: { fieldId, farmId, code },
     });
     console.log(response.data);
     return response.data;

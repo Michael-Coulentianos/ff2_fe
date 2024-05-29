@@ -9,17 +9,39 @@ const FieldManagement = () => {
   const initialFieldData = location.state?.fieldData;
 
   const [fieldData, setFieldData] = useState(initialFieldData);
+  const [mapLoaded, setMapLoaded] = useState(false); // State to track if the map is loaded
 
   const handleFieldDataChange = (updatedFieldData) => {
     setFieldData(updatedFieldData);
   };
 
+  const handleMapLoad = () => {
+    setMapLoaded(true);
+  };
+
   useEffect(() => {
-    // Ensure fieldData is updated when location state changes
     if (location.state?.fieldData !== fieldData) {
       setFieldData(location.state?.fieldData);
     }
-  }, [location.state?.fieldData]);
+
+    const handleMessage = (event) => {
+      console.log("event");
+      console.log("Event origin:", event.origin);
+      console.log("Expected origin:", process.env.REACT_APP_MAPPING_TOOL);
+      if (event.origin !== process.env.REACT_APP_MAPPING_TOOL) {
+        console.warn("Ignoring message from unexpected origin:", event.origin);
+        return;
+      }
+      const { data } = event;
+      console.log(data);
+      // if (data.type === 'updateArea') {
+      //   setPolygonArea(data.area);
+      // }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [location.state?.fieldData, fieldData]);
 
   return (
     <Grid container>
@@ -28,13 +50,15 @@ const FieldManagement = () => {
         <Divider sx={{ marginTop: 1 }} />
       </Grid>
       <Grid item xs={9}>
-        <FieldMapComponent height="500px" fieldData={fieldData} />
+        <FieldMapComponent height="500px" fieldData={fieldData} onLoad={handleMapLoad} />
       </Grid>
       <Grid item xs={3}>
-        <FieldForm
-          initialFieldData={fieldData}
-          onFieldDataChange={handleFieldDataChange}
-        />
+        {mapLoaded && (
+          <FieldForm
+            initialFieldData={fieldData}
+            onFieldDataChange={handleFieldDataChange}
+          />
+        )}
       </Grid>
     </Grid>
   );

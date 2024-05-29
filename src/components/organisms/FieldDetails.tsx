@@ -12,7 +12,11 @@ import { getOrganizationFarms } from "../../api-ffm-service";
 import { useFetchData } from "../../hooks/useFethData";
 import { Farm } from "../../models/farm.interface";
 import { useGlobalState } from "../../GlobalState";
-import { createFarmFieldLink, getFieldMetaData, updateField } from "../../api-gs-service";
+import {
+  createFarmFieldLink,
+  getFieldMetaData,
+  updateField,
+} from "../../api-gs-service";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -22,15 +26,8 @@ import { FieldMetadata } from "../../models/fieldMetadata.interface";
 
 const validationSchema = yup.object({
   name: yup.string().required(),
-  size: yup.number().optional(),
-  metadata: yup
-    .object({
-      irrDry: yup
-        .string()
-        .oneOf(["Irrigated", "Non-Irrigated", "Dry"])
-        .optional(),
-    })
-    .required(),
+  size: yup.string().optional(),
+  irrDry: yup.string().oneOf(["Irrigated", "Non-Irrigated", "Dry"]).optional(),
   farmId: yup.string().optional(),
   seasonalField: yup.boolean(),
   activities: yup.string().optional(),
@@ -47,7 +44,6 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
   ]);
 
   const [fieldData, setFieldData] = useState(initialFieldData);
-
   const {
     control,
     handleSubmit,
@@ -56,17 +52,16 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      farmId: fieldData?.farmId || "", // Set default value for farm
-      // other default values...
+      farmId: fieldData?.farmId || ""
     },
   });
 
   const fetchFieldData = async (fieldId: number) => {
     const data = await getFieldMetaData(fieldId);
-    if (data?.result) {
-      setFieldData(data.result);
-      reset(data.result);
-      onFieldDataChange(data.result);
+    if (data) {
+      setFieldData(data);
+      reset(data);
+      onFieldDataChange(data);
     }
   };
 
@@ -77,26 +72,34 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
   }, [fieldData?.fieldId]);
 
   const handleFormSubmit = async (data) => {
+    const farmId = data.farmId === "" ? null : data.farmId;
     // Handle form submission (e.g., send data to server)
     console.log("Form data submitted:", data);
-    await createFarmFieldLink(data.cropperRef, data.farmId);
+    console.log("fieldId:", data.fieldId);
+    console.log("farmId:", farmId);
+    await createFarmFieldLink(data.fieldId, farmId);
 
     const exampleFieldMetadata: FieldMetadata = {
       fieldId: data.fieldId,
       coords: data.coords,
       partyId: data.partyId,
       name: data.name,
-      metadata:  {
-        irrDry: data.metadata.irrDry,
-      },
+      metadata: {
+        irrDry: data.irrDry
+      }
     };
+
+    console.log(exampleFieldMetadata);
 
     await updateField(exampleFieldMetadata);
     navigate("/");
   };
 
   const fieldDefinitions = {
-    fieldDetails: [{ id: "name", label: "Field Name", type: "text" }],
+    fieldDetails: [
+      { id: "name", label: "Field Name", type: "text" },
+      { id: "area", label: "Size", type: "text" },
+    ],
     irrDry: [{ id: "irrDry", label: "Irrigated Field", type: "checkbox" }],
     farm: [
       {
@@ -139,27 +142,23 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
                 title=""
               />
               <Controller
-                name="metadata.irrDry"
+                name="irrDry"
                 control={control}
-                render={({ field }) => {
-                  return (
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          {...field}
-                          checked={field.value === "Irrigated"}
-                          onChange={(e) => {
-                            field.onChange(
-                              e.target.checked ? "Irrigated" : "Dry"
-                            );
-                          }}
-                          color="primary"
-                        />
-                      }
-                      label="Irrigated Field"
-                    />
-                  );
-                }}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        {...field}
+                        checked={field.value === "Irrigated"}
+                        onChange={(e) =>
+                          field.onChange(e.target.checked ? "Irrigated" : "Dry")
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="Irrigated Field"
+                  />
+                )}
               />
 
               <FormSection
