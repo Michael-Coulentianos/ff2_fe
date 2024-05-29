@@ -19,6 +19,7 @@
     "@mui/material": "^5.15.17",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@react-google-maps/api": "^2.19.3",
+    "@react-pdf/renderer": "^3.4.4",
     "@syncfusion/ej2-base": "^25.2.3",
     "@syncfusion/ej2-react-kanban": "^25.2.3",
     "@testing-library/jest-dom": "^5.17.0",

@@ -1,5 +1,11 @@
-import React from 'react';
-import { Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
+import React from "react";
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
+} from "@mui/material";
 
 // Define the type for each item in the dropdown list
 interface DropdownItem {
@@ -13,11 +19,20 @@ interface DropdownProps {
   name: string;
   value: string | number;
   items: DropdownItem[];
+  sx?: any;
   onChange: (event: SelectChangeEvent<string | number>) => void;
 }
 
 // Create the Dropdown component as a React Functional Component
-const Dropdown: React.FC<DropdownProps> = ({ label, name, value, items, onChange, ...props }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+  label,
+  name,
+  value,
+  items,
+  onChange,
+  sx,
+  ...props
+}) => {
   return (
     <FormControl fullWidth>
       <InputLabel id={`${name}-select-label`}>{label}</InputLabel>
@@ -28,8 +43,11 @@ const Dropdown: React.FC<DropdownProps> = ({ label, name, value, items, onChange
         value={value}
         label={label}
         onChange={onChange}
-        displayEmpty
         {...props}
+        variant="outlined"
+        size="small"
+        margin="dense"
+        sx={sx}
       >
         {items.map((item) => (
           <MenuItem key={item.value} value={item.value}>
