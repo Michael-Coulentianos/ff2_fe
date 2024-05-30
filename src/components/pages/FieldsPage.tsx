@@ -9,8 +9,8 @@ const FieldManagement = () => {
   const initialFieldData = location.state?.fieldData;
 
   const [fieldData, setFieldData] = useState(initialFieldData);
-  const [mapLoaded, setMapLoaded] = useState(false); // State to track if the map is loaded
-const [polygonData, setPolygonData] = useState();
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [polygonData, setPolygonData] = useState();
   const handleFieldDataChange = (updatedFieldData) => {
     setFieldData(updatedFieldData);
   };
@@ -20,18 +20,13 @@ const [polygonData, setPolygonData] = useState();
   };
 
   const handleMessage = (event) => {
-    console.log("event");
-    console.log("Event origin:", event.origin);
-    console.log("Expected origin:", process.env.REACT_APP_MAPPING_TOOL);
     if (event.origin !== process.env.REACT_APP_MAPPING_TOOL) {
       console.warn("Ignoring message from unexpected origin:", event.origin);
       return;
     }
     const { data } = event;
-    console.log(data);
-    if (data.type === 'updatedPolygon') {
+    if (data.type === "updatedPolygon") {
       setPolygonData(data);
-      //setPolygonArea(data.area);
     }
   };
 
@@ -40,8 +35,8 @@ const [polygonData, setPolygonData] = useState();
       setFieldData(location.state?.fieldData);
     }
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [location.state?.fieldData, fieldData]);
 
   return (
@@ -51,7 +46,11 @@ const [polygonData, setPolygonData] = useState();
         <Divider sx={{ marginTop: 1 }} />
       </Grid>
       <Grid item xs={9}>
-        <FieldMapComponent height="500px" fieldData={fieldData} onLoad={handleMapLoad} />
+        <FieldMapComponent
+          height="500px"
+          fieldData={fieldData}
+          onLoad={handleMapLoad}
+        />
       </Grid>
       <Grid item xs={3}>
         {mapLoaded && (

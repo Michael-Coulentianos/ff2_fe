@@ -100,21 +100,29 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
   const handleFormSubmit = async (data) => {
     const farmId = data.farmId === "" ? null : data.farmId;
     await createFarmFieldLink(data.fieldId, farmId);
+    console.log(initialFieldData);
 
-    // Rounded coordinate data
-   const roundedCoords = roundCoordinates(polygonData.coordinates);
+    let coords = "";
 
-   let test = JSON.stringify(roundedCoords);
+    if (polygonData?.coordinates === undefined) {
+      coords = initialFieldData.coords;
+    } else {
+      const roundedCoords = roundCoordinates(polygonData.coordinates);
+      coords = JSON.stringify(roundedCoords);
+    }
+
     const fieldMetadata: FieldMetadata = {
       fieldId: data.fieldId,
-      coords: test,
+      coords: coords,
       partyId: data.partyId,
       name: data.name,
       metadata: {
         irrDry: data.irrDry,
       },
     };
-console.log(fieldMetadata);
+
+    console.log(fieldMetadata);
+
     await updateField(fieldMetadata);
     navigate("/");
   };
