@@ -35,7 +35,7 @@ const validationSchema = yup.object({
   notes: yup.string().optional(),
 });
 
-const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
+const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
   const navigate = useNavigate();
   const { selectedOrganization } = useGlobalState();
   const [farms, setFarms] = useState<Farm[]>([]);
@@ -43,20 +43,21 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
     selectedOrganization?.organizationId ?? 0,
   ]);
 
-  const [fieldData, setFieldData] = useState(initialFieldData);
+  const [fieldData, setFieldData] = useState(initialFieldData || {});
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      farmId: fieldData?.farmId || ""
+      farmId: fieldData?.farmId || "",
     },
   });
 
-  const fetchFieldData = async (fieldId: number) => {
+  const fetchFieldData = async (fieldId) => {
     const data = await getFieldMetaData(fieldId);
     if (data) {
       setFieldData(data);
@@ -66,39 +67,62 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
   };
 
   useEffect(() => {
+    if (initialFieldData.area) {
+      const size = initialFieldData.area;
+      setValue("size", size + " ha");
+    }
+  }, [initialFieldData, setValue]);
+
+  useEffect(() => {
     if (fieldData?.fieldId) {
       fetchFieldData(fieldData.fieldId);
     }
   }, [fieldData?.fieldId]);
 
+  useEffect(() => {
+    if (polygonData) {
+      // Assuming polygonData contains an area property for simplicity
+      const size = polygonData.area; // or however you calculate the size from polygonData
+      setValue("size", size);
+    }
+  }, [polygonData, setValue]);
+
+  // Function to round coordinates to 4 decimal places
+  function roundCoordinates(coords: number[][][]): number[][][] {
+    return coords.map((coordGroup) =>
+      coordGroup.map(([lat, long]) => [
+        parseFloat(lat.toFixed(4)),
+        parseFloat(long.toFixed(4)),
+      ])
+    );
+  }
+
   const handleFormSubmit = async (data) => {
     const farmId = data.farmId === "" ? null : data.farmId;
-    // Handle form submission (e.g., send data to server)
-    console.log("Form data submitted:", data);
-    console.log("fieldId:", data.fieldId);
-    console.log("farmId:", farmId);
     await createFarmFieldLink(data.fieldId, farmId);
 
-    const exampleFieldMetadata: FieldMetadata = {
+    // Rounded coordinate data
+   const roundedCoords = roundCoordinates(polygonData.coordinates);
+
+   let test = JSON.stringify(roundedCoords);
+    const fieldMetadata: FieldMetadata = {
       fieldId: data.fieldId,
-      coords: data.coords,
+      coords: test,
       partyId: data.partyId,
       name: data.name,
       metadata: {
-        irrDry: data.irrDry
-      }
+        irrDry: data.irrDry,
+      },
     };
-
-    console.log(exampleFieldMetadata);
-
-    await updateField(exampleFieldMetadata);
+console.log(fieldMetadata);
+    await updateField(fieldMetadata);
     navigate("/");
   };
 
   const fieldDefinitions = {
     fieldDetails: [
       { id: "name", label: "Field Name", type: "text" },
-      { id: "area", label: "Size", type: "text" },
+      { id: "size", label: "Size", type: "text" },
     ],
     irrDry: [{ id: "irrDry", label: "Irrigated Field", type: "checkbox" }],
     farm: [
@@ -113,7 +137,6 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
         })),
       },
     ],
-
     seasonalField: [
       { id: "seasonalField", label: "Seasonal Field", type: "checkbox" },
     ],
@@ -125,82 +148,75 @@ const FieldForm = ({ initialFieldData, onFieldDataChange }) => {
   };
 
   return (
-    <>
-      <Paper
-        elevation={3}
-        sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}
-      >
-        <Typography variant="h6">Field Details</Typography>
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
-          <DialogContent>
-            <Grid container spacing={2} sx={{ padding: 2 }}>
-              <FormSection
-                fields={fieldDefinitions.fieldDetails}
-                control={control}
-                errors={errors}
-                columns={1}
-                title=""
-              />
-              <Controller
-                name="irrDry"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        {...field}
-                        checked={field.value === "Irrigated"}
-                        onChange={(e) =>
-                          field.onChange(e.target.checked ? "Irrigated" : "Dry")
-                        }
-                        color="primary"
-                      />
-                    }
-                    label="Irrigated Field"
-                  />
-                )}
-              />
-
-              <FormSection
-                title=""
-                fields={fieldDefinitions.farm}
-                control={control}
-                errors={errors}
-                columns={1}
-              />
-
-              <Controller
-                name="seasonalField"
-                control={control}
-                render={({ field }) => (
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        {...field}
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        color="primary"
-                      />
-                    }
-                    label="Seasonal Field"
-                  />
-                )}
-              />
-              <FormSection
-                fields={fieldDefinitions.fieldHistory}
-                control={control}
-                errors={errors}
-                columns={1}
-                title=""
-              />
-            </Grid>
-            <Button variant="contained" color="primary" type="submit">
-              SAVE
-            </Button>
-          </DialogContent>
-        </form>
-      </Paper>
-    </>
+    <Paper elevation={3} sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}>
+      <Typography variant="h6">Field Details</Typography>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ padding: 2 }}>
+            <FormSection
+              fields={fieldDefinitions.fieldDetails}
+              control={control}
+              errors={errors}
+              columns={1}
+              title=""
+            />
+            <Controller
+              name="irrDry"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      {...field}
+                      checked={field.value === "Irrigated"}
+                      onChange={(e) =>
+                        field.onChange(e.target.checked ? "Irrigated" : "Dry")
+                      }
+                      color="primary"
+                    />
+                  }
+                  label="Irrigated Field"
+                />
+              )}
+            />
+            <FormSection
+              title=""
+              fields={fieldDefinitions.farm}
+              control={control}
+              errors={errors}
+              columns={1}
+            />
+            <Controller
+              name="seasonalField"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      {...field}
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Seasonal Field"
+                />
+              )}
+            />
+            <FormSection
+              fields={fieldDefinitions.fieldHistory}
+              control={control}
+              errors={errors}
+              columns={1}
+              title=""
+            />
+          </Grid>
+          <Button variant="contained" color="primary" type="submit">
+            SAVE
+          </Button>
+        </DialogContent>
+      </form>
+    </Paper>
   );
 };
 
