@@ -13,7 +13,7 @@ interface FormData {
   description: string;
   startDate: string;
   endDate: string;
-  field: number;
+  fields: number;
   cost: string;
   contractWorkCost: string;
   Properties: any;
@@ -185,8 +185,8 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
     ],
     generalActivityDetails2: [
       {
-        id: "field",
-        label: "Field",
+        id: "fields",
+        label: "Field(s)",
         type: "multiSelectChip",
         options: fieldsMap.map((field) => ({
           value: field.fieldId,
@@ -242,7 +242,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
       description: data.description,
       startDate: data.startDate,
       endDate: data.endDate,
-      field: data.field,
+      fields: data.fields,
       cost: data.cost,
       contractWorkCost: data.contractWorkCost,
       Properties: JSON.stringify(properties),

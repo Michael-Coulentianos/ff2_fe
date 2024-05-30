@@ -51,6 +51,11 @@ const getStyles = (name: string, personName: readonly string[], theme: any) => {
   };
 };
 
+const getLabelForValue = (value: any, options: Array<{ label: string; value: any }>) => {
+  const option = options.find((option) => option.value === value);
+  return option ? option.label : value;
+};
+
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   title = "",
   fields,
@@ -225,7 +230,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     return <DateRangePicker></DateRangePicker>;
                   case "multiSelectChip":
                     return (
-                      <FormControl sx={{ m: 1, width: 300 }}>
+                      <FormControl fullWidth margin="dense" error={!!errors[field.id]}>
                         <InputLabel id={`multiple-chip-label-${field.id}`}>{field.label}</InputLabel>
                         <Select
                           labelId={`multiple-chip-label-${field.id}`}
@@ -236,8 +241,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                           input={<OutlinedInput id={`select-multiple-chip-${field.id}`} label={field.label} />}
                           renderValue={(selected) => (
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                              {selected.map((val: string) => (
-                                <Chip key={val} label={val} />
+                              {selected.map((val: any) => (
+                                <Chip key={val} label={getLabelForValue(val, field.options || [])} />
                               ))}
                             </Box>
                           )}
@@ -257,6 +262,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                             <MenuItem disabled>No Options Available</MenuItem>
                           )}
                         </Select>
+                        {errors[field.id] && <Typography variant="body2" color="error">{errors[field.id]?.message}</Typography>}
                       </FormControl>
                     );
                   default:
