@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import SaveIcon from "@mui/icons-material/Save";
 import FormSection from "../molecules/DynamicFormSection";
 import DynamicFormDialog from "../molecules/dialog";
-import { addPropertyIfNotEmpty, formatDate } from "../../utils/Utilities";
+import { addPropertyIfNotEmpty, formatDate, processProperties } from "../../utils/Utilities";
 import { Delete } from "@mui/icons-material";
 
 interface FormData {
@@ -22,14 +22,6 @@ interface FormData {
   seasonStageId: number;
   partyId: number;
   property: any;
-}
-
-interface Field {
-  id: string;
-  label: string;
-  type?: string;
-  options?: Array<{ label: string; value: any; id: any; properties?: any }>;
-  placeholder?: string;
 }
 
 interface ActivitiesDialogInterface {
@@ -93,35 +85,7 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
 
   const activityCategoryId = watch("activityCategoryId");
 
-  const processProperties = (properties, parentKey = ""): Field[] => {
-    return properties.flatMap((prop) => {
-      if (prop.key.toLowerCase() === "color") return [];
-      const id =
-        (parentKey ? `${parentKey}_` : "") +
-        prop.key.toLowerCase().replace(/\s+/g, "");
-      const result: Field[] = [
-        {
-          id,
-          label: prop.key,
-          type: prop.type,
-          options:
-            prop.type === "select"
-              ? prop.value.map((option) => ({
-                  label:
-                    option.Option + (option.unit ? ` (${option.unit})` : ""),
-                  value: option.id,
-                  id: option.id,
-                  properties: option.properties || [],
-                }))
-              : undefined,
-        },
-      ];
-
-      return result;
-    });
-  };
-
-  const [dynamicFields, setDynamicFields] = useState<Field[]>([]);
+  const [dynamicFields, setDynamicFields] = useState<any[]>([]);
 
   useEffect(() => {
     if (activityCategoryId) {

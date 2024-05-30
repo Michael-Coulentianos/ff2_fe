@@ -1,5 +1,14 @@
 // utils.js
 
+interface Field {
+  id: string;
+  label: string;
+  type?: string;
+  options?: Array<{ label: string; value: any; id: any; properties?: any }>;
+  placeholder?: string;
+}
+
+
 export const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
@@ -18,4 +27,32 @@ export const addPropertyIfNotEmpty = (obj, key, value) => {
 export default {
   formatDate,
   addPropertyIfNotEmpty,
+};
+
+export const processProperties = (properties, parentKey = ""): Field[] => {
+  return properties.flatMap((prop) => {
+    if (prop.key.toLowerCase() === "color") return [];
+    const id =
+      (parentKey ? `${parentKey}_` : "") +
+      prop.key.toLowerCase().replace(/\s+/g, "");
+    const result: Field[] = [
+      {
+        id,
+        label: prop.key,
+        type: prop.type,
+        options:
+          prop.type === "select"
+            ? prop.value.map((option) => ({
+                label:
+                  option.Option + (option.unit ? ` (${option.unit})` : ""),
+                value: option.id,
+                id: option.id,
+                properties: option.properties || [],
+              }))
+            : undefined,
+      },
+    ];
+
+    return result;
+  });
 };
