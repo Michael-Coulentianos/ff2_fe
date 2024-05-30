@@ -121,8 +121,6 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
       },
     };
 
-    console.log(fieldMetadata);
-
     await updateField(fieldMetadata);
     navigate("/");
   };
