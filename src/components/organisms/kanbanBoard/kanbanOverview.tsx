@@ -14,6 +14,7 @@ import {
   updateActivity,
   createActivity,
   getNotes,
+  deleteActivity,
 } from "../../../api-ffm-service";
 import { getFields } from "../../../api-gs-service";
 import { useGlobalState } from "../../../GlobalState";
@@ -22,6 +23,8 @@ import "./overview.css";
 import ActivityDialog from "../../organisms/activityDialog";
 import { Status } from "../../../models/status.interface";
 import { Button, CircularProgress } from "@mui/material";
+import GenericConfirmDialog from "../genericConfirmDialog";
+import Loading from "../../pages/loading";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVtpR2Nbe05yflRAal5QVAciSV9jS3pTc0VqWX1fdnZWQmhbUw=="
@@ -48,31 +51,38 @@ const KanbanBoard = () => {
   const [activities, setActivities] = useState<any[]>([]);
   const [activityStatuses, setActivityStatuses] = useState<any[]>([]);
   const { selectedOrganization, activeAccount } = useGlobalState();
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [activityCategories, setActivityCategories] = useState<any[]>([]);
   const [seasonStages, setSeasonStages] = useState<any[]>([]);
   const [isDataFetched, setIsDataFetched] = useState(false);
   const [fields, setFields] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
-      await Promise.all([
-        fetchData(getActivities, setActivities, undefined, [
-          selectedOrganization?.organizationId ?? 0,
-        ]),
-        fetchData(getActivityStatuses, setActivityStatuses),
-        fetchData(getActivityCategories, setActivityCategories),
-        fetchData(getSeasonStages, setSeasonStages),
-        fetchData(getFields, setFields, undefined, [
-          selectedOrganization?.partyIdentifier ?? 0,
-        ]),
-        fetchData(getNotes, setNotes, undefined, [
-          selectedOrganization?.organizationId ?? 0,
-        ]),
-      ]);
-      setIsDataFetched(true);
+      setIsLoading(true);
+      try {
+        await Promise.all([
+          fetchData(getActivities, setActivities, undefined, [
+            selectedOrganization?.organizationId ?? 0,
+          ]),
+          fetchData(getActivityStatuses, setActivityStatuses),
+          fetchData(getActivityCategories, setActivityCategories),
+          fetchData(getSeasonStages, setSeasonStages),
+          fetchData(getFields, setFields, undefined, [
+            selectedOrganization?.partyIdentifier ?? 0,
+          ]),
+          fetchData(getNotes, setNotes, undefined, [
+            selectedOrganization?.organizationId ?? 0,
+          ]),
+        ]);
+        setIsDataFetched(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchDataAsync();
@@ -98,6 +108,29 @@ const KanbanBoard = () => {
       setTasks(transformedData);
     }
   }, [activities, activityStatuses]);
+
+  const handleDelete = () => {
+    setSelectedTask(selectedTask);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedTask) {
+      try {
+        await deleteActivity(selectedTask.activity.activityId);
+        setActivities(
+          activities.filter(
+            (activity) => activity.activityId !== selectedTask.activity.activityId
+          )
+        );
+      } catch (error) {
+        console.error("Failed to delete organization:", error);
+      }
+
+      setConfirmOpen(false);
+      closeModal();
+    }
+  };
 
   const handleDragStop = async (args) => {
     const { data } = args;
@@ -177,60 +210,71 @@ const KanbanBoard = () => {
 
   return (
     <>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpenForm}
-        sx={{ marginBottom: "5px", marginLeft: "5px" }}
-      >
-        Add Activity
-      </Button>
-      <div className="kanban-control-section">
-        <div className="col-lg-12 control-section">
-          <div className="control-wrapper">
-            {isDataFetched ? (
-              <KanbanComponent
-                id="kanban"
-                keyField="Status"
-                dataSource={tasks}
-                cardSettings={{
-                  contentField: "Summary",
-                  headerField: "Title",
-                  tagsField: "Tags",
-                  grabberField: "Color",
-                  footerCssField: "Assignee",
-                }}
-                dragStop={handleDragStop}
-                cardClick={handleCardClick}
-              >
-                <ColumnsDirective>
-                  {activityStatuses.map((status) => (
-                    <ColumnDirective
-                      key={status.key}
-                      headerText={status.value}
-                      keyField={status.value}
-                    />
-                  ))}
-                </ColumnsDirective>
-              </KanbanComponent>
-            ) : (
-              <CircularProgress color="primary" />
-            )}
+      {isLoading && <Loading />}
+      {!isLoading && (
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenForm}
+            sx={{ marginBottom: "5px", marginLeft: "5px" }}
+          >
+            Add Activity
+          </Button>
+          <div className="kanban-control-section">
+            <div className="col-lg-12 control-section">
+              <div className="control-wrapper">
+                {isDataFetched ? (
+                  <KanbanComponent
+                    id="kanban"
+                    keyField="Status"
+                    dataSource={tasks}
+                    cardSettings={{
+                      contentField: "Summary",
+                      headerField: "Title",
+                      tagsField: "Tags",
+                      grabberField: "Color",
+                      footerCssField: "Assignee",
+                    }}
+                    dragStop={handleDragStop}
+                    cardClick={handleCardClick}
+                  >
+                    <ColumnsDirective>
+                      {activityStatuses.map((status) => (
+                        <ColumnDirective
+                          key={status.key}
+                          headerText={status.value}
+                          keyField={status.value}
+                        />
+                      ))}
+                    </ColumnsDirective>
+                  </KanbanComponent>
+                ) : (
+                  <CircularProgress color="primary" />
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      {showModal && (
-        <ActivityDialog
-          isOpen={showModal}
-          onClose={closeModal}
-          onSubmit={handleFormSubmit}
-          activityCategory={activityCategories}
-          activityStatus={activityStatuses}
-          seasonStages={seasonStages}
-          notes={notes}
-          fieldsMap={fields}
-          formData={selectedTask?.activity}
-        />
+          <ActivityDialog
+            isOpen={showModal}
+            onClose={closeModal}
+            onSubmit={handleFormSubmit}
+            activityCategory={activityCategories}
+            activityStatus={activityStatuses}
+            seasonStages={seasonStages}
+            handleDelete={handleDelete}
+            notes={notes}
+            fieldsMap={fields}
+            formData={selectedTask?.activity}
+          />
+          <GenericConfirmDialog
+            open={confirmOpen}
+            onCancel={() => setConfirmOpen(false)}
+            onConfirm={handleConfirmDelete}
+            title="Confirm Deletion"
+            content="Are you sure you want to delete this activity?"
+          />
+        </>
       )}
     </>
   );
