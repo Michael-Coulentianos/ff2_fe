@@ -1,6 +1,6 @@
 import React from "react";
 import { Controller } from "react-hook-form";
-import { Grid, Typography, MenuItem, IconButton, Tooltip } from "@mui/material";
+import { Grid, Typography, MenuItem, IconButton, Tooltip, FormControl, InputLabel, Box, Select, OutlinedInput, Chip } from "@mui/material";
 import ColoredRadio from "./ColoredRadio";
 import DateSelector from "../atom/dateSelect";
 import AddAttachmentButton from "../atom/attachmentButton";
@@ -34,6 +34,23 @@ interface DynamicFormSectionProps {
   initialAddress?: string;
 }
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const getStyles = (name: string, personName: readonly string[], theme: any) => {
+  return {
+    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
+  };
+};
+
 const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
   title = "",
   fields,
@@ -64,8 +81,8 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
             <Controller
               name={field.id}
               control={control}
-              defaultValue=""
-              render={({ field: { onChange, onBlur, value, ref } }) => {
+              defaultValue={[]}
+              render={({ field: { onChange, onBlur, value = [], ref } }) => {
                 switch (field.type) {
                   case "select":
                     return (
@@ -206,6 +223,42 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                     );
                   case "dateRange":
                     return <DateRangePicker></DateRangePicker>;
+                  case "multiSelectChip":
+                    return (
+                      <FormControl sx={{ m: 1, width: 300 }}>
+                        <InputLabel id={`multiple-chip-label-${field.id}`}>{field.label}</InputLabel>
+                        <Select
+                          labelId={`multiple-chip-label-${field.id}`}
+                          id={`multiple-chip-${field.id}`}
+                          multiple
+                          value={value}
+                          onChange={onChange}
+                          input={<OutlinedInput id={`select-multiple-chip-${field.id}`} label={field.label} />}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((val: string) => (
+                                <Chip key={val} label={val} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {Array.isArray(field.options) ? (
+                            field.options.map((option) => (
+                              <MenuItem
+                                key={option.id}
+                                value={option.value}
+                                style={getStyles(option.label, value, theme)}
+                              >
+                                {option.label}
+                              </MenuItem>
+                            ))
+                          ) : (
+                            <MenuItem disabled>No Options Available</MenuItem>
+                          )}
+                        </Select>
+                      </FormControl>
+                    );
                   default:
                     return (
                       <TextBox
@@ -220,7 +273,7 @@ const DynamicFormSection: React.FC<DynamicFormSectionProps> = ({
                         helperText={errors[field.id]?.message}
                       />
                     );
-                }
+              }
               }}
             />
           </Grid>

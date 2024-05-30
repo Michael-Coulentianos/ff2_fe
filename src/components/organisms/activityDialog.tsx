@@ -31,6 +31,7 @@ interface Field {
   options?: Array<{ label: string; value: any; id: any; properties?: any }>;
   placeholder?: string;
 }
+
 interface ActivitiesDialogInterface {
   isOpen: any;
   onClose: any;
@@ -186,13 +187,15 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
       {
         id: "field",
         label: "Field",
-        type: "select",
+        type: "multiSelectChip",
         options: fieldsMap.map((field) => ({
           value: field.fieldId,
           label: field.name,
-          id: field.cropperRef
+          id: field.cropperRef,
         })),
-      },
+      }
+    ],
+    generalActivityDetails4: [
       { id: "contractWorkCost", label: "Contract Work Cost", type: "currency" },
       { id: "cost", label: "Cost", type: "currency" },
     ],
@@ -278,6 +281,12 @@ const ActivityDialog: React.FC<ActivitiesDialogInterface> = ({
 
           <FormSection
             fields={fieldDefinitions.generalActivityDetails2}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+          <FormSection
+            fields={fieldDefinitions.generalActivityDetails4}
             control={control}
             errors={errors}
             columns={2}
