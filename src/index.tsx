@@ -9,13 +9,12 @@ import { Providers } from '@microsoft/mgt-element';
 import { Msal2Provider } from '@microsoft/mgt-msal2-provider';
 import '@fontsource/poppins';
 import { GlobalStateProvider, useGlobalState } from './GlobalState';
-import { getOrganizations, setAzureUserId } from "./api-ffm-service";
+import { getOrganizations } from './api-ffm-service';
 
 Providers.globalProvider = new Msal2Provider({
   clientId: 'REPLACE_WITH_CLIENTID',
 });
 
-// Instantiate MSAL outside to prevent re-renders
 const msalInstance = new PublicClientApplication(msalConfig);
 
 const InitializeApp = () => {
@@ -33,7 +32,7 @@ const InitializeApp = () => {
       const currentActiveAccount = msalInstance.getActiveAccount();
       if (currentActiveAccount) {
         setActiveAccount(currentActiveAccount);
-        setAzureUserId(currentActiveAccount.localAccountId);
+        // setAzureUserId(currentActiveAccount.localAccountId);
         
         // Fetch organizations after setting the active account
         try {
@@ -54,7 +53,7 @@ const InitializeApp = () => {
         const account = event.payload.account;
         msalInstance.setActiveAccount(account);
         setActiveAccount(account);
-        setAzureUserId(account.localAccountId);
+        // setAzureUserId(account.localAccountId);
 
         // Fetch organizations after setting the active account on login
         getOrganizations().then(organizations => {
@@ -65,7 +64,7 @@ const InitializeApp = () => {
         });
       }
     });
-  }, [setActiveAccount, setAzureUserId, setSelectedOrganization]);
+  }, [setActiveAccount, setSelectedOrganization]);
 
   return <App instance={msalInstance} />;
 };

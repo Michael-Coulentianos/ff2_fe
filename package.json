@@ -7,6 +7,7 @@
     "@azure/msal-react": "^2.0.12",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@capacitor/android": "^6.0.0",
+    "@capacitor/camera": "^6.0.0",
     "@capacitor/core": "^6.0.0",
     "@capacitor/ios": "^6.0.0",
     "@date-io/date-fns": "^3.0.0",
