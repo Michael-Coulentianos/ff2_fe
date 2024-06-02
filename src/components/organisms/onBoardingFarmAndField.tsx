@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FormSection from "../molecules/DynamicFormSection";
-import FieldMapComponent from "../molecules/FieldMapComponent";
 import { ForwardRefRenderFunction, forwardRef, useImperativeHandle } from "react";
 import Iframe from "react-iframe";
 import { useGlobalState } from "../../GlobalState";
+
 
 const validationSchema = yup.object({
   farmName: yup.string().required("Required"),
@@ -16,7 +16,8 @@ type OnBoardingFarmAndFieldProps = {
   onSubmit: (formData: any) => Promise<void>;
 };
 
-const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown, OnBoardingFarmAndFieldProps> = ({ onSubmit }, ref) => {
+const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown
+, OnBoardingFarmAndFieldProps> = ({ onSubmit }, ref) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(validationSchema),
   });
@@ -25,9 +26,9 @@ const OnBoardingFarmAndField: ForwardRefRenderFunction<unknown, OnBoardingFarmAn
     submitForm: handleSubmit(onSubmit),
   }));
 
-  const { activeAccount } = useGlobalState();
-  const azureUserId = activeAccount?.localAccountId;
-  let mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${azureUserId}`;
+  const { selectedOrganization } = useGlobalState();
+
+  let mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${selectedOrganization}`;
 
   return (
     <Container>

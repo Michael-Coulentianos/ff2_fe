@@ -192,7 +192,7 @@ const OrganizationDialog = ({
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit(onSubmit)}
-      title={formData ? "Update Organisation" : "Add Organisation"}
+      title={formData ? "Update Organisation" : "Add Organisation & Farm"}
       formContent={formContent}
     />
   );

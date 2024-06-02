@@ -8,6 +8,7 @@ import { Activity } from "./models/activity.interface";
 import { Farm } from "./models/farm.interface";
 import { Note } from "./models/note.interface";
 import { Organization } from "./models/organization.interface";
+import { CreateOrganizationResponse } from "./models/createOrganizationResponse.interface";
 
 
 const api = axios.create({
@@ -64,8 +65,9 @@ export const updateUserProfile = async (userProfile: Partial<UserProfile>): Prom
   }
 };
 
+
 //Organisation CRUD APIs
-export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<any>> => {
+export const createOrganization = async (organization: Partial<CreateOrganization>): Promise<ResponseApi<CreateOrganizationResponse>> => {
   try {
     organization.azureUserId = azureUserId ? azureUserId : '';
     const response = await api.post<ResponseApi<any>>("/CreateOrganization", organization);
@@ -171,7 +173,6 @@ export const createFarm = async (farm: Partial<Farm>): Promise<Farm> => {
   try {
     farm.azureUserId = azureUserId;
     const response = await api.post<ResponseApi<Farm>>("/CreateFarm",farm);
-    console.log(response);
     return response.data.details;
   } catch (error: any) {
     if (error.response && error.response.data) {

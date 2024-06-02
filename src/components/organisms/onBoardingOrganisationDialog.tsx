@@ -17,6 +17,7 @@ const validationSchema = yup.object({
   fullName: yup.string().required("Required"),
   contactNumber: yup.string().required("Required"),
   emailAddress: yup.string().email().required("Required"),
+  farmName: yup.string().required("Required"),
   name: yup.string().required("Required"),
   vatNumber: yup.string().required("Required"),
   legalEntityTypeId: yup.string().required("Required"),
@@ -110,6 +111,7 @@ const OnBoardingOrganisationForm: ForwardRefRenderFunction<
           errors={errors}
           columns={2}
         />
+
         <FormSection
           title="Physical Address"
           fields={fieldDefinitions.address}
@@ -143,6 +145,19 @@ const OnBoardingOrganisationForm: ForwardRefRenderFunction<
             columns={2}
           />
         )}
+      </form>
+
+      <Typography variant="h5" gutterBottom>
+        Add Farm
+      </Typography>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormSection
+          title="Farm Details"
+          fields={[{ id: "farmName", label: "Farm Name", type: "text" }]}
+          control={control}
+          errors={errors}
+          columns={2}
+        />
       </form>
     </Container>
   );
