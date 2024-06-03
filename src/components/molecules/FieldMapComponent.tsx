@@ -1,7 +1,9 @@
 import { Paper } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Iframe from "react-iframe";
 import { useGlobalState } from "../../GlobalState";
+import { fetchData } from "../../hooks/useFethData";
+import { getOrganizations } from "../../api-ffm-service";
 
 interface FieldMapProps {
   height?: string;
@@ -9,23 +11,31 @@ interface FieldMapProps {
   onLoad: () => void; // Callback to be called when the map is loaded
 }
 
-const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData, onLoad }) => {
+const FieldMapComponent: React.FC<FieldMapProps> = ({ height = '650px', fieldData, onLoad }) => {
   const { selectedOrganization } = useGlobalState();
-console.log("selectedOrganization");
-console.log(selectedOrganization);
+  const [organizations, setOrganizations] = useState<any[]>([]);
   const cropperRef = fieldData?.cropperRef;
-  let mapUrl = "";
-  if (cropperRef !== undefined) {
+
+  useEffect(() => {
+    fetchData(getOrganizations, setOrganizations);
+  }, []);
+
+  let mapUrl = '';
+
+  if (cropperRef) {
     mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${selectedOrganization?.partyIdentifier}/${cropperRef}`;
-  } else {
-    mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${selectedOrganization?.partyIdentifier}`;
+  } else if (selectedOrganization) {
+    mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${selectedOrganization.partyIdentifier}`;
+  } else if (organizations.length > 0) {
+    mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${organizations[0].partyIdentifier}`;
   }
+
   return (
     <div>
       <Iframe
         url={mapUrl}
         width="100%"
-        height={"650px" || height}
+        height={height}
         display="initial"
         position="relative"
         frameBorder={0}
