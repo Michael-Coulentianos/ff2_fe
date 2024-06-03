@@ -108,7 +108,19 @@ const FieldForm = ({ fieldData }) => {
                 color="primary"
               />
             }
-            label="Irrigated Field"
+            label="Irrigated"
+          />
+          
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.seasonalField}
+                onChange={handleChange}
+                name="seasonalField"
+                color="primary"
+              />
+            }
+            label="Seasonal"
           />
 
           <Dropdown
@@ -119,17 +131,6 @@ const FieldForm = ({ fieldData }) => {
             onChange={handleDropdownChange}
           ></Dropdown>
 
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.seasonalField}
-                onChange={handleChange}
-                name="seasonalField"
-                color="primary"
-              />
-            }
-            label="Seasonal Field"
-          />
           <TextBox
             label="Activities"
             //name="activities"

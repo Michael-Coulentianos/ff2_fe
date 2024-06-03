@@ -22,7 +22,6 @@ import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
 import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
-import ActivitySummary from "../organisms/activitySummary";
 
 interface DataItem {
   id: string;
@@ -219,7 +218,6 @@ const Activities: React.FC = () => {
               title="Confirm Deletion"
               content="Are you sure you want to delete this activity?"
             />
-            <ActivitySummary></ActivitySummary>
           </Grid>
         </Grid>
       )}

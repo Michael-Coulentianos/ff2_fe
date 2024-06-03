@@ -9,11 +9,12 @@ import { Link as RouterLink } from "react-router-dom";
 
 interface MenuItemProps {
   text: string;
+  open: boolean;
   icon: React.ReactNode;
   onClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ text, icon, onClick }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ text, open, icon, onClick }) => (
   <ListItem disablePadding>
     <ListItemButton
       onClick={onClick}
@@ -28,9 +29,11 @@ const MenuItem: React.FC<MenuItemProps> = ({ text, icon, onClick }) => (
           backgroundColor: "#F1A81E",
         },
       }}
-    >
-      <ListItemIcon>{icon}</ListItemIcon>
-      <ListItemText primary={text} sx={{ color: "white" }} />
+    > 
+      <ListItemText
+        primary={text}
+        sx={{ opacity: open ? 1 : 0, ml: 6, color: "white" }}
+      />
     </ListItemButton>
   </ListItem>
 );
