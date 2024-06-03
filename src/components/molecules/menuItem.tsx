@@ -13,12 +13,18 @@ interface MenuItemProps {
   onClick?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ text, icon,  onClick }) => (
+const MenuItem: React.FC<MenuItemProps> = ({ text, icon, onClick }) => (
   <ListItem disablePadding>
     <ListItemButton
       onClick={onClick}
       sx={{
         "&:hover": {
+          backgroundColor: "#F1A81E",
+        },
+        "&:focus": {
+          backgroundColor: "#F1A81E",
+        },
+        "&:visited": {
           backgroundColor: "#F1A81E",
         },
       }}

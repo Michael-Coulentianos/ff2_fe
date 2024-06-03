@@ -4,7 +4,7 @@ import Iframe from "react-iframe";
 import { useGlobalState } from "../../GlobalState";
 
 interface FieldMapProps {
-  height: string;
+  height?: string;
   fieldData?: any;
   onLoad: () => void; // Callback to be called when the map is loaded
 }
@@ -20,19 +20,18 @@ console.log(selectedOrganization);
   } else {
     mapUrl = `${process.env.REACT_APP_MAPPING_TOOL}/field/${selectedOrganization?.partyIdentifier}`;
   }
-
   return (
-    <Paper elevation={2} sx={{ backgroundColor: "white", margin: 1, p: 0.2 }}>
+    <div>
       <Iframe
         url={mapUrl}
         width="100%"
-        height={height}
+        height={"650px" || height}
         display="initial"
         position="relative"
         frameBorder={0}
         onLoad={onLoad}
       />
-    </Paper>
+    </div>
   );
 };
 

@@ -41,7 +41,7 @@ const FieldManagement = () => {
 
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid item xs={12} padding={"10px"}>
         <Typography variant="h5">Field Management</Typography>
         <Divider sx={{ marginTop: 1 }} />
       </Grid>

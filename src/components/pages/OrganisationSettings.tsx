@@ -9,7 +9,7 @@ import {
   createOrganization,
   updateOrganization,
   getLegalEntities,
-  getOrganizationById
+  getOrganizationById,
 } from "../../api-ffm-service";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import GenericConfirmDialog from "../organisms/genericConfirmDialog";
@@ -107,7 +107,9 @@ const OrganizationSettings: React.FC = () => {
           sameAddress: formData.sameAddress,
         };
 
-        const response = await createOrganization(org) as unknown as { organizationId: number };
+        const response = (await createOrganization(org)) as unknown as {
+          organizationId: number;
+        };
         // fetchData(getOrganizations, setOrganizations);
         // const newOrg = organizations.find((org) => org.organizationId === response.organizationId);
 
@@ -191,7 +193,7 @@ const OrganizationSettings: React.FC = () => {
       {isLoading && <Loading />}
       {!isLoading && (
         <>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} padding={"10px"}>
             <Grid item xs={12}>
               <Typography variant="h5">Organisation settings</Typography>
               <Divider sx={{ marginTop: 1 }} />

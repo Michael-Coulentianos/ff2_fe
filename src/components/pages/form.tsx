@@ -10,8 +10,6 @@ import {
 } from "@mui/material";
 
 const NoteForm: React.FC = () => {
-  // State and handlers would go here
-
   return (
     <form noValidate autoComplete="off">
       <h1>Notes</h1>

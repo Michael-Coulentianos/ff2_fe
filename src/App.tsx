@@ -76,7 +76,7 @@ const App = ({ instance }) => {
               sx={{
                 minHeight: "88.3vh",
                 marginTop: 6,
-                padding: "10px",
+                padding: 0,
               }}
             >
               {selectedOrganization ? <Routing /> : <StepperForm />}
