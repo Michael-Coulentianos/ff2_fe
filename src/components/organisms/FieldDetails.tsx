@@ -7,6 +7,7 @@ import {
   Paper,
   Typography,
   TextField,
+  Box,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { getOrganizationFarms, getOrganizations } from "../../api-ffm-service";
@@ -194,70 +195,68 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
     <Paper elevation={3} sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}>
       <Typography variant="h6">Field Details</Typography>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ padding: 2 }}>
-            <FormSection
-              fields={fieldDefinitions.fieldDetails}
-              control={control}
-              errors={errors}
-              columns={1}
-              title=""
-            />
-            <Controller
-              name="irrDry"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      {...field}
-                      checked={field.value === "Irrigated"}
-                      onChange={(e) =>
-                        field.onChange(e.target.checked ? "Irrigated" : "Dry")
-                      }
-                      color="primary"
-                    />
-                  }
-                  label="Irrigated Field"
-                />
-              )}
-            />
-            <FormSection
-              title=""
-              fields={fieldDefinitions.farm}
-              control={control}
-              errors={errors}
-              columns={1}
-            />
-            <Controller
-              name="seasonalField"
-              control={control}
-              render={({ field }) => (
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      {...field}
-                      checked={field.value}
-                      onChange={(e) => field.onChange(e.target.checked)}
-                      color="primary"
-                    />
-                  }
-                  label="Seasonal Field"
-                />
-              )}
-            />
-            <FormSection
-              fields={fieldDefinitions.fieldHistory}
-              control={control}
-              errors={errors}
-              columns={1}
-              title=""
-            />
-          </Grid>
-          <Button variant="contained" color="primary" type="submit">
-            SAVE
-          </Button>
-        </DialogContent>
+        <Box sx={{ overflow: "auto" }}>
+          <FormSection
+            fields={fieldDefinitions.fieldDetails}
+            control={control}
+            errors={errors}
+            columns={1}
+            title=""
+          />
+          <Controller
+            name="irrDry"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...field}
+                    checked={field.value === "Irrigated"}
+                    onChange={(e) =>
+                      field.onChange(e.target.checked ? "Irrigated" : "Dry")
+                    }
+                    color="primary"
+                  />
+                }
+                label="Irrigated Field"
+              />
+            )}
+          />
+          <FormSection
+            title=""
+            fields={fieldDefinitions.farm}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+          <Controller
+            name="seasonalField"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    {...field}
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Seasonal Field"
+              />
+            )}
+          />
+          <FormSection
+            fields={fieldDefinitions.fieldHistory}
+            control={control}
+            errors={errors}
+            columns={1}
+            title=""
+          />
+        </Box>
+        <Button variant="contained" color="primary" type="submit">
+          SAVE
+        </Button>
       </form>
     </Paper>
   );

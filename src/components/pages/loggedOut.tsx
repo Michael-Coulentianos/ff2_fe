@@ -27,7 +27,7 @@ const LogoutPage = () => {
     <Container
       maxWidth="sm"
       sx={{
-        height: "100vh",
+        height: "111vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

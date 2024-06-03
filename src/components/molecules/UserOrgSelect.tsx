@@ -11,16 +11,16 @@ import {
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import barnIcon from "../../assets/icons/barnIcon.svg";
 import { getOrganizations } from "../../api-ffm-service";
-import { useFetchData } from '../../hooks/useFethData';
-import { useGlobalState } from '../../GlobalState';
-import { Organization } from '../../models/organization.interface';
+import { useFetchData } from "../../hooks/useFethData";
+import { useGlobalState } from "../../GlobalState";
+import { Organization } from "../../models/organization.interface";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const UserOrganizationComponent: React.FC = () => {
+const UserOrganizationComponent = ({ open }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const theme = useTheme();
-  
+
   const { selectedOrganization, setSelectedOrganization } = useGlobalState();
 
   useFetchData(getOrganizations, setOrganizations);
@@ -45,7 +45,8 @@ const UserOrganizationComponent: React.FC = () => {
         elevation={3}
         sx={{
           padding: "10px",
-          minWidth: "220px",
+          minWidth: "50px",
+          paddingLeft: "8px",
           backgroundColor: theme.palette.background.paper,
           "&:hover": {
             backgroundColor: "#C5CBBC",
@@ -57,15 +58,19 @@ const UserOrganizationComponent: React.FC = () => {
           <Grid item xs={2} sx={{ marginTop: 1 }}>
             <img src={barnIcon} alt="barnIcon" />
           </Grid>
-          <Grid item xs={9} sx={{ paddingLeft: 2 }}>
-            <Typography variant="body1">
-              {selectedOrganization ? selectedOrganization.name : "Name"}
-            </Typography>
-            <Typography variant="caption">Organization</Typography>
-          </Grid>
-          <Grid item xs={1} sx={{ marginTop: 2 }}>
-            <UnfoldMoreIcon fontSize="small" />
-          </Grid>
+          {open && (
+            <>
+              <Grid item xs={9} sx={{ paddingLeft: 2 }}>
+                <Typography variant="body1">
+                  {selectedOrganization ? selectedOrganization.name : "Name"}
+                </Typography>
+                <Typography variant="caption">Organization</Typography>
+              </Grid>
+              <Grid item xs={1} sx={{ marginTop: 2 }}>
+                <UnfoldMoreIcon fontSize="small" />
+              </Grid>
+            </>
+          )}
         </Grid>
       </Paper>
       <Menu

@@ -24,7 +24,7 @@ import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const options = ["New Organisation", "New Note", "New Activity"];
+const options = ["New Organisation", "New Note", "New Activity","New Field"];
 
 export default function QuickAdd() {
   const [openOrg, setOpenOrg] = useState(false);

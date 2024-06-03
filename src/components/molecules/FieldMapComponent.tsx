@@ -35,7 +35,7 @@ const FieldMapComponent: React.FC<FieldMapProps> = ({ height = '650px', fieldDat
       <Iframe
         url={mapUrl}
         width="100%"
-        height={height}
+        height={"500px" || height}
         display="initial"
         position="relative"
         frameBorder={0}

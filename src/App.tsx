@@ -26,7 +26,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  marginLeft: 5,
+  marginLeft: 55,
   ...(open && {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
@@ -55,7 +55,7 @@ const App = ({ instance }) => {
           <div
             style={{
               backgroundColor: theme.palette.primary.main,
-              minHeight: "100vh",
+              minHeight: "111vh",
             }}
           >
             <LogoutPage />
@@ -66,7 +66,7 @@ const App = ({ instance }) => {
             <Header />
             {selectedOrganization && (
               <NavigationDrawer
-                open={open}
+                openDrawer={open}
                 handleDrawerOpen={handleDrawerOpen}
                 handleDrawerClose={handleDrawerClose}
               />
@@ -74,7 +74,7 @@ const App = ({ instance }) => {
             <Main
               open={selectedOrganization ? open : false}
               sx={{
-                minHeight: "88.3vh",
+                minHeight: "102vh",
                 marginTop: 6,
                 padding: 0,
               }}
@@ -174,7 +174,7 @@ export default App;
 //           <div
 //             style={{
 //               backgroundColor: theme.palette.primary.main,
-//               minHeight: "100vh",
+//               minHeight: "111vh",
 //             }}
 //           >
 //             <LogoutPage />
