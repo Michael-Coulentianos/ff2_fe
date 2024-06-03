@@ -6,7 +6,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import WelcomeCard from "../molecules/welcome";
-import { CircularProgress, Grid, Paper } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import theme from "../../theme";
 import {
   createFarm,
@@ -20,11 +20,11 @@ import { useState } from "react";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import { fetchData, useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
-import OnBoardingFarmAndField from "./onBoardingFarmAndField";
+import OnBoardingField from "./onBoardingField";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
 
-const steps = ["Welcome", "Add Organisation", "Add Farm & Field"];
+const steps = ["Welcome", "Add Organisation & Farm", "Add Field"];
 
 const stepDescriptions = [
   "Kickstart the process by creating your organisation.",
@@ -58,7 +58,7 @@ export default function StepperForm() {
   };
 
   const handleFinish = async () => {
-    if(!selectedOrganization){
+    if (!selectedOrganization) {
       setSelectedOrganization(organizations[0]);
       navigate("/");
     }
@@ -109,7 +109,13 @@ export default function StepperForm() {
       };
 
       await createOrganization(org);
-      fetchData(getOrganizations, setOrganizations);
+      await fetchData(getOrganizations, setOrganizations);
+      const updatedOrganizations = await getOrganizations();
+      const createData = {
+        name: formData.farmName,
+        partyId: updatedOrganizations[0]?.partyId,
+      };
+      await createFarm(createData);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
       console.error("Failed to create organization:", error);
@@ -118,12 +124,7 @@ export default function StepperForm() {
 
   const handleFarmSubmit = async (formData: any) => {
     try {
-      const createData = {
-        name: formData.farmName,
-        partyId: organizations[0]?.partyId,
-      };
-      console.log(createData);
-      await createFarm(createData);
+      // create field
       if (activeStep === steps.length - 1) {
         handleFinish();
       }
@@ -140,7 +141,11 @@ export default function StepperForm() {
       onSubmit={handleOrgSubmit}
       legalEntities={legalEntities}
     />,
-    <OnBoardingFarmAndField key="farmForm" ref={farmFormRef} onSubmit={handleFarmSubmit} />,
+    <OnBoardingField
+      key="farmForm"
+      ref={farmFormRef}
+      onSubmit={handleFarmSubmit}
+    />,
   ];
 
   return (
@@ -219,9 +224,7 @@ export default function StepperForm() {
           p: 2,
         }}
       >
-        <Button
-          onClick={handleNext}
-        >
+        <Button onClick={handleNext}>
           {activeStep === steps.length - 1 ? "Finish" : "Next"}
         </Button>
       </Box>
