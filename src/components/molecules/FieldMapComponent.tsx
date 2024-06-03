@@ -10,9 +10,9 @@ interface FieldMapProps {
 }
 
 const FieldMapComponent: React.FC<FieldMapProps> = ({ height, fieldData, onLoad }) => {
-  const { selectedOrganization, activeAccount } = useGlobalState();
-  const azureUserId = activeAccount?.localAccountId;
-
+  const { selectedOrganization } = useGlobalState();
+console.log("selectedOrganization");
+console.log(selectedOrganization);
   const cropperRef = fieldData?.cropperRef;
   let mapUrl = "";
   if (cropperRef !== undefined) {

@@ -67,7 +67,7 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
   };
 
   useEffect(() => {
-    if (initialFieldData.area) {
+    if (initialFieldData?.area) {
       const size = initialFieldData.area;
       setValue("size", size + " ha");
     }

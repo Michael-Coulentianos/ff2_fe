@@ -20,7 +20,7 @@ import { useState } from "react";
 import { LegalEntity } from "../../models/legalEntity.interface";
 import { fetchData, useFetchData } from "../../hooks/useFethData";
 import OnBoardingOrganisationForm from "./onBoardingOrganisationDialog";
-import OnBoardingFarmAndField from "./onBoardingFarmAndField";
+import OnBoardingField from "./onBoardingField";
 import { CreateOrganization } from "../../models/createOrganization.interface";
 import { ContactPerson } from "../../models/contactPerson.interface";
 
@@ -141,7 +141,7 @@ export default function StepperForm() {
       onSubmit={handleOrgSubmit}
       legalEntities={legalEntities}
     />,
-    <OnBoardingFarmAndField
+    <OnBoardingField
       key="farmForm"
       ref={farmFormRef}
       onSubmit={handleFarmSubmit}
