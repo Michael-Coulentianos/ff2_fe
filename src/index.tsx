@@ -38,7 +38,6 @@ const InitializeApp = () => {
         // Fetch organizations after setting the active account
         try {
           const organizations = await getOrganizations();
-          console.log("cry");
           setSelectedOrganization(organizations[0]);
           console.log("Organizations fetched and set:", organizations);
         } catch (error) {

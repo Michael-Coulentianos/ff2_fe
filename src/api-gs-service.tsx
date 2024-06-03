@@ -45,6 +45,22 @@ export const updateField = async (field: FieldMetadata): Promise<any> => {
   }
 };
 
+export const createField = async (field: FieldMetadata): Promise<any> => {
+  try {
+    const response = await api.post<FieldMetadata>("field", field, {
+      params: { code },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to update field: ${error.response.data.message || error.message}`);
+    } else {
+      console.error('Something went wrong while updating field', error);
+      return null;
+    }
+  }
+};
+
 export const getFieldMetaData = async (fieldId: number): Promise<any> => {
   try {
     const response = await api.get<any>("field/metadata", {
@@ -147,6 +163,24 @@ export const createFarmFieldLink = async (fieldId: number, farmId: string): Prom
   try {
     const response = await api.put<any>("farm/field/link", null, {
       params: { fieldId, farmId, code },
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      throw new Error(`Failed to create farm-field link: ${error.response.data.message || error.message}`);
+    } else {
+      console.error('Something went wrong while creating farm-field link', error);
+      return null;
+    }
+  }
+};
+
+
+export const createFarmFieldLinkCropperRef = async (cropperRef: string, farmId: string): Promise<any> => {
+  try {
+    const response = await api.put<any>("farm/field/link", null, {
+      params: { cropperRef, farmId, code },
     });
     console.log(response.data);
     return response.data;

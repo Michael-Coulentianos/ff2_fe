@@ -6,14 +6,17 @@ import {
   DialogContent,
   Paper,
   Typography,
+  TextField,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { getOrganizationFarms } from "../../api-ffm-service";
-import { useFetchData } from "../../hooks/useFethData";
+import { getOrganizationFarms, getOrganizations } from "../../api-ffm-service";
+import { fetchData, useFetchData } from "../../hooks/useFethData";
 import { Farm } from "../../models/farm.interface";
 import { useGlobalState } from "../../GlobalState";
 import {
   createFarmFieldLink,
+  createFarmFieldLinkCropperRef,
+  createField,
   getFieldMetaData,
   updateField,
 } from "../../api-gs-service";
@@ -81,13 +84,11 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
 
   useEffect(() => {
     if (polygonData) {
-      // Assuming polygonData contains an area property for simplicity
-      const size = polygonData.area; // or however you calculate the size from polygonData
+      const size = polygonData.area;
       setValue("size", size);
     }
   }, [polygonData, setValue]);
 
-  // Function to round coordinates to 4 decimal places
   function roundCoordinates(coords: number[][][]): number[][][] {
     return coords.map((coordGroup) =>
       coordGroup.map(([lat, long]) => [
@@ -97,33 +98,69 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
     );
   }
 
-  const handleFormSubmit = async (data) => {
-    const farmId = data.farmId === "" ? null : data.farmId;
-    await createFarmFieldLink(data.fieldId, farmId);
-    console.log(initialFieldData);
-
+  const existingFieldCoordinates = () => {
     let coords = "";
-
     if (polygonData?.coordinates === undefined) {
       coords = initialFieldData.coords;
-    } else {
+    } else if (polygonData.coordinates !== undefined) {
       const roundedCoords = roundCoordinates(polygonData.coordinates);
       coords = JSON.stringify(roundedCoords);
     }
-
-    const fieldMetadata: FieldMetadata = {
-      fieldId: data.fieldId,
-      coords: coords,
-      partyId: data.partyId,
-      name: data.name,
-      metadata: {
-        irrDry: data.irrDry,
-      },
-    };
-
-    await updateField(fieldMetadata);
-    navigate("/");
+    return coords;
   };
+  const [organizations, setOrganizations] = useState<any[]>([]);
+
+  const handleFormSubmit = async (data) => {
+    const farmId = data.farmId === "" ? null : data.farmId;
+
+    let coords = existingFieldCoordinates();
+
+    const cropperRef = generateGUID();
+
+    await fetchData(getOrganizations, setOrganizations);
+    const updatedOrganizations = await getOrganizations();
+
+    if (data.fieldId === undefined) {
+      const fieldMetadata: FieldMetadata = {
+        cropperRef: cropperRef,
+        coords: coords,
+        partyId: updatedOrganizations[0]?.partyIdentifier,
+        name: data.name,
+        metadata: {
+          irrDry: data.irrDry,
+        },
+      };
+      console.log(fieldMetadata);
+
+      await createField(fieldMetadata);
+      await createFarmFieldLinkCropperRef(cropperRef, farmId);
+    } else {
+      const fieldMetadata: FieldMetadata = {
+        fieldId: data.fieldId,
+        coords: coords,
+        partyId: updatedOrganizations[0]?.partyIdentifier,
+        name: data.name,
+        metadata: {
+          irrDry: data.irrDry,
+        },
+      };
+
+      await updateField(fieldMetadata);
+      await createFarmFieldLink(data.fieldId, farmId);
+      navigate("/");
+    }
+  };
+
+  function generateGUID(): string {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  }
 
   const fieldDefinitions = {
     fieldDetails: [
