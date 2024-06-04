@@ -49,8 +49,7 @@ const FieldManagement = () => {
 
   function handleHome(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.preventDefault();
-    navigate("/"); console.log(event,"click to home");
-    
+    navigate("/");
   }
 
   return (
