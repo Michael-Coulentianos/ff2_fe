@@ -168,7 +168,10 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
       { id: "name", label: "Field Name", type: "text" },
       { id: "size", label: "Size", type: "text" },
     ],
-    irrDry: [{ id: "irrDry", label: "Irrigated Field", type: "checkbox" }],
+    irrDry: [{ id: "irrDry", label: "Irrigated", type: "checkbox" }],
+    seasonalField: [
+      { id: "seasonalField", label: "Seasonal", type: "checkbox" },
+    ],
     farm: [
       {
         id: "farmId",
@@ -176,23 +179,22 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
         type: "select",
         options: farms.map((farm) => ({
           value: farm.farmIdentifier,
+          
           label: farm.farm,
           id: farm.farmId,
         })),
       },
     ],
-    seasonalField: [
-      { id: "seasonalField", label: "Seasonal Field", type: "checkbox" },
-    ],
+
     fieldHistory: [
-      { id: "activities", label: "Activities", type: "text" },
-      { id: "cropHistory", label: "Crop History", type: "text" },
-      { id: "notes", label: "Notes", type: "text" },
+      { id: "activities", label: "Activities", type: "multiText" },
+      { id: "cropHistory", label: "Crop History", type: "multiText" },
+      { id: "notes", label: "Notes", type: "multiText" },
     ],
   };
 
   return (
-    <Paper elevation={3} sx={{ marginTop: 1, padding: 1, minHeight: "510px" }}>
+    <Paper elevation={3} sx={{ marginTop: 4, padding: 2, minHeight: "500px" }}>
       <Typography variant="h6">Field Details</Typography>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <Box sx={{ overflow: "auto" }}>
@@ -218,16 +220,9 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
                     color="primary"
                   />
                 }
-                label="Irrigated Field"
+                label="Irrigated"
               />
             )}
-          />
-          <FormSection
-            title=""
-            fields={fieldDefinitions.farm}
-            control={control}
-            errors={errors}
-            columns={1}
           />
           <Controller
             name="seasonalField"
@@ -242,20 +237,27 @@ const FieldForm = ({ initialFieldData, onFieldDataChange, polygonData }) => {
                     color="primary"
                   />
                 }
-                label="Seasonal Field"
+                label="Seasonal"
               />
             )}
           />
           <FormSection
+            title=""
+            fields={fieldDefinitions.farm}
+            control={control}
+            errors={errors}
+            columns={1}
+          />
+          <FormSection
+            title=""
             fields={fieldDefinitions.fieldHistory}
             control={control}
             errors={errors}
             columns={1}
-            title=""
           />
         </Box>
         <Button variant="contained" color="primary" type="submit">
-          SAVE
+          Save
         </Button>
       </form>
     </Paper>

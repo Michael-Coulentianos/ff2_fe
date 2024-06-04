@@ -104,11 +104,7 @@ const ActivitySummary: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h6" gutterBottom>
-        Activity Summary
-        <Divider sx={{ marginTop: 1 }} />
-      </Typography>
+    <Container>
       <form onSubmit={handleSubmit(handleGenerateSummary)}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -208,7 +204,6 @@ const ActivitySummary: React.FC = () => {
                     name={"selectCategory"}
                     value={field.value}
                     items={categoryItems}
-                    sx={{ marginBottom: 1 }}
                     onChange={(e) => {
                       field.onChange(e);
                       handleCategoryChange(e);
@@ -228,7 +223,6 @@ const ActivitySummary: React.FC = () => {
                       name={"selectSubCategory"}
                       value={field.value}
                       items={subCategoryItems}
-                      sx={{ marginBottom: 1 }}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
                   )}
@@ -239,7 +233,7 @@ const ActivitySummary: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              sx={{ marginBottom: 1 }}
+              sx={{ mb: 1, mt: 1, ml: 5 }}
               type="submit"
             >
               Generate Summary

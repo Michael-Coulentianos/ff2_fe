@@ -210,10 +210,6 @@ const Notes: React.FC = () => {
       {!isLoading && (
         <Grid container spacing={2} padding={"10px"}>
           <Grid item xs={12}>
-            <Typography variant="h5">Notes</Typography>
-            <Divider sx={{ marginTop: 1 }} />
-          </Grid>
-          <Grid item xs={12}>
             {notes.length === 0 && (
               <Paper
                 sx={{

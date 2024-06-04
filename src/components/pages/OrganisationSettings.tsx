@@ -195,10 +195,6 @@ const OrganizationSettings: React.FC = () => {
         <>
           <Grid container spacing={2} padding={"10px"}>
             <Grid item xs={12}>
-              <Typography variant="h5">Organisation settings</Typography>
-              <Divider sx={{ marginTop: 1 }} />
-            </Grid>
-            <Grid item xs={12}>
               {organizations.length === 0 && (
                 <Paper
                   sx={{

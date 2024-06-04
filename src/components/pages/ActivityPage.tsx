@@ -194,10 +194,6 @@ const Activities: React.FC = () => {
       {!isLoading && (
         <Grid container spacing={2} padding={"10px"}>
           <Grid item xs={12}>
-            <Typography variant="h5">Activity Management</Typography>
-            <Divider sx={{ marginTop: 1 }} />
-          </Grid>
-          <Grid item xs={12}>
             <ActivitiesDialog
               isOpen={formOpen}
               onClose={handleCloseForm}

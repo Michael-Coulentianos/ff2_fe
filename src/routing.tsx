@@ -5,6 +5,7 @@ import Notes from "./components/pages/notesPage";
 import Activities from "./components/pages/ActivityPage";
 import FieldManagement from "./components/pages/FieldsPage";
 import FarmManagement from "./components/pages/FarmPage";
+import ReportPage from "./components/pages/ReportPage";
 
 const Routing: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const Routing: React.FC = () => {
       <Route path="/notes" element={<Notes />} />
       <Route path="/fields" element={<FieldManagement />} />
       <Route path="/activity" element={<Activities />} />
+      <Route path="/reports" element={<ReportPage />} />
     </Routes>
   );
 };

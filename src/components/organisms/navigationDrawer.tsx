@@ -366,7 +366,9 @@ const NavigationDrawer = ({
         }}
       >
         <DrawerHeader>
-          <UserOrganizationComponent open={openDrawer}></UserOrganizationComponent>
+          <UserOrganizationComponent
+            open={openDrawer}
+          ></UserOrganizationComponent>
         </DrawerHeader>
         <Divider />
         <List>
@@ -487,7 +489,7 @@ const NavigationDrawer = ({
                     text="Reports"
                     icon={undefined}
                     open={openDrawer}
-                    onClick={undefined}
+                    onClick={() => navigate("/reports")}
                   />
                   <MenuItem
                     text="Documentation"

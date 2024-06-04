@@ -3,6 +3,7 @@ import { Divider, Grid, Typography } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import FieldForm from "../organisms/FieldDetails";
 import { useLocation } from "react-router-dom";
+import FarmFieldManagement from "../organisms/farmManageCard";
 
 const FieldManagement = () => {
   const location = useLocation();
@@ -41,13 +42,10 @@ const FieldManagement = () => {
 
   return (
     <Grid container>
-      <Grid item xs={12} padding={"10px"}>
-        <Typography variant="h5">Field Management</Typography>
-        <Divider sx={{ marginTop: 1 }} />
-      </Grid>
       <Grid item xs={9}>
+        <FarmFieldManagement></FarmFieldManagement>
         <FieldMapComponent
-          height="500px"
+          height={"650px"}
           fieldData={fieldData}
           onLoad={handleMapLoad}
         />

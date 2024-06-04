@@ -75,6 +75,9 @@ export default function QuickAdd() {
       case 2:
         setOpenAct(true);
         break;
+      case 3:
+        navigate("/fields");
+        break;
       default:
         break;
     }

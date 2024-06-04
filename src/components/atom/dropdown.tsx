@@ -7,13 +7,12 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 
-// Define the type for each item in the dropdown list
+
 interface DropdownItem {
   value: string | number;
   label: string;
 }
 
-// Define the props interface
 interface DropdownProps {
   label: string;
   name: string;
@@ -23,7 +22,6 @@ interface DropdownProps {
   onChange: (event: SelectChangeEvent<string | number>) => void;
 }
 
-// Create the Dropdown component as a React Functional Component
 const Dropdown: React.FC<DropdownProps> = ({
   label,
   name,

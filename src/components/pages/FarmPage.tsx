@@ -15,7 +15,10 @@ const FarmManagement = () => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <FieldMapComponent onLoad={handleMapLoad}></FieldMapComponent>
+        <FieldMapComponent
+          height="500px"
+          onLoad={handleMapLoad}
+        ></FieldMapComponent>
         <FarmFieldManagement></FarmFieldManagement>
       </Grid>
       <Grid item xs={12}>
