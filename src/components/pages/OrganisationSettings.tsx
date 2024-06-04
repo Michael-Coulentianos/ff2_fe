@@ -18,6 +18,8 @@ import { Contacts } from "../../models/contacts.interface";
 import Loading from "./loading";
 import { useGlobalState } from "../../GlobalState";
 import { fetchData, useFetchData } from "../../hooks/useFethData";
+import { Breadcrumb } from "../atom/breadcrumbs";
+import { useNavigate } from "react-router-dom";
 
 interface DataItem {
   id: string;
@@ -188,11 +190,30 @@ const OrganizationSettings: React.FC = () => {
     },
   ];
 
+  const navigate = useNavigate();
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    navigate(-1);
+  }
+
   return (
     <>
       {isLoading && <Loading />}
       {!isLoading && (
         <>
+          <Grid item xs={12}>
+            <Breadcrumb
+              crumbs={[
+                { text: "<< Back", onClick: handleClick, underline: "hover" },
+                {
+                  text: "Administration",
+                  onClick: undefined,
+                  underline: "none",
+                },
+              ]}
+              currentCrumb={"Organisation Settings"}
+            ></Breadcrumb>
+          </Grid>
           <Grid container spacing={2} padding={"10px"}>
             <Grid item xs={12}>
               {organizations.length === 0 && (

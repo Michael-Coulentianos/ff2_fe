@@ -22,6 +22,8 @@ import { useFetchData, fetchData } from "../../hooks/useFethData";
 import DynamicChip from "../atom/dynamicChip";
 import { getFields } from "../../api-gs-service";
 import KanbanBoard from "../organisms/kanbanBoard/kanbanOverview";
+import { useNavigate } from "react-router-dom";
+import { Breadcrumb } from "../atom/breadcrumbs";
 
 interface DataItem {
   id: string;
@@ -188,34 +190,55 @@ const Activities: React.FC = () => {
     },
   ];
 
+  const navigate = useNavigate();
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    navigate(-1);
+  }
+
   return (
     <>
       {isLoading && <Loading />}
       {!isLoading && (
-        <Grid container spacing={2} padding={"10px"}>
+        <>
           <Grid item xs={12}>
-            <ActivitiesDialog
-              isOpen={formOpen}
-              onClose={handleCloseForm}
-              onSubmit={handleSubmit}
-              formData={selectedActivity}
-              activityCategory={activityCategories}
-              activityStatus={activityStatuses}
-              seasonStages={seasonStages}
-              notes={notes}
-              fieldsMap={fields}
-              handleDelete={handleDelete}
-            />
-            <KanbanBoard></KanbanBoard>
-            <GenericConfirmDialog
-              open={confirmOpen}
-              onCancel={() => setConfirmOpen(false)}
-              onConfirm={handleConfirmDelete}
-              title="Confirm Deletion"
-              content="Are you sure you want to delete this activity?"
-            />
+            <Breadcrumb
+              crumbs={[
+                { text: "<< Back", onClick: handleClick, underline: "hover" },
+                {
+                  text: "My Farm",
+                  onClick: undefined,
+                  underline: "none",
+                },
+              ]}
+              currentCrumb={"Activity Management"}
+            ></Breadcrumb>
           </Grid>
-        </Grid>
+          <Grid container spacing={2} padding={"10px"}>
+            <Grid item xs={12}>
+              <ActivitiesDialog
+                isOpen={formOpen}
+                onClose={handleCloseForm}
+                onSubmit={handleSubmit}
+                formData={selectedActivity}
+                activityCategory={activityCategories}
+                activityStatus={activityStatuses}
+                seasonStages={seasonStages}
+                notes={notes}
+                fieldsMap={fields}
+                handleDelete={handleDelete}
+              />
+              <KanbanBoard></KanbanBoard>
+              <GenericConfirmDialog
+                open={confirmOpen}
+                onCancel={() => setConfirmOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Deletion"
+                content="Are you sure you want to delete this activity?"
+              />
+            </Grid>
+          </Grid>
+        </>
       )}
     </>
   );

@@ -18,6 +18,8 @@ import Loading from "./loading";
 import { useGlobalState } from "../../GlobalState";
 import { addPropertyIfNotEmpty } from "../../utils/Utilities";
 import ActionButtons from "../molecules/actionButtons";
+import { Breadcrumb } from "../atom/breadcrumbs";
+import { useNavigate } from "react-router-dom";
 
 const Notes: React.FC = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -204,73 +206,93 @@ const Notes: React.FC = () => {
     },
   ];
 
+  const navigate = useNavigate();
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    navigate(-1);
+  }
+
   return (
     <>
       {isLoading && <Loading />}
       {!isLoading && (
-        <Grid container spacing={2} padding={"10px"}>
+        <>
           <Grid item xs={12}>
-            {notes.length === 0 && (
-              <Paper
-                sx={{
-                  padding: "20px",
-                  margin: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ m: 2 }}>
-                  You do not have any notes. Please click the button below to
-                  add an organization.
-                </Typography>
-                <Button
-                  variant="contained"
-                  onClick={handleOpenForm}
-                  color="primary"
-                >
-                  Add Note
-                </Button>
-              </Paper>
-            )}
-            <NotesDialog
-              isOpen={formOpen}
-              onClose={handleCloseForm}
-              onSubmit={handleSubmit}
-              formData={selectedNote}
-              noteTypes={noteTypes}
-              handleDelete={() => handleDelete(selectedNote)}
-            />
+            <Breadcrumb
+              crumbs={[
+                { text: "<< Back", onClick: handleClick, underline: "hover" },
+                {
+                  text: "Administration",
+                  onClick: undefined,
+                  underline: "none",
+                },
+              ]}
+              currentCrumb={"Notes"}
+            ></Breadcrumb>
           </Grid>
-
-          {notes.length > 0 && (
-            <>
-              <Grid item xs={12}>
-                <Button
-                  variant="contained"
-                  onClick={handleOpenForm}
-                  color="primary"
+          <Grid container spacing={2} padding={"10px"}>
+            <Grid item xs={12}>
+              {notes.length === 0 && (
+                <Paper
+                  sx={{
+                    padding: "20px",
+                    margin: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
                 >
-                  Add Note
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                <DynamicTable
-                  data={notes}
-                  columns={myColumns}
-                  rowsPerPage={5}
-                />
-                <GenericConfirmDialog
-                  open={confirmOpen}
-                  onCancel={() => setConfirmOpen(false)}
-                  onConfirm={handleConfirm}
-                  title="Confirm Deletion"
-                  content="Are you sure you want to delete this note?"
-                />
-              </Grid>
-            </>
-          )}
-        </Grid>
+                  <Typography sx={{ m: 2 }}>
+                    You do not have any notes. Please click the button below to
+                    add an organization.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    onClick={handleOpenForm}
+                    color="primary"
+                  >
+                    Add Note
+                  </Button>
+                </Paper>
+              )}
+              <NotesDialog
+                isOpen={formOpen}
+                onClose={handleCloseForm}
+                onSubmit={handleSubmit}
+                formData={selectedNote}
+                noteTypes={noteTypes}
+                handleDelete={() => handleDelete(selectedNote)}
+              />
+            </Grid>
+            {notes.length > 0 && (
+              <>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    onClick={handleOpenForm}
+                    color="primary"
+                  >
+                    Add Note
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <DynamicTable
+                    data={notes}
+                    columns={myColumns}
+                    rowsPerPage={5}
+                  />
+                  <GenericConfirmDialog
+                    open={confirmOpen}
+                    onCancel={() => setConfirmOpen(false)}
+                    onConfirm={handleConfirm}
+                    title="Confirm Deletion"
+                    content="Are you sure you want to delete this note?"
+                  />
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </>
       )}
     </>
   );

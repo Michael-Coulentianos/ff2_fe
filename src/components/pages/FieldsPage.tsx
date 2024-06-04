@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Divider, Grid, Typography } from "@mui/material";
 import FieldMapComponent from "../molecules/FieldMapComponent";
 import FieldForm from "../organisms/FieldDetails";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import FarmFieldManagement from "../organisms/farmManageCard";
+import { Breadcrumb } from "../atom/breadcrumbs";
 
 const FieldManagement = () => {
   const location = useLocation();
@@ -40,8 +41,34 @@ const FieldManagement = () => {
     return () => window.removeEventListener("message", handleMessage);
   }, [location.state?.fieldData, fieldData]);
 
+  const navigate = useNavigate();
+  function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    navigate(-1);
+  }
+
+  function handleHome(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    event.preventDefault();
+    navigate("/"); console.log(event,"click to home");
+    
+  }
+
   return (
     <Grid container>
+      <Grid item xs={12}>
+        <Breadcrumb
+          crumbs={[
+            { text: "<< Back", onClick: handleClick, underline: "hover" },
+            { text: "My Farm", onClick: undefined, underline: "none" },
+            {
+              text: "Farm Management",
+              onClick: handleHome,
+              underline: "hover",
+            },
+          ]}
+          currentCrumb={"Fields"}
+        ></Breadcrumb>
+      </Grid>
       <Grid item xs={9}>
         <FarmFieldManagement></FarmFieldManagement>
         <FieldMapComponent
